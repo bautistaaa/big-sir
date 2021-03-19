@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 
 interface DockItem {
@@ -16,7 +16,15 @@ const items: DockItem[] = [
   },
 ];
 
-const Dock: FC = () => {
+const Dock: FC<{
+  isTerminalMinimized: boolean;
+  minimizedTerminalRef: MutableRefObject<any>;
+  setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({
+  isTerminalMinimized,
+  minimizedTerminalRef,
+  setIsTerminalMinimized,
+}) => {
   return (
     <Wrapper>
       <IconsContainer>
@@ -31,6 +39,12 @@ const Dock: FC = () => {
       </IconsContainer>
       <TrashContainer>
         <Separator />
+        <MinimizedTerminal
+          ref={minimizedTerminalRef}
+          onClick={() => setIsTerminalMinimized(false)}
+        >
+          {isTerminalMinimized && <img src="minimized.png" alt="" />}
+        </MinimizedTerminal>
         <Button>
           <img src="./trash.png" alt="Trash" />
         </Button>
@@ -39,6 +53,14 @@ const Dock: FC = () => {
   );
 };
 
+const MinimizedTerminal = styled.div`
+  img {
+    width: 40px;
+    height: 31px;
+    object-fit: cover;
+    margin-right: 5px;
+  }
+`;
 const Separator = styled.div`
   height: 100%;
   width: 1px;

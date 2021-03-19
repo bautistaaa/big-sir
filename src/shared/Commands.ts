@@ -1,5 +1,11 @@
-const Commands: { [k: string]: string[] | string } = {
-  ls: ['Documents', 'Desktop'],
+import files from './files';
+
+const commands: { [k: string]: () => string } = {
+  ls: () =>
+    Object.values(files)
+      .map((x) => x.display)
+      .join(' '),
+  cat: () => 'Only vim is supported in this terminal',
 };
 
-export default Commands;
+export default commands;

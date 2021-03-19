@@ -1,13 +1,37 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
-import History from '../shared/History';
-import Commands from '../shared/Commands';
+import commands from '../shared/commands';
+import files from '../shared/files';
+import useHistory from '../hooks/useHistory';
 
+const searchForOptions = (term: string): string[] => {
+  const o = Object.values(files)
+    .filter((x) => x.searchText.filter((x) => x.startsWith(term)).length > 0)
+    .map((x) => x.display);
+
+  return o;
+};
 const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const history = useRef(new History());
+  const commandRef = useRef<string | null>(null);
   const [currentCommand, setCurrentCommand] = useState('');
-  const [lines, setLines] = useState<number[]>([1]);
+  const [tabbedResults, setTabbedResults] = useState('');
+  const [keysCurrentlyPressed, setKeysCurrentlyPressed] = useState<string[]>(
+    []
+  );
+  const {
+    state: { actualCommands },
+    addCommand,
+    clear: clearHistory,
+    getOutput,
+  } = useHistory();
+
+  const clear = () => {
+    textAreaRef.current!.value = '';
+    setCurrentCommand('');
+    commandRef.current = '';
+    clearHistory();
+  };
 
   useEffect(() => {
     if (isTerminalFocused) {
@@ -18,62 +42,114 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   }, [isTerminalFocused]);
 
   useEffect(() => {
+    if (
+      keysCurrentlyPressed.includes('Meta') &&
+      keysCurrentlyPressed.includes('k') &&
+      textAreaRef.current &&
+      textAreaRef.current.value === ''
+    ) {
+      clear();
+    }
+  }, [keysCurrentlyPressed]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const { key } = e;
       let output = '';
-      if (key === 'Enter') {
+      const currentCommand = commandRef.current ?? '';
+      const [cmd, ...args] = currentCommand.split(' ');
+
+      setKeysCurrentlyPressed((keys) => [
+        ...keys.filter((k) => k !== key),
+        key,
+      ]);
+
+      if (key === 'Tab') {
         e.preventDefault();
-        setCurrentCommand((currentCommand) => {
-          if (textAreaRef.current) {
-            textAreaRef.current.value = '';
-          }
-          if (Commands[currentCommand]) {
-            const co = Commands[currentCommand];
-            console.log(co);
-            if (Array.isArray(co)) {
-              output = co.join(' ');
+        if (cmd === 'ls' || cmd === 'cat') {
+          const results = searchForOptions(args[0]);
+          if (results.length > 1) {
+            setTabbedResults(results.join(' '));
+          } else {
+            if (results[0]) {
+              const newCommand = `${cmd} ${results[0]}`;
+              setCurrentCommand(newCommand);
+              commandRef.current = newCommand;
             }
           }
+        }
+      } else if (key === 'Enter') {
+        e.preventDefault();
+        if (textAreaRef.current) {
+          textAreaRef.current.value = '';
+        }
+        if (commands[currentCommand!]) {
+          const co = commands[currentCommand ?? ''];
+          output = co();
+        } else if (cmd === 'cat') {
+          const file = args[0];
+          output = files[file].content;
+        }
 
-          console.log(currentCommand, output);
-          history.current.addCommand(currentCommand, output);
-          console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-          console.log('AFTER');
-          console.log(history);
-
-          return '';
-        });
-        setLines((lines) => [...lines, 1]);
+        addCommand(commandRef.current!, output);
+        setCurrentCommand('');
+        commandRef.current = '';
       }
     };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const { key } = e;
+      if (key === 'Meta') {
+        // blow it all away
+        setKeysCurrentlyPressed([]);
+      }
+      setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
+    };
+
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
 
   return (
     <Wrapper>
+      <pre
+        style={{
+          background: 'white',
+          position: 'absolute',
+          top: '-100px',
+          padding: '10px',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          fontSize: '20px',
+        }}
+      >
+        {keysCurrentlyPressed.join(' ')}
+      </pre>
       <HiddenTextArea
         ref={textAreaRef}
         onChange={(e) => {
+          commandRef.current = e.target.value;
           setCurrentCommand(e.target.value);
         }}
-        onBlur={(e: React.FocusEventHandler<HTMLTextAreaElement>) => {
+        onBlur={() => {
           if (isTerminalFocused && textAreaRef.current) {
             textAreaRef.current.focus();
           }
         }}
       />
-      {history.current.getList().map((line, i) => {
-        const output = history.current.getOutput(i);
+      {actualCommands.map((line, i) => {
+        const output = getOutput(i);
         return (
           <React.Fragment key={i}>
             <Line>
               <User>[root ~]$&nbsp;</User>
               <Input>{line}</Input>
             </Line>
-            {output && <span style={{ color: 'white' }}>{output}</span>}
+            {output && <pre style={{ color: 'white' }}>{output}</pre>}
           </React.Fragment>
         );
       })}
@@ -82,6 +158,7 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
         <Input>{currentCommand}</Input>
         {isTerminalFocused && <Cursor />}
       </Line>
+      {tabbedResults && <pre style={{ color: 'white' }}>{tabbedResults}</pre>}
     </Wrapper>
   );
 };
@@ -94,7 +171,7 @@ const Line = styled.div`
   width: 100%;
   line-height: 25px;
 `;
-const User = styled.span`
+const User = styled.div`
   color: limegreen;
 `;
 const Input = styled.pre`

@@ -1,4 +1,5 @@
-import { FC, useRef } from 'react';
+import React, { FC, useRef } from 'react';
+import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Prompt from '../components/Prompt';
 import useIsFocused from '../hooks/useIsFocused';
@@ -7,19 +8,29 @@ const RED = 'rgb(255 91 82)';
 const YELLOW = 'rgb(230 192 41)';
 const GREEN = '#53c22c';
 
-const Terminal: FC = () => {
+const Terminal: FC<{
+  setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setIsTerminalMinimized }) => {
   const terminalWrapperRef = useRef<HTMLDivElement | null>(null);
+  const consoleRef = useRef<HTMLDivElement | null>(null);
 
+  const callback = () => {
+    if (consoleRef.current) {
+      const scrollHeight = consoleRef.current.scrollHeight;
+      consoleRef.current.scrollTo(0, scrollHeight);
+    }
+  };
   const isTerminalFocused = useIsFocused(terminalWrapperRef);
+  useMutationObserver(consoleRef, callback);
 
   return (
     <Wrapper ref={terminalWrapperRef}>
       <ActionBar>
         <CloseButton />
-        <MinimizeButton />
+        <MinimizeButton onClick={() => setIsTerminalMinimized(true)} />
         <FullScreenButton />
       </ActionBar>
-      <Console>
+      <Console ref={consoleRef}>
         <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
         <Prompt isTerminalFocused={isTerminalFocused}></Prompt>
       </Console>
@@ -55,6 +66,7 @@ const Console = styled.div`
   padding: 3px;
   background: #151516;
   flex: 1;
+  overflow: scroll;
 `;
 const BaseButton = styled.button`
   border: none;

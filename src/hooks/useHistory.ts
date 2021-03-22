@@ -1,47 +1,65 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+type CommandType = 'real' | 'fake';
+
+export interface Command {
+  input: string;
+  type: CommandType;
+}
 
 function useHistory() {
   let [index, setIndex] = useState(0);
-  let [actualCommands, setActualCommands] = useState<string[]>([]);
-  let [notActualCommands, setNotActualCommands] = useState<string[]>([]);
+  let [historyIndex, setHistoryIndex] = useState(0);
+  let [commands, setCommands] = useState<Command[]>([]);
   let [output, setOutput] = useState<string[]>([]);
+  const previousCommand = useRef<Command>();
 
-  function addCommand(command: string, output: string) {
-    setActualCommands((list) => {
+  useEffect(() => {
+    setHistoryIndex(index);
+  }, [index]);
+  useEffect(() => {
+    const realCommands = commands.filter((command) => command.type === 'real');
+    previousCommand.current = realCommands[historyIndex - 1] ?? realCommands[0];
+  }, [commands, historyIndex]);
+
+  function decrementIndex() {
+    setHistoryIndex((index) => (index - 1 < 0 ? 0 : index - 1));
+  }
+  function incrementIndex() {
+    setIndex((index) => index + 1);
+  }
+
+  function addCommand(command: Command, output: string) {
+    setCommands((list) => {
       return [...list, command];
     });
     setOutput((oldOut) => {
       return [...oldOut, output];
     });
-    setIndex((i) => i + 1);
+    if (command.type !== 'fake') {
+      setIndex((i) => i + 1);
+    }
   }
 
   function getOutput(i: number) {
     return output[i];
   }
 
-  function getPreviousCommand() {
-    return actualCommands[index - 1] ?? actualCommands[0];
-  }
-
-  function getNextCommand() {
-    return (
-      actualCommands[index + 1] ?? actualCommands[actualCommands.length - 1]
-    );
-  }
-
   function clear() {
-    setActualCommands([]);
+    setCommands([]);
     setOutput([]);
+    setIndex(0);
+    setHistoryIndex(0);
   }
 
   return {
-    state: { index, actualCommands, output },
+    state: { index, commands, output },
+    previousCommand,
+    incrementIndex,
+    decrementIndex,
     addCommand,
     clear,
     getOutput,
-    getPreviousCommand,
-    getNextCommand,
   };
 }
 

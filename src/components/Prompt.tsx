@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
-import commands from '../shared/commands';
+import commandsList from '../shared/commands';
 import files from '../shared/files';
-import useHistory from '../hooks/useHistory';
+import useHistory, { Command } from '../hooks/useHistory';
 
 const searchForOptions = (term: string): string[] => {
   const o = Object.values(files)
@@ -11,20 +11,27 @@ const searchForOptions = (term: string): string[] => {
 
   return o;
 };
+
 const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const [currentCommand, setCurrentCommand] = useState('');
-  const [tabbedResults, setTabbedResults] = useState('');
   const [keysCurrentlyPressed, setKeysCurrentlyPressed] = useState<string[]>(
     []
   );
   const {
-    state: { actualCommands },
+    state: { commands, index },
     addCommand,
+    previousCommand,
+    decrementIndex,
     clear: clearHistory,
     getOutput,
   } = useHistory();
+  console.log({
+    commands,
+    index,
+    currentCommand,
+  });
 
   const clear = () => {
     textAreaRef.current!.value = '';
@@ -50,69 +57,113 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
     ) {
       clear();
     }
+    if (
+      keysCurrentlyPressed.includes('Control') &&
+      keysCurrentlyPressed.includes('c')
+    ) {
+      const currentInput = textAreaRef.current!.value;
+      const currentCommand = `${currentInput}^C`;
+
+      const command: Command = {
+        input: currentCommand,
+        type: 'real',
+      };
+
+      textAreaRef.current!.value = '';
+      commandRef.current = '';
+      addCommand(command, '');
+      setCurrentCommand('');
+    }
   }, [keysCurrentlyPressed]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const { key } = e;
-      let output = '';
-      const currentCommand = commandRef.current ?? '';
-      const [cmd, ...args] = currentCommand.split(' ');
+    if (isTerminalFocused) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        const { key } = e;
+        let output = '';
+        const currentCommand = commandRef.current ?? '';
+        const [cmd, ...args] = currentCommand.split(' ');
+        console.log(currentCommand);
 
-      setKeysCurrentlyPressed((keys) => [
-        ...keys.filter((k) => k !== key),
-        key,
-      ]);
+        setKeysCurrentlyPressed((keys) => [
+          ...keys.filter((k) => k !== key),
+          key,
+        ]);
 
-      if (key === 'Tab') {
-        e.preventDefault();
-        if (cmd === 'ls' || cmd === 'cat') {
-          const results = searchForOptions(args[0]);
-          if (results.length > 1) {
-            setTabbedResults(results.join(' '));
-          } else {
-            if (results[0]) {
-              const newCommand = `${cmd} ${results[0]}`;
-              setCurrentCommand(newCommand);
-              commandRef.current = newCommand;
+        if (key === 'Tab') {
+          e.preventDefault();
+          if (cmd === 'ls' || cmd === 'cat') {
+            const results = searchForOptions(args[0]);
+            if (results.length > 1) {
+              const command: Command = {
+                input: commandRef.current!,
+                type: 'real',
+              };
+
+              const output = results.join(' ');
+              addCommand(command, output);
+              setCurrentCommand('');
+              commandRef.current = '';
+              textAreaRef.current!.value = '';
+              commandRef.current = '';
+            } else {
+              if (results[0]) {
+                const newCommand = `${cmd} ${results[0]}`;
+                setCurrentCommand(newCommand);
+                commandRef.current = newCommand;
+              }
             }
           }
-        }
-      } else if (key === 'Enter') {
-        e.preventDefault();
-        if (textAreaRef.current) {
-          textAreaRef.current.value = '';
-        }
-        if (commands[currentCommand!]) {
-          const co = commands[currentCommand ?? ''];
-          output = co();
-        } else if (cmd === 'cat') {
-          const file = args[0];
-          output = files[file].content;
-        }
+        } else if (key === 'ArrownDown') {
+        } else if (key === 'ArrowUp') {
+          decrementIndex();
+          const cmd = previousCommand.current;
+          if (cmd) {
+            setCurrentCommand(cmd.input);
+            commandRef.current = cmd.input;
+            textAreaRef.current!.value = cmd.input;
+          }
+        } else if (key === 'Enter') {
+          e.preventDefault();
+          if (textAreaRef.current) {
+            textAreaRef.current.value = '';
+          }
+          if (commandsList[currentCommand!]) {
+            const co = commandsList[currentCommand ?? ''];
+            output = co();
+          } else if (cmd === 'cat') {
+            const file = args[0];
+            output = files[file].content;
+          }
 
-        addCommand(commandRef.current!, output);
-        setCurrentCommand('');
-        commandRef.current = '';
-      }
-    };
-    const handleKeyUp = (e: KeyboardEvent) => {
-      const { key } = e;
-      if (key === 'Meta') {
-        // blow it all away
-        setKeysCurrentlyPressed([]);
-      }
-      setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
-    };
+          const command: Command = {
+            input: commandRef.current!,
+            type: 'real',
+          };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+          addCommand(command, output);
+          setCurrentCommand('');
+          commandRef.current = '';
+        }
+      };
+      const handleKeyUp = (e: KeyboardEvent) => {
+        const { key } = e;
+        if (key === 'Meta') {
+          // blow it all away
+          setKeysCurrentlyPressed([]);
+        }
+        setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
+      };
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+      };
+    }
+  }, [isTerminalFocused]);
 
   return (
     <Wrapper>
@@ -141,13 +192,13 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
           }
         }}
       />
-      {actualCommands.map((line, i) => {
+      {commands.map((line, i) => {
         const output = getOutput(i);
         return (
           <React.Fragment key={i}>
             <Line>
               <User>[root ~]$&nbsp;</User>
-              <Input>{line}</Input>
+              <Input>{line.input}</Input>
             </Line>
             {output && <pre style={{ color: 'white' }}>{output}</pre>}
           </React.Fragment>
@@ -158,7 +209,6 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
         <Input>{currentCommand}</Input>
         {isTerminalFocused && <Cursor />}
       </Line>
-      {tabbedResults && <pre style={{ color: 'white' }}>{tabbedResults}</pre>}
     </Wrapper>
   );
 };

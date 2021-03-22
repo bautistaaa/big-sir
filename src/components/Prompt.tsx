@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
 import files from '../shared/files';
-import useHistory, { Command } from '../hooks/useHistory';
+import useHistory, { Command, CommandType } from '../hooks/useHistory';
 
 const searchForOptions = (term: string): string[] => {
   const o = Object.values(files)
@@ -22,16 +22,17 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   const {
     state: { commands, index },
     addCommand,
-    previousCommand,
+    historyCommand,
     decrementIndex,
+    incrementIndex,
     clear: clearHistory,
     getOutput,
   } = useHistory();
-  console.log({
-    commands,
-    index,
-    currentCommand,
-  });
+  //console.log({
+  //commands,
+  //index,
+  //currentCommand,
+  //});
 
   const clear = () => {
     textAreaRef.current!.value = '';
@@ -66,7 +67,7 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
 
       const command: Command = {
         input: currentCommand,
-        type: 'real',
+        type: 'fake',
       };
 
       textAreaRef.current!.value = '';
@@ -77,13 +78,23 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   }, [keysCurrentlyPressed]);
 
   useEffect(() => {
+    const add = (type: CommandType, output: string) => {
+      const command: Command = {
+        input: commandRef.current!,
+        type,
+      };
+
+      addCommand(command, output);
+      setCurrentCommand('');
+      commandRef.current = '';
+    };
+
     if (isTerminalFocused) {
       const handleKeyDown = (e: KeyboardEvent) => {
         const { key } = e;
         let output = '';
         const currentCommand = commandRef.current ?? '';
         const [cmd, ...args] = currentCommand.split(' ');
-        console.log(currentCommand);
 
         setKeysCurrentlyPressed((keys) => [
           ...keys.filter((k) => k !== key),
@@ -114,10 +125,17 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
               }
             }
           }
-        } else if (key === 'ArrownDown') {
+        } else if (key === 'ArrowDown') {
+          incrementIndex();
+          const cmd = historyCommand.current;
+          if (cmd) {
+            setCurrentCommand(cmd.input);
+            commandRef.current = cmd.input;
+            textAreaRef.current!.value = cmd.input;
+          }
         } else if (key === 'ArrowUp') {
           decrementIndex();
-          const cmd = previousCommand.current;
+          const cmd = historyCommand.current;
           if (cmd) {
             setCurrentCommand(cmd.input);
             commandRef.current = cmd.input;
@@ -135,15 +153,7 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
             const file = args[0];
             output = files[file].content;
           }
-
-          const command: Command = {
-            input: commandRef.current!,
-            type: 'real',
-          };
-
-          addCommand(command, output);
-          setCurrentCommand('');
-          commandRef.current = '';
+          add('real', output);
         }
       };
       const handleKeyUp = (e: KeyboardEvent) => {

@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
 import files from '../shared/files';
-import useHistory, { Command, CommandType } from '../hooks/useHistory';
+import { reducer, Command } from '../prompt.reducer';
 
 const searchForOptions = (term: string): string[] => {
   const o = Object.values(files)
@@ -13,32 +13,35 @@ const searchForOptions = (term: string): string[] => {
 };
 
 const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
+  const [state, dispatch] = useReducer(reducer, {
+    index: 0,
+    historyIndex: 0,
+    commands: [],
+  });
+  const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const [currentCommand, setCurrentCommand] = useState('');
   const [keysCurrentlyPressed, setKeysCurrentlyPressed] = useState<string[]>(
     []
   );
-  const {
-    state: { commands, index },
-    addCommand,
-    historyCommand,
-    decrementIndex,
-    incrementIndex,
-    clear: clearHistory,
-    getOutput,
-  } = useHistory();
-  //console.log({
-  //commands,
-  //index,
-  //currentCommand,
-  //});
+
+  useEffect(() => {
+    console.log(state);
+    stateRef.current = state;
+  }, [state]);
 
   const clear = () => {
     textAreaRef.current!.value = '';
     setCurrentCommand('');
     commandRef.current = '';
-    clearHistory();
+    dispatch({ type: 'clear' });
+  };
+
+  const getRealCommands = () => {
+    return stateRef.current.commands.filter(
+      (command) => command.type === 'real' && command.input !== ''
+    );
   };
 
   useEffect(() => {
@@ -68,27 +71,17 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
       const command: Command = {
         input: currentCommand,
         type: 'fake',
+        output: '',
       };
 
       textAreaRef.current!.value = '';
       commandRef.current = '';
-      addCommand(command, '');
+      dispatch({ type: 'addCommand', payload: { command } });
       setCurrentCommand('');
     }
   }, [keysCurrentlyPressed]);
 
   useEffect(() => {
-    const add = (type: CommandType, output: string) => {
-      const command: Command = {
-        input: commandRef.current!,
-        type,
-      };
-
-      addCommand(command, output);
-      setCurrentCommand('');
-      commandRef.current = '';
-    };
-
     if (isTerminalFocused) {
       const handleKeyDown = (e: KeyboardEvent) => {
         const { key } = e;
@@ -106,13 +99,13 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
           if (cmd === 'ls' || cmd === 'cat') {
             const results = searchForOptions(args[0]);
             if (results.length > 1) {
+              const output = results.join(' ');
               const command: Command = {
                 input: commandRef.current!,
                 type: 'real',
+                output,
               };
-
-              const output = results.join(' ');
-              addCommand(command, output);
+              dispatch({ type: 'addCommand', payload: { command } });
               setCurrentCommand('');
               commandRef.current = '';
               textAreaRef.current!.value = '';
@@ -126,16 +119,16 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
             }
           }
         } else if (key === 'ArrowDown') {
-          incrementIndex();
-          const cmd = historyCommand.current;
+          dispatch({ type: 'incrementHistory' });
+          const cmd = getRealCommands()[stateRef.current.historyIndex + 1];
           if (cmd) {
             setCurrentCommand(cmd.input);
             commandRef.current = cmd.input;
             textAreaRef.current!.value = cmd.input;
           }
         } else if (key === 'ArrowUp') {
-          decrementIndex();
-          const cmd = historyCommand.current;
+          dispatch({ type: 'decrementHistory' });
+          const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
           if (cmd) {
             setCurrentCommand(cmd.input);
             commandRef.current = cmd.input;
@@ -153,7 +146,14 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
             const file = args[0];
             output = files[file].content;
           }
-          add('real', output);
+          const command: Command = {
+            input: commandRef.current!,
+            type: 'real',
+            output,
+          };
+          dispatch({ type: 'addCommand', payload: { command } });
+          setCurrentCommand('');
+          commandRef.current = '';
         }
       };
       const handleKeyUp = (e: KeyboardEvent) => {
@@ -202,8 +202,8 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
           }
         }}
       />
-      {commands.map((line, i) => {
-        const output = getOutput(i);
+      {state.commands.map((line, i) => {
+        const { output } = line;
         return (
           <React.Fragment key={i}>
             <Line>

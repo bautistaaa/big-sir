@@ -45,11 +45,14 @@ const LastLogin = styled.div`
   margin-bottom: 7px;
 `;
 const Console = styled.div`
+  font-family: 'Roboto Mono', monospace;
   height: calc(100% - 22px);
   width: 100%;
   padding: 3px;
   background: #151516;
   flex: 1;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
   overflow: scroll;
 `;
 

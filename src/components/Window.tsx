@@ -97,6 +97,8 @@ const Window: FC<{
     <Rnd
       style={{ position: 'fixed', ...overrideStyle }}
       onDragStop={handleOnDragStop}
+      minHeight={300}
+      minWidth={300}
       position={position}
       default={{
         ...position,

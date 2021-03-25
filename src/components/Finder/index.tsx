@@ -125,6 +125,7 @@ const Content = styled.div`
   width: 100%;
   height: 100%;
   background: rgb(43, 43, 43);
+  border-bottom-right-radius: 6px;
 `;
 const Items = styled.div`
   padding-left: 10px;
@@ -147,6 +148,8 @@ const Wrapper = styled.div`
   display: flex;
   height: calc(100% - 52px);
   width: 100%;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 `;
 const SideBar = styled.aside`
   height: 100%;
@@ -155,6 +158,7 @@ const SideBar = styled.aside`
   border-right: 1px solid black;
   padding: 5px;
   backdrop-filter: blur(5px);
+  border-bottom-left-radius: 6px;
 `;
 const UtilityBar = styled.div`
   display: flex;

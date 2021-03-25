@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { createGlobalStyle } from 'styled-components/macro';
+import { createGlobalStyle, ThemeProvider } from 'styled-components/macro';
 
 const GlobalStyling = createGlobalStyle`
   * {
@@ -41,7 +41,7 @@ const GlobalStyling = createGlobalStyle`
     display: block;
   }
   body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: -apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue','Helvetica','Arial',sans-serif;
     line-height: 1;
   }
   ol, ul {
@@ -61,10 +61,13 @@ const GlobalStyling = createGlobalStyle`
 }
 `;
 
+const theme = {};
 ReactDOM.render(
   <React.StrictMode>
     <GlobalStyling />
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

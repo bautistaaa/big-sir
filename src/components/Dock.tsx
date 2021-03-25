@@ -85,7 +85,7 @@ const MinimizedTerminal = styled.div`
 const Separator = styled.div`
   height: 100%;
   width: 1px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.3);
   margin-right: 10px;
 `;
 const BaseContainer = styled.div`
@@ -100,13 +100,13 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-radius: 10px;
   height: 50px;
   width: 30%;
   padding: 7px;
-  background: rgb(126 126 126 / 30%);
+  background: rgb(51 51 51 / 23%);
   backdrop-filter: blur(5px);
+  box-shadow: inset 0px 0px 0px 0.2px rgb(255 255 255 / 35%);
 `;
 const Button = styled.button<{ active?: boolean }>`
   position: relative;

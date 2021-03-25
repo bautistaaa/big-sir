@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Terminal from './components/Terminal';
@@ -45,28 +45,8 @@ const App: FC = () => {
 const Wrapper = styled.div`
   min-height: 100vh;
   max-height: 100vh;
-  background: url('./night.png') no-repeat center top fixed;
+  background: url('./bg-3.jpg') no-repeat center top fixed;
   background-size: cover;
-`;
-const TerminalWrapper = styled.div<{
-  isTerminalMinimized: boolean;
-  addTransition: boolean;
-}>`
-  ${({ isTerminalMinimized, addTransition }) =>
-    isTerminalMinimized
-      ? `
-        pointer-events: none;
-        opacity: 0;
-        transform: scale(0.1);
-        transition: transform .7s, opacity 0.5s;
-      `
-      : `
-        ${addTransition ? 'transition: transform .7s, opacity 0.5s;' : ''}
-        opacity: 1;
-        `}
-  position: fixed;
-  bottom: 40%;
-  left: 30%;
 `;
 const DockWrapper = styled.div`
   display: flex;
@@ -74,7 +54,7 @@ const DockWrapper = styled.div`
   justify-content: center;
   width: 100%;
   position: absolute;
-  bottom: 0;
+  bottom: 5px;
   left: 0;
 `;
 export default App;

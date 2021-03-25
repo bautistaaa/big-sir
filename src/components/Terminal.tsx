@@ -4,7 +4,6 @@ import styled from 'styled-components/macro';
 import Window from '../components/Window';
 import Prompt from '../components/Prompt';
 import useIsFocused from '../hooks/useIsFocused';
-import { RED, YELLOW, GREEN } from '../shared/constants';
 import { RectResult } from '../hooks/useRect';
 
 const Terminal: FC<{
@@ -52,27 +51,6 @@ const Console = styled.div`
   background: #151516;
   flex: 1;
   overflow: scroll;
-`;
-const BaseButton = styled.button`
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 50%;
-  height: 10px;
-  width: 10px;
-  & + & {
-    margin-left: 5px;
-  }
-`;
-const CloseButton = styled(BaseButton)`
-  background: ${RED};
-`;
-const MinimizeButton = styled(BaseButton)`
-  background: ${YELLOW};
-`;
-const FullScreenButton = styled(BaseButton)`
-  background: ${GREEN};
 `;
 
 export default Terminal;

@@ -1,7 +1,8 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import styled, { CSSProperties } from 'styled-components/macro';
-import useRect, { RectResult } from '../hooks/useRect';
+import { RectResult } from '../hooks/useRect';
+import useIsFocused from '../hooks/useIsFocused';
 import { RED, YELLOW, GREEN } from '../shared/constants';
 
 const Window: FC<{
@@ -18,8 +19,8 @@ const Window: FC<{
   isWindowMinimized,
   setIsWindowMinimized,
 }) => {
-  const finderRef = useRef(null);
-  const [refresh, setRefresh] = useState(0);
+  const wrapperRef = useRef(null);
+  const [, setRefresh] = useState(0);
   const [previousPosition, setPreviousPosition] = useState<
     | {
         x: number;
@@ -31,11 +32,23 @@ const Window: FC<{
     x: window.innerWidth / 2 - width / 2,
     y: window.innerHeight / 2 - height / 2,
   });
-  const finderRect = useRect(finderRef, [refresh]);
-
   const [overrideStyle, setOverrideStyle] = useState<
     CSSProperties | undefined
   >();
+  const isWindowFocused = useIsFocused(wrapperRef);
+  useEffect(() => {
+    if (isWindowFocused) {
+      setOverrideStyle((styles) => ({
+        ...styles,
+        zIndex: 200,
+      }));
+    } else {
+      setOverrideStyle((styles) => ({
+        ...styles,
+        zIndex: 100,
+      }));
+    }
+  }, [isWindowFocused]);
 
   useEffect(() => {
     if (isWindowMinimized) {
@@ -68,8 +81,6 @@ const Window: FC<{
     }
   }, [isWindowMinimized]);
 
-  useEffect(() => {}, [minimizedTargetRect, finderRect]);
-
   const handleMinimizeClick = () => {
     setIsWindowMinimized(true);
   };
@@ -93,7 +104,7 @@ const Window: FC<{
         height: `${height}px`,
       }}
     >
-      <Wrapper isWindowMinimized={isWindowMinimized} ref={finderRef}>
+      <Wrapper isWindowMinimized={isWindowMinimized} ref={wrapperRef}>
         <ActionBar>
           <CloseButton />
           <MinimizeButton onClick={handleMinimizeClick} />
@@ -105,7 +116,9 @@ const Window: FC<{
   );
 };
 
-const Wrapper = styled.div<{ isWindowMinimized: boolean }>`
+const Wrapper = styled.div<{
+  isWindowMinimized: boolean;
+}>`
   ${({ isWindowMinimized }) =>
     isWindowMinimized
       ? `transform: scale(0.2); opacity: 0;`
@@ -114,6 +127,7 @@ const Wrapper = styled.div<{ isWindowMinimized: boolean }>`
   transform-origin: top left;
   width: 100%;
   height: 100%;
+  z-index: 100;
 `;
 const ActionBar = styled.div`
   display: flex;

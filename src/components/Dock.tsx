@@ -20,10 +20,17 @@ const Dock: FC<{
   isTerminalMinimized: boolean;
   minimizedTerminalRef: MutableRefObject<any>;
   setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+
+  isFinderMinimized: boolean;
+  setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  minimizedFinderRef: MutableRefObject<any>;
 }> = ({
   isTerminalMinimized,
   minimizedTerminalRef,
   setIsTerminalMinimized,
+  isFinderMinimized,
+  minimizedFinderRef,
+  setIsFinderMinimized,
 }) => {
   return (
     <Wrapper>
@@ -39,6 +46,12 @@ const Dock: FC<{
       </IconsContainer>
       <TrashContainer>
         <Separator />
+        <MinimizedFinder
+          ref={minimizedFinderRef}
+          onClick={() => setIsFinderMinimized(false)}
+        >
+          {isFinderMinimized && <img src="finder-min.png" alt="" />}
+        </MinimizedFinder>
         <MinimizedTerminal
           ref={minimizedTerminalRef}
           onClick={() => setIsTerminalMinimized(false)}
@@ -53,6 +66,14 @@ const Dock: FC<{
   );
 };
 
+const MinimizedFinder = styled.div`
+  img {
+    width: 40px;
+    height: 31px;
+    object-fit: cover;
+    margin-right: 5px;
+  }
+`;
 const MinimizedTerminal = styled.div`
   img {
     width: 40px;

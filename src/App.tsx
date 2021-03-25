@@ -1,9 +1,12 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
+import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Terminal from './components/Terminal';
+import Finder from './components/Finder';
 import styled from 'styled-components/macro';
 import useRect from './hooks/useRect';
+
 type DraggableData = {
   node: HTMLElement;
   x: number;
@@ -15,12 +18,18 @@ type DraggableData = {
 };
 
 const App: FC = () => {
-  const [isTerminalMinimized, setIsTerminalMinized] = useState(false);
   const terminalRef = useRef(null);
+
   const minimizedTerminalRef = useRef(null);
+  const minimizedRect = useRect(minimizedTerminalRef, []);
+  const [isTerminalMinimized, setIsTerminalMinized] = useState(false);
+
+  const minimizedFinderRef = useRef(null);
+  const [isFinderMinimized, setIsFinderMinimized] = useState(false);
+  const minimizedFinderRect = useRect(minimizedFinderRef, []);
+
   const [refresh, setRefresh] = useState(0);
   const [deltaX, setDeltaX] = useState(0);
-  const minimizedRect = useRect(minimizedTerminalRef, []);
   const terminalRect = useRect(terminalRef, [refresh]);
   const [deltas, setDeltas] = useState<DraggableData>();
   const [addTransition, setAddTransition] = useState(false);
@@ -68,7 +77,7 @@ const App: FC = () => {
 
   return (
     <Wrapper>
-      <Overlay />
+      <TopBar />
       <Draggable onStop={handleOnStop} position={position}>
         <TerminalWrapper
           ref={terminalRef}
@@ -78,11 +87,19 @@ const App: FC = () => {
           <Terminal setIsTerminalMinimized={setIsTerminalMinized} />
         </TerminalWrapper>
       </Draggable>
+      <Finder
+        minimizedTargetRect={minimizedFinderRect}
+        isFinderMinimized={isFinderMinimized}
+        setIsFinderMinimized={setIsFinderMinimized}
+      />
       <DockWrapper>
         <Dock
           minimizedTerminalRef={minimizedTerminalRef}
           isTerminalMinimized={isTerminalMinimized}
           setIsTerminalMinimized={setIsTerminalMinized}
+          minimizedFinderRef={minimizedFinderRef}
+          isFinderMinimized={isFinderMinimized}
+          setIsFinderMinimized={setIsFinderMinimized}
         />
       </DockWrapper>
     </Wrapper>
@@ -91,16 +108,9 @@ const App: FC = () => {
 
 const Wrapper = styled.div`
   min-height: 100vh;
-  background: url('./sasuke.png') no-repeat center top fixed;
+  max-height: 100vh;
+  background: url('./night.png') no-repeat center top fixed;
   background-size: cover;
-`;
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.6);
 `;
 const TerminalWrapper = styled.div<{
   isTerminalMinimized: boolean;
@@ -118,7 +128,7 @@ const TerminalWrapper = styled.div<{
         ${addTransition ? 'transition: transform .7s, opacity 0.5s;' : ''}
         opacity: 1;
         `}
-  position: absolute;
+  position: fixed;
   bottom: 40%;
   left: 30%;
 `;

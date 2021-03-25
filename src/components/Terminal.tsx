@@ -3,10 +3,7 @@ import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Prompt from '../components/Prompt';
 import useIsFocused from '../hooks/useIsFocused';
-
-const RED = 'rgb(255 91 82)';
-const YELLOW = 'rgb(230 192 41)';
-const GREEN = '#53c22c';
+import { RED, YELLOW, GREEN } from '../shared/constants';
 
 const Terminal: FC<{
   setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,14 +18,17 @@ const Terminal: FC<{
     }
   };
   const isTerminalFocused = useIsFocused(terminalWrapperRef);
+
   useMutationObserver(consoleRef, callback);
+
+  const handleFullScreenClick = () => {};
 
   return (
     <Wrapper ref={terminalWrapperRef}>
       <ActionBar>
         <CloseButton />
         <MinimizeButton onClick={() => setIsTerminalMinimized(true)} />
-        <FullScreenButton />
+        <FullScreenButton onClick={() => handleFullScreenClick} />
       </ActionBar>
       <Console ref={consoleRef}>
         <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
@@ -61,6 +61,13 @@ const ActionBar = styled.div`
   height: 22px;
   padding: 7px;
   background: #3a3a3b;
+  // background: rgb(87, 85, 85);
+  // background: linear-gradient(
+  //   180deg,
+  //   rgba(87, 85, 85, 1) 0%,
+  //   rgba(70, 70, 73, 1) 49%,
+  //   rgba(87, 85, 85, 1) 93%
+  // );
 `;
 const Console = styled.div`
   padding: 3px;

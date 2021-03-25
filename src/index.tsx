@@ -27,12 +27,21 @@ const GlobalStyling = createGlobalStyle`
     font: inherit;
     vertical-align: baseline;
   }
+  pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+   }
   /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure, 
   footer, header, hgroup, menu, nav, section {
     display: block;
   }
   body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     line-height: 1;
   }
   ol, ul {

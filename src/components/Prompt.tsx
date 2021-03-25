@@ -26,8 +26,9 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
     []
   );
 
+  // update ref every time state changes
+  // so we can access in event listener callbacks
   useEffect(() => {
-    console.log(state);
     stateRef.current = state;
   }, [state]);
 

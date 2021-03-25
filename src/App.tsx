@@ -1,5 +1,4 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import Draggable from 'react-draggable';
 import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Terminal from './components/Terminal';
@@ -7,86 +6,23 @@ import Finder from './components/Finder';
 import styled from 'styled-components/macro';
 import useRect from './hooks/useRect';
 
-type DraggableData = {
-  node: HTMLElement;
-  x: number;
-  y: number;
-  deltaX: number;
-  deltaY: number;
-  lastX: number;
-  lastY: number;
-};
-
 const App: FC = () => {
-  const terminalRef = useRef(null);
-
   const minimizedTerminalRef = useRef(null);
-  const minimizedRect = useRect(minimizedTerminalRef, []);
+  const minimizedTerminalRect = useRect(minimizedTerminalRef, []);
   const [isTerminalMinimized, setIsTerminalMinized] = useState(false);
 
   const minimizedFinderRef = useRef(null);
   const [isFinderMinimized, setIsFinderMinimized] = useState(false);
   const minimizedFinderRect = useRect(minimizedFinderRef, []);
 
-  const [refresh, setRefresh] = useState(0);
-  const [deltaX, setDeltaX] = useState(0);
-  const terminalRect = useRect(terminalRef, [refresh]);
-  const [deltas, setDeltas] = useState<DraggableData>();
-  const [addTransition, setAddTransition] = useState(false);
-  const [position, setPosition] = useState<
-    { x: number; y: number } | undefined
-  >(undefined);
-
-  useEffect(() => {
-    const x = minimizedRect.left - terminalRect.left;
-    setDeltaX(x);
-  }, [minimizedRect, terminalRect]);
-
-  useEffect(() => {
-    if (!isTerminalMinimized) {
-      setAddTransition(true);
-      const to = setTimeout(() => {
-        setAddTransition(false);
-      }, 700);
-
-      return () => {
-        clearTimeout(to);
-      };
-    }
-  }, [isTerminalMinimized]);
-
-  useEffect(() => {
-    if (isTerminalMinimized) {
-      setPosition({
-        x: deltaX,
-        y: 1000,
-      });
-    } else {
-      if (deltas) {
-        setPosition({ x: deltas!.lastX, y: deltas!.lastY });
-      } else {
-        setPosition(undefined);
-      }
-    }
-  }, [isTerminalMinimized, deltas]);
-
-  const handleOnStop = (_: any, d: DraggableData) => {
-    setDeltas(d);
-    setRefresh((x) => x + 1);
-  };
-
   return (
     <Wrapper>
       <TopBar />
-      <Draggable onStop={handleOnStop} position={position}>
-        <TerminalWrapper
-          ref={terminalRef}
-          isTerminalMinimized={isTerminalMinimized}
-          addTransition={addTransition}
-        >
-          <Terminal setIsTerminalMinimized={setIsTerminalMinized} />
-        </TerminalWrapper>
-      </Draggable>
+      <Terminal
+        minimizedTargetRect={minimizedTerminalRect}
+        isTerminalMinimized={isTerminalMinimized}
+        setIsTerminalMinimized={setIsTerminalMinized}
+      />
       <Finder
         minimizedTargetRect={minimizedFinderRect}
         isFinderMinimized={isFinderMinimized}

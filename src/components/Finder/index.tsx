@@ -151,7 +151,7 @@ const Wrapper = styled.div`
 const SideBar = styled.aside`
   height: 100%;
   width: 150px;
-  background: rgba(121, 121, 121, 0.3);
+  background: rgb(73 73 73 / 70%);
   border-right: 1px solid black;
   padding: 5px;
   backdrop-filter: blur(5px);

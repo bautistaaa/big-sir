@@ -3,11 +3,19 @@ import styled from 'styled-components/macro';
 import AppleIcon from './AppleIcon';
 
 const TopBar: FC = () => {
+  const date = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date());
+
   return (
     <Wrapper>
       <LeftSide>
         <AppleIcon />
       </LeftSide>
+      <RightSide>{date}</RightSide>
     </Wrapper>
   );
 };
@@ -23,6 +31,7 @@ const Wrapper = styled.div`
   left: 0;
   color: white;
   background: rgb(28, 28, 28);
+  padding: 0 15px;
 `;
 
 const LeftSide = styled.div`

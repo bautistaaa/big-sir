@@ -34,38 +34,49 @@ const Dock: FC<{
 }) => {
   return (
     <Wrapper>
-      <IconsContainer>
-        {items.map((item: DockItem) => {
-          const { name, path } = item;
-          return (
-            <Button key={name} active>
-              <img src={path} alt={name} />
-            </Button>
-          );
-        })}
-      </IconsContainer>
-      <TrashContainer>
-        <Separator />
-        <MinimizedFinder
-          ref={minimizedFinderRef}
-          onClick={() => setIsFinderMinimized(false)}
-        >
-          {isFinderMinimized && <img src="finder-min.png" alt="" />}
-        </MinimizedFinder>
-        <MinimizedTerminal
-          ref={minimizedTerminalRef}
-          onClick={() => setIsTerminalMinimized(false)}
-        >
-          {isTerminalMinimized && <img src="minimized.png" alt="" />}
-        </MinimizedTerminal>
-        <Button>
-          <img src="./trash.png" alt="Trash" />
-        </Button>
-      </TrashContainer>
+      <ContentWrapper>
+        <IconsContainer>
+          {items.map((item: DockItem) => {
+            const { name, path } = item;
+            return (
+              <Button key={name} active>
+                <img src={path} alt={name} />
+              </Button>
+            );
+          })}
+        </IconsContainer>
+        <TrashContainer>
+          <Separator />
+          <MinimizedFinder
+            ref={minimizedFinderRef}
+            onClick={() => setIsFinderMinimized(false)}
+          >
+            {isFinderMinimized && <img src="finder-min.png" alt="" />}
+          </MinimizedFinder>
+          <MinimizedTerminal
+            ref={minimizedTerminalRef}
+            onClick={() => setIsTerminalMinimized(false)}
+          >
+            {isTerminalMinimized && <img src="minimized.png" alt="" />}
+          </MinimizedTerminal>
+          <Button>
+            <img src="./trash.png" alt="Trash" />
+          </Button>
+        </TrashContainer>
+      </ContentWrapper>
     </Wrapper>
   );
 };
 
+const Wrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+`;
 const MinimizedFinder = styled.div`
   img {
     width: 40px;
@@ -96,7 +107,7 @@ const BaseContainer = styled.div`
 `;
 const IconsContainer = styled(BaseContainer)``;
 const TrashContainer = styled(BaseContainer)``;
-const Wrapper = styled.div`
+const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;

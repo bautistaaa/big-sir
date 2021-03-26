@@ -28,16 +28,14 @@ const App: FC = () => {
         isFinderMinimized={isFinderMinimized}
         setIsFinderMinimized={setIsFinderMinimized}
       />
-      <DockWrapper>
-        <Dock
-          minimizedTerminalRef={minimizedTerminalRef}
-          isTerminalMinimized={isTerminalMinimized}
-          setIsTerminalMinimized={setIsTerminalMinized}
-          minimizedFinderRef={minimizedFinderRef}
-          isFinderMinimized={isFinderMinimized}
-          setIsFinderMinimized={setIsFinderMinimized}
-        />
-      </DockWrapper>
+      <Dock
+        minimizedTerminalRef={minimizedTerminalRef}
+        isTerminalMinimized={isTerminalMinimized}
+        setIsTerminalMinimized={setIsTerminalMinized}
+        minimizedFinderRef={minimizedFinderRef}
+        isFinderMinimized={isFinderMinimized}
+        setIsFinderMinimized={setIsFinderMinimized}
+      />
     </Wrapper>
   );
 };
@@ -47,14 +45,5 @@ const Wrapper = styled.div`
   max-height: 100vh;
   background: url('./bg-3.jpg') no-repeat center top fixed;
   background-size: cover;
-`;
-const DockWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  width: 100%;
-  position: absolute;
-  bottom: 5px;
-  left: 0;
 `;
 export default App;

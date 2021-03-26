@@ -1,11 +1,12 @@
-import { FC, useState } from 'react';
+import { FC, useState, useRef } from 'react';
 import { RectResult } from '../../hooks/useRect';
+import useIsFocused from '../../hooks/useIsFocused';
 import styled from 'styled-components/macro';
 import Window from '../Window';
-import { Icons, Details, List } from './icons/';
 import IconView from './IconView';
 import ListView from './ListView';
 import DetailView from './DetailView';
+import { RED, YELLOW, GREEN } from '../../shared/constants';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -56,10 +57,18 @@ const Finder: FC<{
   isFinderMinimized: boolean;
   setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ minimizedTargetRect, isFinderMinimized, setIsFinderMinimized }) => {
+  const wrapperRef = useRef(null);
+
+  const isWindowFocused = useIsFocused(wrapperRef);
+
   const [view, setView] = useState<View>('Icon');
   const isIconView = view === 'Icon';
   const isDetailView = view === 'Detail';
   const isListView = view === 'List';
+
+  const handleMinimizeClick = () => {
+    setIsFinderMinimized(true);
+  };
 
   return (
     <Window
@@ -67,38 +76,15 @@ const Finder: FC<{
       width={800}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isFinderMinimized}
-      setIsWindowMinimized={setIsFinderMinimized}
+      isWindowFocused={isWindowFocused}
     >
-      <UtilityBar>
-        <ButtonsWrapper>
-          <LeftButton
-            onClick={() => {
-              setView('Icon');
-            }}
-            isActive={isIconView}
-          >
-            <Icons fill={isIconView ? 'rgb(64,64,64)' : 'white'} />
-          </LeftButton>
-          <MiddleButton
-            onClick={() => {
-              setView('List');
-            }}
-            isActive={isListView}
-          >
-            <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
-          </MiddleButton>
-          <RightButton
-            onClick={() => {
-              setView('Detail');
-            }}
-            isActive={isDetailView}
-          >
-            <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
-          </RightButton>
-        </ButtonsWrapper>
-      </UtilityBar>
-      <Wrapper>
-        <SideBar>
+      <Wrapper isWindowMinimized={isFinderMinimized}>
+        <Sidebar>
+          <ActionBar>
+            <CloseButton />
+            <MinimizeButton onClick={handleMinimizeClick} />
+            <FullScreenButton />
+          </ActionBar>
           <Title>Favorites</Title>
           <Items>
             {SideBarItems.map((item) => {
@@ -110,8 +96,9 @@ const Finder: FC<{
               );
             })}
           </Items>
-        </SideBar>
+        </Sidebar>
         <Content>
+          <UtilityBar></UtilityBar>
           {isIconView && <IconView files={files} />}
           {isListView && <ListView files={files} />}
           {isDetailView && <DetailView files={files} />}
@@ -121,11 +108,8 @@ const Finder: FC<{
   );
 };
 
-const Content = styled.div`
-  width: 100%;
-  height: 100%;
-  background: rgb(43, 43, 43);
-  border-bottom-right-radius: 6px;
+const UtilityBar = styled.div`
+  padding-left: 10px;
 `;
 const Items = styled.div`
   padding-left: 10px;
@@ -144,68 +128,87 @@ const ItemName = styled.div`
   color: #ffffff;
   font-size: 12px;
 `;
-const Wrapper = styled.div`
-  display: flex;
-  height: calc(100% - 52px);
+const Wrapper = styled.div<{
+  isWindowMinimized: boolean;
+}>`
+  ${({ isWindowMinimized }) =>
+    isWindowMinimized
+      ? `transform: scale(0.2); opacity: 0;`
+      : `transform: scale(1); opacity: 1;`}
+  transition: transform .7s, opacity .4s;
+  transform-origin: top left;
   width: 100%;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  height: 100%;
+  z-index: 100;
 `;
-const SideBar = styled.aside`
+const Sidebar = styled.div`
+  padding: 15px;
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100%;
   width: 150px;
-  background: rgb(73 73 73 / 70%);
-  border-right: 1px solid black;
-  padding: 5px;
-  backdrop-filter: blur(5px);
-  border-bottom-left-radius: 6px;
+  box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  &::after {
+    content: '';
+    position: absolute;
+    background: black;
+    height: 100%;
+    width: 1px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
 `;
-const UtilityBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 30px;
+const Content = styled.div`
+  margin-left: 148px;
+  background: rgb(41, 35, 38);
   width: 100%;
-  background: rgb(56, 56, 56);
-  padding: 5px 10px 10px;
-  border-bottom: 1px solid black;
-`;
-const ButtonsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
   height: 100%;
-  width: 100%;
-`;
-const BaseButton = styled.button<{ isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  outline: none;
-  width: 30px;
-  height: 22px;
-  background: rgb(107, 107, 107);
-  margin-right: 1px;
-  ${({ isActive }) =>
-    isActive &&
-    `
-    background: rgb(204, 204, 204);
-    `}
-`;
-const LeftButton = styled(BaseButton)`
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-`;
-const MiddleButton = styled(BaseButton)``;
-const RightButton = styled(BaseButton)`
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  clip-path: inset(0px 0px 0px 2px);
+  box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
 `;
 const Title = styled.div`
   font-size: 10px;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
 `;
+const BaseButton = styled.button`
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+  & + & {
+    margin-left: 5px;
+  }
+`;
+const CloseButton = styled(BaseButton)`
+  background: ${RED};
+`;
+const MinimizeButton = styled(BaseButton)`
+  background: ${YELLOW};
+`;
+const FullScreenButton = styled(BaseButton)`
+  background: ${GREEN};
+`;
+const ActionBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  height: 22px;
+  padding: 7px;
+  margin-bottom: 10px;
+`;
+
 export default Finder;

@@ -1,5 +1,6 @@
 import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
+import { useAppContext } from '../AppContext';
 
 interface DockItem {
   name: string;
@@ -7,31 +8,44 @@ interface DockItem {
 }
 const items: DockItem[] = [
   {
-    name: 'Finder',
+    name: 'finder',
     path: './finder.png',
   },
   {
-    name: 'Terminal',
+    name: 'terminal',
     path: './terminal.png',
   },
 ];
 
 const Dock: FC<{
+  terminalRef: MutableRefObject<HTMLDivElement | null>;
+  finderRef: MutableRefObject<HTMLDivElement | null>;
   isTerminalMinimized: boolean;
-  minimizedTerminalRef: MutableRefObject<any>;
   setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-
   isFinderMinimized: boolean;
   setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-  minimizedFinderRef: MutableRefObject<any>;
+  minimizedTargetRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({
+  terminalRef,
+  finderRef,
   isTerminalMinimized,
-  minimizedTerminalRef,
   setIsTerminalMinimized,
   isFinderMinimized,
-  minimizedFinderRef,
   setIsFinderMinimized,
+  minimizedTargetRef,
 }) => {
+  const { state, dispatch } = useAppContext();
+
+  const getRefByName = (name: string) => {
+    if (name === 'terminal') {
+      return terminalRef;
+    } else if (name === 'finder') {
+      return finderRef;
+    }
+
+    return { current: null } as MutableRefObject<HTMLElement | null>;
+  };
+
   return (
     <Wrapper>
       <ContentWrapper>
@@ -39,24 +53,26 @@ const Dock: FC<{
           {items.map((item: DockItem) => {
             const { name, path } = item;
             return (
-              <Button key={name} active>
+              <Button
+                key={name}
+                onClick={() =>
+                  dispatch({
+                    type: 'focusWindow',
+                    payload: { name, ref: getRefByName(name) },
+                  })
+                }
+              >
                 <img src={path} alt={name} />
               </Button>
             );
           })}
         </IconsContainer>
         <TrashContainer>
-          <Separator />
-          <MinimizedFinder
-            ref={minimizedFinderRef}
-            onClick={() => setIsFinderMinimized(false)}
-          >
+          <Separator ref={minimizedTargetRef} />
+          <MinimizedFinder onClick={() => setIsFinderMinimized(false)}>
             {isFinderMinimized && <img src="finder-min.png" alt="" />}
           </MinimizedFinder>
-          <MinimizedTerminal
-            ref={minimizedTerminalRef}
-            onClick={() => setIsTerminalMinimized(false)}
-          >
+          <MinimizedTerminal onClick={() => setIsTerminalMinimized(false)}>
             {isTerminalMinimized && <img src="minimized.png" alt="" />}
           </MinimizedTerminal>
           <Button>

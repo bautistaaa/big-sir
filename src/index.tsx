@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { AppProvider } from './AppContext';
 import { createGlobalStyle, ThemeProvider } from 'styled-components/macro';
 
 const GlobalStyling = createGlobalStyle`
@@ -66,7 +67,9 @@ ReactDOM.render(
   <React.StrictMode>
     <GlobalStyling />
     <ThemeProvider theme={theme}>
-      <App />
+      <AppProvider>
+        <App />
+      </AppProvider>
     </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

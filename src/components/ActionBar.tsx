@@ -2,13 +2,14 @@ import { FC } from 'react';
 import styled from 'styled-components/macro';
 import { RED, YELLOW, GREEN } from '../shared/constants';
 
-const ActionBar: FC<{ handleMinimizeClick: () => void }> = ({
-  handleMinimizeClick,
-}) => {
+const ActionBar: FC<{
+  handleCloseClick: () => void;
+  handleMinimizeClick: () => void;
+}> = ({ handleCloseClick, handleMinimizeClick }) => {
   return (
     <>
       <Wrapper>
-        <CloseButton />
+        <CloseButton onClick={() => handleCloseClick()} />
         <MinimizeButton onClick={() => handleMinimizeClick()} />
         <FullScreenButton />
       </Wrapper>

@@ -1,19 +1,24 @@
-import React, { FC, useRef } from 'react';
+import React, { forwardRef, ForwardRefRenderFunction, useRef } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Window from '../components/Window';
 import Prompt from '../components/Prompt';
 import ActionBar from '../components/ActionBar';
-import useIsFocused from '../hooks/useIsFocused';
 import { RectResult } from '../hooks/useRect';
+import { useAppContext } from '../AppContext';
 
-const Terminal: FC<{
-  minimizedTargetRect: RectResult;
-  isTerminalMinimized: boolean;
-  setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ minimizedTargetRect, isTerminalMinimized, setIsTerminalMinimized }) => {
-  const wrapperRef = useRef(null);
-  const terminalWrapperRef = useRef<HTMLDivElement | null>(null);
+const Terminal: ForwardRefRenderFunction<
+  HTMLDivElement,
+  {
+    minimizedTargetRect: RectResult;
+    isTerminalMinimized: boolean;
+    setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+> = (
+  { minimizedTargetRect, isTerminalMinimized, setIsTerminalMinimized },
+  ref
+) => {
+  const { dispatch } = useAppContext();
   const consoleRef = useRef<HTMLDivElement | null>(null);
 
   const callback = () => {
@@ -22,13 +27,13 @@ const Terminal: FC<{
       consoleRef.current.scrollTo(0, scrollHeight);
     }
   };
-  const isTerminalFocused = useIsFocused(terminalWrapperRef);
-
   useMutationObserver(consoleRef, callback);
-  const isWindowFocused = useIsFocused(wrapperRef);
 
   const handleMinimizeClick = () => {
     setIsTerminalMinimized(true);
+  };
+  const handleCloseClick = () => {
+    dispatch({ type: 'removeWindow', payload: { name: 'terminal' } });
   };
 
   return (
@@ -37,13 +42,15 @@ const Terminal: FC<{
       width={800}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isTerminalMinimized}
-      isWindowFocused={isWindowFocused}
     >
-      <Wrapper isWindowMinimized={isTerminalMinimized} ref={wrapperRef}>
-        <ActionBar handleMinimizeClick={handleMinimizeClick} />
+      <Wrapper isWindowMinimized={isTerminalMinimized} ref={ref}>
+        <ActionBar
+          handleMinimizeClick={handleMinimizeClick}
+          handleCloseClick={handleCloseClick}
+        />
         <Console ref={consoleRef}>
           <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
-          <Prompt isTerminalFocused={isTerminalFocused}></Prompt>
+          <Prompt></Prompt>
         </Console>
       </Wrapper>
     </Window>
@@ -79,4 +86,4 @@ const Wrapper = styled.div<{
   z-index: 100;
 `;
 
-export default Terminal;
+export default forwardRef(Terminal);

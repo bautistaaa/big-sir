@@ -12,7 +12,7 @@ const searchForOptions = (term: string): string[] => {
   return o;
 };
 
-const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
+const Prompt: FC = () => {
   const [state, dispatch] = useReducer(reducer, {
     index: 0,
     historyIndex: 0,
@@ -46,14 +46,6 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   };
 
   useEffect(() => {
-    if (isTerminalFocused) {
-      if (textAreaRef.current) {
-        textAreaRef.current.focus();
-      }
-    }
-  }, [isTerminalFocused]);
-
-  useEffect(() => {
     if (
       keysCurrentlyPressed.includes('Meta') &&
       keysCurrentlyPressed.includes('k') &&
@@ -83,98 +75,96 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
   }, [keysCurrentlyPressed]);
 
   useEffect(() => {
-    if (isTerminalFocused) {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        const { key } = e;
-        let output = '';
-        const currentCommand = commandRef.current ?? '';
-        const [cmd, ...args] = currentCommand.split(' ');
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const { key } = e;
+      let output = '';
+      const currentCommand = commandRef.current ?? '';
+      const [cmd, ...args] = currentCommand.split(' ');
 
-        setKeysCurrentlyPressed((keys) => [
-          ...keys.filter((k) => k !== key),
-          key,
-        ]);
+      setKeysCurrentlyPressed((keys) => [
+        ...keys.filter((k) => k !== key),
+        key,
+      ]);
 
-        if (key === 'Tab') {
-          e.preventDefault();
-          if (cmd === 'ls' || cmd === 'cat') {
-            const results = searchForOptions(args[0]);
-            if (results.length > 1) {
-              const output = results.join(' ');
-              const command: Command = {
-                input: commandRef.current!,
-                type: 'real',
-                output,
-              };
-              dispatch({ type: 'addCommand', payload: { command } });
-              setCurrentCommand('');
-              commandRef.current = '';
-              textAreaRef.current!.value = '';
-              commandRef.current = '';
-            } else {
-              if (results[0]) {
-                const newCommand = `${cmd} ${results[0]}`;
-                setCurrentCommand(newCommand);
-                commandRef.current = newCommand;
-              }
+      if (key === 'Tab') {
+        e.preventDefault();
+        if (cmd === 'ls' || cmd === 'cat') {
+          const results = searchForOptions(args[0]);
+          if (results.length > 1) {
+            const output = results.join(' ');
+            const command: Command = {
+              input: commandRef.current!,
+              type: 'real',
+              output,
+            };
+            dispatch({ type: 'addCommand', payload: { command } });
+            setCurrentCommand('');
+            commandRef.current = '';
+            textAreaRef.current!.value = '';
+            commandRef.current = '';
+          } else {
+            if (results[0]) {
+              const newCommand = `${cmd} ${results[0]}`;
+              setCurrentCommand(newCommand);
+              commandRef.current = newCommand;
             }
           }
-        } else if (key === 'ArrowDown') {
-          dispatch({ type: 'incrementHistory' });
-          const cmd = getRealCommands()[stateRef.current.historyIndex + 1];
-          if (cmd) {
-            setCurrentCommand(cmd.input);
-            commandRef.current = cmd.input;
-            textAreaRef.current!.value = cmd.input;
-          }
-        } else if (key === 'ArrowUp') {
-          dispatch({ type: 'decrementHistory' });
-          const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
-          if (cmd) {
-            setCurrentCommand(cmd.input);
-            commandRef.current = cmd.input;
-            textAreaRef.current!.value = cmd.input;
-          }
-        } else if (key === 'Enter') {
-          e.preventDefault();
-          if (textAreaRef.current) {
-            textAreaRef.current.value = '';
-          }
-          if (commandsList[currentCommand!]) {
-            const co = commandsList[currentCommand ?? ''];
-            output = co();
-          } else if (cmd === 'cat') {
-            const file = args[0];
-            output = files[file].content;
-          }
-          const command: Command = {
-            input: commandRef.current!,
-            type: 'real',
-            output,
-          };
-          dispatch({ type: 'addCommand', payload: { command } });
-          setCurrentCommand('');
-          commandRef.current = '';
         }
-      };
-      const handleKeyUp = (e: KeyboardEvent) => {
-        const { key } = e;
-        if (key === 'Meta') {
-          // blow it all away
-          setKeysCurrentlyPressed([]);
+      } else if (key === 'ArrowDown') {
+        dispatch({ type: 'incrementHistory' });
+        const cmd = getRealCommands()[stateRef.current.historyIndex + 1];
+        if (cmd) {
+          setCurrentCommand(cmd.input);
+          commandRef.current = cmd.input;
+          textAreaRef.current!.value = cmd.input;
         }
-        setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
-      };
+      } else if (key === 'ArrowUp') {
+        dispatch({ type: 'decrementHistory' });
+        const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
+        if (cmd) {
+          setCurrentCommand(cmd.input);
+          commandRef.current = cmd.input;
+          textAreaRef.current!.value = cmd.input;
+        }
+      } else if (key === 'Enter') {
+        e.preventDefault();
+        if (textAreaRef.current) {
+          textAreaRef.current.value = '';
+        }
+        if (commandsList[currentCommand!]) {
+          const co = commandsList[currentCommand ?? ''];
+          output = co();
+        } else if (cmd === 'cat') {
+          const file = args[0];
+          output = files[file].content;
+        }
+        const command: Command = {
+          input: commandRef.current!,
+          type: 'real',
+          output,
+        };
+        dispatch({ type: 'addCommand', payload: { command } });
+        setCurrentCommand('');
+        commandRef.current = '';
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      const { key } = e;
+      if (key === 'Meta') {
+        // blow it all away
+        setKeysCurrentlyPressed([]);
+      }
+      setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
+    };
 
-      window.addEventListener('keydown', handleKeyDown);
-      window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
-      };
-    }
-  }, [isTerminalFocused]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   return (
     <Wrapper>
@@ -198,7 +188,8 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
           setCurrentCommand(e.target.value);
         }}
         onBlur={() => {
-          if (isTerminalFocused && textAreaRef.current) {
+          // if (isTerminalFocused && textAreaRef.current) {
+          if (textAreaRef.current) {
             textAreaRef.current.focus();
           }
         }}
@@ -218,7 +209,8 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
       <Line>
         <User>[root ~]$&nbsp;</User>
         <Input>{currentCommand}</Input>
-        {isTerminalFocused && <Cursor />}
+        {/* {isTerminalFocused && <Cursor />} */}
+        <Cursor />
       </Line>
     </Wrapper>
   );

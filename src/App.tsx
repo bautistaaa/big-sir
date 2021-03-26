@@ -5,36 +5,54 @@ import Terminal from './components/Terminal';
 import Finder from './components/Finder';
 import styled from 'styled-components/macro';
 import useRect from './hooks/useRect';
+import { useAppContext } from './AppContext';
 
 const App: FC = () => {
-  const minimizedTerminalRef = useRef(null);
-  const minimizedTerminalRect = useRect(minimizedTerminalRef, []);
+  const { state } = useAppContext();
+  const isTerminalActive = state.activeWindows.some(
+    (aw) => aw.name === 'terminal'
+  );
+  const isFinderActive = state.activeWindows.some((aw) => aw.name === 'finder');
+
+  const terminalRef = useRef<HTMLDivElement | null>(null);
+  const finderRef = useRef<HTMLDivElement | null>(null);
+
+  const minimizedTargetRef = useRef(null);
+  const minimizedTargetRect = useRect(minimizedTargetRef, []);
+
   const [isTerminalMinimized, setIsTerminalMinized] = useState(false);
 
-  const minimizedFinderRef = useRef(null);
   const [isFinderMinimized, setIsFinderMinimized] = useState(false);
-  const minimizedFinderRect = useRect(minimizedFinderRef, []);
 
   return (
     <Wrapper>
       <TopBar />
-      <Terminal
-        minimizedTargetRect={minimizedTerminalRect}
-        isTerminalMinimized={isTerminalMinimized}
-        setIsTerminalMinimized={setIsTerminalMinized}
-      />
-      <Finder
-        minimizedTargetRect={minimizedFinderRect}
-        isFinderMinimized={isFinderMinimized}
-        setIsFinderMinimized={setIsFinderMinimized}
-      />
+      {isTerminalActive && (
+        <Terminal
+          ref={terminalRef}
+          minimizedTargetRect={minimizedTargetRect}
+          isTerminalMinimized={isTerminalMinimized}
+          setIsTerminalMinimized={setIsTerminalMinized}
+        />
+      )}
+
+      {isFinderActive && (
+        <Finder
+          ref={finderRef}
+          minimizedTargetRect={minimizedTargetRect}
+          isFinderMinimized={isFinderMinimized}
+          setIsFinderMinimized={setIsFinderMinimized}
+        />
+      )}
+
       <Dock
-        minimizedTerminalRef={minimizedTerminalRef}
+        terminalRef={terminalRef}
+        finderRef={finderRef}
         isTerminalMinimized={isTerminalMinimized}
         setIsTerminalMinimized={setIsTerminalMinized}
-        minimizedFinderRef={minimizedFinderRef}
         isFinderMinimized={isFinderMinimized}
         setIsFinderMinimized={setIsFinderMinimized}
+        minimizedTargetRef={minimizedTargetRef}
       />
     </Wrapper>
   );

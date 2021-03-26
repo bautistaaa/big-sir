@@ -1,12 +1,12 @@
-import { FC, useState, useRef } from 'react';
+import { useState, ForwardRefRenderFunction, forwardRef } from 'react';
 import { RectResult } from '../../hooks/useRect';
-import useIsFocused from '../../hooks/useIsFocused';
 import styled from 'styled-components/macro';
 import Window from '../Window';
 import IconView from './IconView';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import { RED, YELLOW, GREEN } from '../../shared/constants';
+import { useAppContext } from '../../AppContext';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -52,15 +52,15 @@ const SideBarItems: SidebarItem[] = [
 ];
 type View = 'Icon' | 'Detail' | 'List';
 
-const Finder: FC<{
-  minimizedTargetRect: RectResult;
-  isFinderMinimized: boolean;
-  setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ minimizedTargetRect, isFinderMinimized, setIsFinderMinimized }) => {
-  const wrapperRef = useRef(null);
-
-  const isWindowFocused = useIsFocused(wrapperRef);
-
+const Finder: ForwardRefRenderFunction<
+  HTMLDivElement,
+  {
+    minimizedTargetRect: RectResult;
+    isFinderMinimized: boolean;
+    setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+> = ({ minimizedTargetRect, isFinderMinimized, setIsFinderMinimized }, ref) => {
+  const { dispatch } = useAppContext();
   const [view, setView] = useState<View>('Icon');
   const isIconView = view === 'Icon';
   const isDetailView = view === 'Detail';
@@ -69,6 +69,9 @@ const Finder: FC<{
   const handleMinimizeClick = () => {
     setIsFinderMinimized(true);
   };
+  const handleCloseClick = () => {
+    dispatch({ type: 'removeWindow', payload: { name: 'finder' } });
+  };
 
   return (
     <Window
@@ -76,12 +79,11 @@ const Finder: FC<{
       width={800}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isFinderMinimized}
-      isWindowFocused={isWindowFocused}
     >
-      <Wrapper isWindowMinimized={isFinderMinimized}>
+      <Wrapper isWindowMinimized={isFinderMinimized} ref={ref}>
         <Sidebar>
           <ActionBar>
-            <CloseButton />
+            <CloseButton onClick={handleCloseClick} />
             <MinimizeButton onClick={handleMinimizeClick} />
             <FullScreenButton />
           </ActionBar>
@@ -151,7 +153,7 @@ const Sidebar = styled.div`
   box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgb(42 42 42 / 65%);
   backdrop-filter: blur(12px);
   &::after {
     content: '';
@@ -211,4 +213,4 @@ const ActionBar = styled.div`
   margin-bottom: 10px;
 `;
 
-export default Finder;
+export default forwardRef(Finder);

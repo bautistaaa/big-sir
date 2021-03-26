@@ -8,14 +8,12 @@ const Window: FC<{
   height: number;
   minimizedTargetRect: RectResult;
   isWindowMinimized: boolean;
-  isWindowFocused: boolean;
 }> = ({
   width,
   height,
   children,
   minimizedTargetRect,
   isWindowMinimized,
-  isWindowFocused
 }) => {
   const [, setRefresh] = useState(0);
   const [previousPosition, setPreviousPosition] = useState<
@@ -32,19 +30,6 @@ const Window: FC<{
   const [overrideStyle, setOverrideStyle] = useState<
     CSSProperties | undefined
   >();
-  useEffect(() => {
-    if (isWindowFocused) {
-      setOverrideStyle((styles) => ({
-        ...styles,
-        zIndex: 200,
-      }));
-    } else {
-      setOverrideStyle((styles) => ({
-        ...styles,
-        zIndex: 100,
-      }));
-    }
-  }, [isWindowFocused]);
 
   useEffect(() => {
     if (isWindowMinimized) {

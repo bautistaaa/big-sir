@@ -8,12 +8,14 @@ const Window: FC<{
   height: number;
   minimizedTargetRect: RectResult;
   isWindowMinimized: boolean;
+  zIndex: number | undefined;
 }> = ({
   width,
   height,
   children,
   minimizedTargetRect,
   isWindowMinimized,
+  zIndex,
 }) => {
   const [, setRefresh] = useState(0);
   const [previousPosition, setPreviousPosition] = useState<
@@ -73,7 +75,7 @@ const Window: FC<{
 
   return (
     <Rnd
-      style={{ position: 'fixed', ...overrideStyle }}
+      style={{ position: 'fixed', ...overrideStyle, zIndex }}
       onDragStop={handleOnDragStop}
       minHeight={300}
       minWidth={300}

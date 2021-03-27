@@ -5,9 +5,9 @@ import { File, FileIconMap } from '.';
 const IconView: FC<{ files: File[] }> = ({ files }) => {
   return (
     <Wrapper>
-      {files.map((file: File) => {
+      {files.map((file: File, i) => {
         return (
-          <Item key={file.name}>
+          <Item key={`${file.name}-${i}`}>
             <img src={FileIconMap[file.type]} alt="" />
             <ItemName>{file.name}</ItemName>
           </Item>

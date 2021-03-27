@@ -1,4 +1,9 @@
-import { useState, ForwardRefRenderFunction, forwardRef } from 'react';
+import {
+  useState,
+  ForwardRefRenderFunction,
+  forwardRef,
+  useEffect,
+} from 'react';
 import { RectResult } from '../../hooks/useRect';
 import styled from 'styled-components/macro';
 import Window from '../Window';
@@ -7,6 +12,7 @@ import ListView from './ListView';
 import DetailView from './DetailView';
 import { RED, YELLOW, GREEN } from '../../shared/constants';
 import { useAppContext } from '../../AppContext';
+import useIsFocused from '../../hooks/useIsFocused';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -60,11 +66,23 @@ const Finder: ForwardRefRenderFunction<
     setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
   }
 > = ({ minimizedTargetRect, isFinderMinimized, setIsFinderMinimized }, ref) => {
-  const { dispatch } = useAppContext();
+  const { state, dispatch } = useAppContext();
+  const finderState = state.activeWindows.find((aw) => aw.name === 'finder');
   const [view, setView] = useState<View>('Icon');
   const isIconView = view === 'Icon';
   const isDetailView = view === 'Detail';
   const isListView = view === 'List';
+
+  const isFinderFocused = useIsFocused(ref as any);
+
+  useEffect(() => {
+    if (isFinderFocused) {
+      dispatch({
+        type: 'focusWindow',
+        payload: { name: 'finder', ref: ref as any },
+      });
+    }
+  }, [isFinderFocused]);
 
   const handleMinimizeClick = () => {
     setIsFinderMinimized(true);
@@ -79,6 +97,7 @@ const Finder: ForwardRefRenderFunction<
       width={800}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isFinderMinimized}
+      zIndex={finderState?.zIndex}
     >
       <Wrapper isWindowMinimized={isFinderMinimized} ref={ref}>
         <Sidebar>
@@ -89,9 +108,9 @@ const Finder: ForwardRefRenderFunction<
           </ActionBar>
           <Title>Favorites</Title>
           <Items>
-            {SideBarItems.map((item) => {
+            {SideBarItems.map((item, i) => {
               return (
-                <Item>
+                <Item key={i}>
                   <img src={SidebarItemIconMap[item.type]} alt="" />
                   <ItemName>{item.name}</ItemName>
                 </Item>
@@ -139,7 +158,7 @@ const Wrapper = styled.div<{
       : `transform: scale(1); opacity: 1;`}
   transition: transform .7s, opacity .4s;
   transform-origin: top left;
-  width: 100%;
+  width: calc(100% - 150px);
   height: 100%;
   z-index: 100;
 `;

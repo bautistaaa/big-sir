@@ -1,4 +1,9 @@
-import React, { forwardRef, ForwardRefRenderFunction, useRef } from 'react';
+import React, {
+  forwardRef,
+  ForwardRefRenderFunction,
+  useEffect,
+  useRef,
+} from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Window from '../components/Window';
@@ -6,6 +11,7 @@ import Prompt from '../components/Prompt';
 import ActionBar from '../components/ActionBar';
 import { RectResult } from '../hooks/useRect';
 import { useAppContext } from '../AppContext';
+import useIsFocused from '../hooks/useIsFocused';
 
 const Terminal: ForwardRefRenderFunction<
   HTMLDivElement,
@@ -18,8 +24,21 @@ const Terminal: ForwardRefRenderFunction<
   { minimizedTargetRect, isTerminalMinimized, setIsTerminalMinimized },
   ref
 ) => {
-  const { dispatch } = useAppContext();
+  const { state, dispatch } = useAppContext();
+  const terminalState = state.activeWindows.find(
+    (aw) => aw.name === 'terminal'
+  );
   const consoleRef = useRef<HTMLDivElement | null>(null);
+  const isTerminalFocused = useIsFocused(ref as any);
+
+  useEffect(() => {
+    if (isTerminalFocused) {
+      dispatch({
+        type: 'focusWindow',
+        payload: { name: 'terminal', ref: ref as any },
+      });
+    }
+  }, [isTerminalFocused]);
 
   const callback = () => {
     if (consoleRef.current) {
@@ -42,6 +61,7 @@ const Terminal: ForwardRefRenderFunction<
       width={800}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isTerminalMinimized}
+      zIndex={terminalState?.zIndex}
     >
       <Wrapper isWindowMinimized={isTerminalMinimized} ref={ref}>
         <ActionBar
@@ -83,7 +103,6 @@ const Wrapper = styled.div<{
   transform-origin: top left;
   width: 100%;
   height: 100%;
-  z-index: 100;
 `;
 
 export default forwardRef(Terminal);

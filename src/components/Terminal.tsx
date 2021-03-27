@@ -70,7 +70,7 @@ const Terminal: ForwardRefRenderFunction<
         />
         <Console ref={consoleRef}>
           <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
-          <Prompt></Prompt>
+          <Prompt isTerminalFocused={isTerminalFocused}></Prompt>
         </Console>
       </Wrapper>
     </Window>

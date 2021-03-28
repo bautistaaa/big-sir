@@ -20,38 +20,20 @@ const App: FC = () => {
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
-  const [isTerminalMinimized, setIsTerminalMinized] = useState(false);
-
-  const [isFinderMinimized, setIsFinderMinimized] = useState(false);
-
   return (
     <Wrapper>
       <TopBar />
       {isTerminalActive && (
-        <Terminal
-          ref={terminalRef}
-          minimizedTargetRect={minimizedTargetRect}
-          isTerminalMinimized={isTerminalMinimized}
-          setIsTerminalMinimized={setIsTerminalMinized}
-        />
+        <Terminal ref={terminalRef} minimizedTargetRect={minimizedTargetRect} />
       )}
 
       {isFinderActive && (
-        <Finder
-          ref={finderRef}
-          minimizedTargetRect={minimizedTargetRect}
-          isFinderMinimized={isFinderMinimized}
-          setIsFinderMinimized={setIsFinderMinimized}
-        />
+        <Finder ref={finderRef} minimizedTargetRect={minimizedTargetRect} />
       )}
 
       <Dock
         terminalRef={terminalRef}
         finderRef={finderRef}
-        isTerminalMinimized={isTerminalMinimized}
-        setIsTerminalMinimized={setIsTerminalMinized}
-        isFinderMinimized={isFinderMinimized}
-        setIsFinderMinimized={setIsFinderMinimized}
         minimizedTargetRef={minimizedTargetRef}
       />
     </Wrapper>

@@ -17,16 +17,14 @@ const Terminal: ForwardRefRenderFunction<
   HTMLDivElement,
   {
     minimizedTargetRect: RectResult;
-    isTerminalMinimized: boolean;
-    setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
   }
-> = (
-  { minimizedTargetRect, isTerminalMinimized, setIsTerminalMinimized },
-  ref
-) => {
+> = ({ minimizedTargetRect }, ref) => {
   const { state, dispatch } = useAppContext();
   const terminalState = state.activeWindows.find(
     (aw) => aw.name === 'terminal'
+  );
+  const isMinimized = !!state.minimizedWindows.find(
+    (mw) => mw.name === 'terminal'
   );
   const consoleRef = useRef<HTMLDivElement | null>(null);
   const isTerminalFocused = useIsFocused(ref as any);
@@ -49,7 +47,7 @@ const Terminal: ForwardRefRenderFunction<
   useMutationObserver(consoleRef, callback);
 
   const handleMinimizeClick = () => {
-    setIsTerminalMinimized(true);
+    dispatch({ type: 'minimizedWindow', payload: { name: 'terminal' } });
   };
   const handleCloseClick = () => {
     dispatch({ type: 'removeWindow', payload: { name: 'terminal' } });
@@ -60,10 +58,10 @@ const Terminal: ForwardRefRenderFunction<
       height={400}
       width={800}
       minimizedTargetRect={minimizedTargetRect}
-      isWindowMinimized={isTerminalMinimized}
+      isWindowMinimized={isMinimized}
       zIndex={terminalState?.zIndex}
     >
-      <Wrapper isWindowMinimized={isTerminalMinimized} ref={ref}>
+      <Wrapper isWindowMinimized={isMinimized} ref={ref}>
         <ActionBar
           handleMinimizeClick={handleMinimizeClick}
           handleCloseClick={handleCloseClick}

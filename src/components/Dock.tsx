@@ -6,6 +6,10 @@ interface DockItem {
   name: string;
   path: string;
 }
+const minimizedImages: { [k: string]: string } = {
+  finder: 'finder-min.png',
+  terminal: 'minimized.png',
+};
 const items: DockItem[] = [
   {
     name: 'finder',
@@ -20,20 +24,8 @@ const items: DockItem[] = [
 const Dock: FC<{
   terminalRef: MutableRefObject<HTMLDivElement | null>;
   finderRef: MutableRefObject<HTMLDivElement | null>;
-  isTerminalMinimized: boolean;
-  setIsTerminalMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-  isFinderMinimized: boolean;
-  setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
   minimizedTargetRef: MutableRefObject<HTMLDivElement | null>;
-}> = ({
-  terminalRef,
-  finderRef,
-  isTerminalMinimized,
-  setIsTerminalMinimized,
-  isFinderMinimized,
-  setIsFinderMinimized,
-  minimizedTargetRef,
-}) => {
+}> = ({ terminalRef, finderRef, minimizedTargetRef }) => {
   const { state, dispatch } = useAppContext();
 
   const getRefByName = (name: string) => {
@@ -54,6 +46,7 @@ const Dock: FC<{
             const { name, path } = item;
             return (
               <Button
+                active={!!state.activeWindows.find((aw) => aw.name === name)}
                 key={name}
                 onClick={() =>
                   dispatch({
@@ -69,12 +62,27 @@ const Dock: FC<{
         </IconsContainer>
         <TrashContainer>
           <Separator ref={minimizedTargetRef} />
-          <MinimizedFinder onClick={() => setIsFinderMinimized(false)}>
-            {isFinderMinimized && <img src="finder-min.png" alt="" />}
-          </MinimizedFinder>
-          <MinimizedTerminal onClick={() => setIsTerminalMinimized(false)}>
-            {isTerminalMinimized && <img src="minimized.png" alt="" />}
-          </MinimizedTerminal>
+          {state.minimizedWindows.map(({ name }) => {
+            const imgSrc = minimizedImages[name];
+            const handleMinimizedWindowClick = () => {
+              dispatch({
+                type: 'unminimizedWindow',
+                payload: { name },
+              });
+            };
+            if (imgSrc) {
+              return (
+                <MinimizedWindow
+                  key={name}
+                  onClick={handleMinimizedWindowClick}
+                >
+                  <img src={imgSrc} alt="" />
+                </MinimizedWindow>
+              );
+            }
+
+            return null;
+          })}
           <Button>
             <img src="./trash.png" alt="Trash" />
           </Button>
@@ -93,15 +101,7 @@ const Wrapper = styled.div`
   bottom: 5px;
   left: 0;
 `;
-const MinimizedFinder = styled.div`
-  img {
-    width: 40px;
-    height: 31px;
-    object-fit: cover;
-    margin-right: 5px;
-  }
-`;
-const MinimizedTerminal = styled.div`
+const MinimizedWindow = styled.div`
   img {
     width: 40px;
     height: 31px;

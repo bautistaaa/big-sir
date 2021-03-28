@@ -9,6 +9,7 @@ interface AppContextValues {
 const AppContext = React.createContext<AppContextValues>({
   state: {
     activeWindows: [],
+    minimizedWindows: [],
   },
   dispatch: () => {},
 });
@@ -17,6 +18,7 @@ const useAppContext = () => useContext(AppContext);
 
 const initialState: AppState = {
   activeWindows: [],
+  minimizedWindows: [],
 };
 
 const AppProvider: FC = ({ children }) => {

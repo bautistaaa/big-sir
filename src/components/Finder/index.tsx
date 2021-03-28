@@ -4,8 +4,9 @@ import {
   forwardRef,
   useEffect,
 } from 'react';
-import { RectResult } from '../../hooks/useRect';
 import styled from 'styled-components/macro';
+import { RectResult } from '../../hooks/useRect';
+import { Icons, Details, List } from './icons/';
 import Window from '../Window';
 import IconView from './IconView';
 import ListView from './ListView';
@@ -62,11 +63,12 @@ const Finder: ForwardRefRenderFunction<
   HTMLDivElement,
   {
     minimizedTargetRect: RectResult;
-    isFinderMinimized: boolean;
-    setIsFinderMinimized: React.Dispatch<React.SetStateAction<boolean>>;
   }
-> = ({ minimizedTargetRect, isFinderMinimized, setIsFinderMinimized }, ref) => {
+> = ({ minimizedTargetRect }, ref) => {
   const { state, dispatch } = useAppContext();
+  const isMinimized = !!state.minimizedWindows.find(
+    (mw) => mw.name === 'finder'
+  );
   const finderState = state.activeWindows.find((aw) => aw.name === 'finder');
   const [view, setView] = useState<View>('Icon');
   const isIconView = view === 'Icon';
@@ -85,7 +87,7 @@ const Finder: ForwardRefRenderFunction<
   }, [isFinderFocused]);
 
   const handleMinimizeClick = () => {
-    setIsFinderMinimized(true);
+    dispatch({ type: 'minimizedWindow', payload: { name: 'finder' } });
   };
   const handleCloseClick = () => {
     dispatch({ type: 'removeWindow', payload: { name: 'finder' } });
@@ -96,10 +98,10 @@ const Finder: ForwardRefRenderFunction<
       height={400}
       width={800}
       minimizedTargetRect={minimizedTargetRect}
-      isWindowMinimized={isFinderMinimized}
+      isWindowMinimized={isMinimized}
       zIndex={finderState?.zIndex}
     >
-      <Wrapper isWindowMinimized={isFinderMinimized} ref={ref}>
+      <Wrapper isWindowMinimized={isMinimized} ref={ref}>
         <Sidebar>
           <ActionBar>
             <CloseButton onClick={handleCloseClick} />
@@ -119,7 +121,34 @@ const Finder: ForwardRefRenderFunction<
           </Items>
         </Sidebar>
         <Content>
-          <UtilityBar></UtilityBar>
+          <UtilityBar>
+            <ButtonsWrapper>
+              <LeftButton
+                onClick={() => {
+                  setView('Icon');
+                }}
+                isActive={isIconView}
+              >
+                <Icons fill={isIconView ? 'rgb(64,64,64)' : 'white'} />
+              </LeftButton>
+              <MiddleButton
+                onClick={() => {
+                  setView('List');
+                }}
+                isActive={isListView}
+              >
+                <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
+              </MiddleButton>
+              <RightButton
+                onClick={() => {
+                  setView('Detail');
+                }}
+                isActive={isDetailView}
+              >
+                <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
+              </RightButton>
+            </ButtonsWrapper>
+          </UtilityBar>
           {isIconView && <IconView files={files} />}
           {isListView && <ListView files={files} />}
           {isDetailView && <DetailView files={files} />}
@@ -230,6 +259,39 @@ const ActionBar = styled.div`
   height: 22px;
   padding: 7px;
   margin-bottom: 10px;
+`;
+const ButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+`;
+const BaseUtilButton = styled.button<{ isActive: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  outline: none;
+  width: 30px;
+  height: 22px;
+  background: rgb(107, 107, 107);
+  margin-right: 1px;
+  ${({ isActive }) =>
+    isActive &&
+    `
+    background: rgb(204, 204, 204);
+    `}
+`;
+const LeftButton = styled(BaseUtilButton)`
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+`;
+const MiddleButton = styled(BaseUtilButton)``;
+const RightButton = styled(BaseUtilButton)`
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 `;
 
 export default forwardRef(Finder);

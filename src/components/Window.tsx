@@ -73,10 +73,23 @@ const Window: FC<{
     });
   };
 
+  // export declare type RndResizeCallback = (e: MouseEvent | TouchEvent, dir: ResizeDirection, elementRef: HTMLElement, delta: ResizableDelta, position: Position) => void;
+  // @ts-ignore
+  const handleResizeStop = (...args) => {
+    const [, , , , position] = args;
+    setRefresh((x) => x + 1);
+    const { x, y } = position;
+    setPosition({
+      x,
+      y,
+    });
+  };
+
   return (
     <Rnd
       style={{ position: 'fixed', ...overrideStyle, zIndex }}
       onDragStop={handleOnDragStop}
+      onResizeStop={handleResizeStop}
       minHeight={300}
       minWidth={300}
       position={position}

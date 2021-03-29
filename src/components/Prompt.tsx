@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
 import files from '../shared/files';
 import { reducer, Command } from '../prompt.reducer';
+import { View } from './Terminal';
 
 const searchForOptions = (term: string): string[] => {
   const o = Object.values(files)
@@ -12,7 +13,10 @@ const searchForOptions = (term: string): string[] => {
   return o;
 };
 
-const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
+const Prompt: FC<{
+  isTerminalFocused: boolean;
+  setView: React.Dispatch<React.SetStateAction<View>>;
+}> = ({ isTerminalFocused, setView }) => {
   const [state, dispatch] = useReducer(reducer, {
     index: 0,
     historyIndex: 0,
@@ -88,6 +92,7 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
         const { key } = e;
         let output = '';
         const currentCommand = commandRef.current ?? '';
+
         const [cmd, ...args] = currentCommand.split(' ');
 
         setKeysCurrentlyPressed((keys) => [
@@ -140,6 +145,10 @@ const Prompt: FC<{ isTerminalFocused: boolean }> = ({ isTerminalFocused }) => {
           if (textAreaRef.current) {
             textAreaRef.current.value = '';
           }
+          if (currentCommand === 'nvim') {
+            setView('nvim');
+          }
+
           if (commandsList[currentCommand!]) {
             const co = commandsList[currentCommand ?? ''];
             output = co();

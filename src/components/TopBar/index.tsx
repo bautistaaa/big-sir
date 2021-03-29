@@ -1,29 +1,17 @@
 import { FC } from 'react';
 import styled from 'styled-components/macro';
 import AppleIcon from './AppleIcon';
+import Clock from './Clock';
 
 const TopBar: FC = () => {
-  const weekday = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-  }).format(new Date());
-
-  const date = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date());
-
-  const time = new Intl.DateTimeFormat('en-US', {
-    hour12: true,
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date());
-
   return (
     <Wrapper>
       <LeftSide>
         <AppleIcon />
       </LeftSide>
-      <RightSide>{`${weekday} ${date}  ${time}`}</RightSide>
+      <RightSide>
+        <Clock />
+      </RightSide>
     </Wrapper>
   );
 };

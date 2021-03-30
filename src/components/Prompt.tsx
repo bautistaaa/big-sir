@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
 import files from '../shared/files';
-import { reducer, Command } from '../prompt.reducer';
+import usePromptState, { Command } from '../hooks/usePrompState';
 import { View } from './Terminal';
 
 const searchForOptions = (term: string): string[] => {
@@ -16,12 +16,9 @@ const searchForOptions = (term: string): string[] => {
 const Prompt: FC<{
   isTerminalFocused: boolean;
   setView: React.Dispatch<React.SetStateAction<View>>;
-}> = ({ isTerminalFocused, setView }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    index: 0,
-    historyIndex: 0,
-    commands: [],
-  });
+  setFileContent: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ isTerminalFocused, setView, setFileContent }) => {
+  const [state, dispatch] = usePromptState();
   const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
@@ -123,6 +120,13 @@ const Prompt: FC<{
                 commandRef.current = newCommand;
               }
             }
+          } else if (cmd === 'nvim') {
+            const results = searchForOptions(args[0]);
+            if (results[0]) {
+              const newCommand = `${cmd} ${results[0]}`;
+              setCurrentCommand(newCommand);
+              commandRef.current = newCommand;
+            }
           }
         } else if (key === 'ArrowDown') {
           dispatch({ type: 'incrementHistory' });
@@ -145,9 +149,6 @@ const Prompt: FC<{
           if (textAreaRef.current) {
             textAreaRef.current.value = '';
           }
-          if (currentCommand === 'nvim') {
-            setView('nvim');
-          }
 
           if (commandsList[currentCommand!]) {
             const co = commandsList[currentCommand ?? ''];
@@ -155,6 +156,11 @@ const Prompt: FC<{
           } else if (cmd === 'cat') {
             const file = args[0];
             output = files[file].content;
+          } else if (cmd === 'nvim') {
+            const file = args[0];
+            output = files[file].content;
+            setView('nvim');
+            setFileContent(output);
           }
           const command: Command = {
             input: commandRef.current!,

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
 import files from '../shared/files';
@@ -19,13 +19,10 @@ const Prompt: FC<{
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ isTerminalFocused, setView, setFileContent }) => {
   const [state, dispatch] = usePromptState();
+  const { currentCommand, keysCurrentlyPressed } = state;
   const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
-  const [currentCommand, setCurrentCommand] = useState('');
-  const [keysCurrentlyPressed, setKeysCurrentlyPressed] = useState<string[]>(
-    []
-  );
 
   // update ref every time state changes
   // so we can access in event listener callbacks
@@ -43,7 +40,6 @@ const Prompt: FC<{
 
   const clear = () => {
     textAreaRef.current!.value = '';
-    setCurrentCommand('');
     commandRef.current = '';
     dispatch({ type: 'clear' });
   };
@@ -79,7 +75,6 @@ const Prompt: FC<{
       textAreaRef.current!.value = '';
       commandRef.current = '';
       dispatch({ type: 'addCommand', payload: { command } });
-      setCurrentCommand('');
     }
   }, [keysCurrentlyPressed]);
 
@@ -89,13 +84,9 @@ const Prompt: FC<{
         const { key } = e;
         let output = '';
         const currentCommand = commandRef.current ?? '';
-
         const [cmd, ...args] = currentCommand.split(' ');
 
-        setKeysCurrentlyPressed((keys) => [
-          ...keys.filter((k) => k !== key),
-          key,
-        ]);
+        dispatch({ type: 'keyDown', payload: { key } });
 
         if (key === 'Tab') {
           e.preventDefault();
@@ -109,14 +100,16 @@ const Prompt: FC<{
                 output,
               };
               dispatch({ type: 'addCommand', payload: { command } });
-              setCurrentCommand('');
               commandRef.current = '';
               textAreaRef.current!.value = '';
               commandRef.current = '';
             } else {
               if (results[0]) {
                 const newCommand = `${cmd} ${results[0]}`;
-                setCurrentCommand(newCommand);
+                dispatch({
+                  type: 'setCurrentCommand',
+                  payload: { command: newCommand },
+                });
                 commandRef.current = newCommand;
               }
             }
@@ -124,7 +117,10 @@ const Prompt: FC<{
             const results = searchForOptions(args[0]);
             if (results[0]) {
               const newCommand = `${cmd} ${results[0]}`;
-              setCurrentCommand(newCommand);
+              dispatch({
+                type: 'setCurrentCommand',
+                payload: { command: newCommand },
+              });
               commandRef.current = newCommand;
             }
           }
@@ -132,7 +128,10 @@ const Prompt: FC<{
           dispatch({ type: 'incrementHistory' });
           const cmd = getRealCommands()[stateRef.current.historyIndex + 1];
           if (cmd) {
-            setCurrentCommand(cmd.input);
+            dispatch({
+              type: 'setCurrentCommand',
+              payload: { command: cmd.input },
+            });
             commandRef.current = cmd.input;
             textAreaRef.current!.value = cmd.input;
           }
@@ -140,7 +139,10 @@ const Prompt: FC<{
           dispatch({ type: 'decrementHistory' });
           const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
           if (cmd) {
-            setCurrentCommand(cmd.input);
+            dispatch({
+              type: 'setCurrentCommand',
+              payload: { command: cmd.input },
+            });
             commandRef.current = cmd.input;
             textAreaRef.current!.value = cmd.input;
           }
@@ -168,17 +170,12 @@ const Prompt: FC<{
             output,
           };
           dispatch({ type: 'addCommand', payload: { command } });
-          setCurrentCommand('');
           commandRef.current = '';
         }
       };
       const handleKeyUp = (e: KeyboardEvent) => {
         const { key } = e;
-        if (key === 'Meta') {
-          // blow it all away
-          setKeysCurrentlyPressed([]);
-        }
-        setKeysCurrentlyPressed((keys) => keys.filter((k) => k !== key));
+        dispatch({ type: 'keyUp', payload: { key } });
       };
 
       window.addEventListener('keydown', handleKeyDown);
@@ -204,13 +201,16 @@ const Prompt: FC<{
           fontSize: '20px',
         }}
       >
-        {keysCurrentlyPressed.join(' ')}
+        {state.keysCurrentlyPressed.join(' ')}
       </pre>
       <HiddenTextArea
         ref={textAreaRef}
         onChange={(e) => {
           commandRef.current = e.target.value;
-          setCurrentCommand(e.target.value);
+          dispatch({
+            type: 'setCurrentCommand',
+            payload: { command: e.target.value },
+          });
         }}
         onBlur={() => {
           if (isTerminalFocused && textAreaRef.current) {

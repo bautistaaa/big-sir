@@ -49,6 +49,7 @@ const Terminal: ForwardRefRenderFunction<
       consoleRef.current.scrollTo(0, scrollHeight);
     }
   };
+
   useMutationObserver(consoleRef, callback);
 
   const handleMinimizeClick = () => {
@@ -90,7 +91,11 @@ const Terminal: ForwardRefRenderFunction<
           )}
           {view === 'nvim' && (
             <>
-              <Neovim fileContent={fileContent} setView={setView} />
+              <Neovim
+                fileContent={fileContent}
+                setView={setView}
+                isTerminalFocused={isTerminalFocused}
+              />
             </>
           )}
         </Console>

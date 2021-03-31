@@ -1,15 +1,19 @@
 import { FC, useEffect, useState } from 'react';
 import Loading from './Loading';
 import Editor from './Editor';
+import { View } from '../Terminal';
 
-type View = 'loading' | 'nvim';
-const Neovim: FC = () => {
-  const [view, setView] = useState<View>('loading');
-  console.log(view);
+type EditorState = 'loading' | 'nvim';
+const Neovim: FC<{
+  isTerminalFocused: boolean;
+  fileContent: string;
+  setView: React.Dispatch<React.SetStateAction<View>>;
+}> = ({ isTerminalFocused, fileContent, setView }) => {
+  const [editorState, setEditorState] = useState<EditorState>('loading');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setView('nvim');
+      setEditorState('nvim');
     }, 2000);
 
     return () => {
@@ -17,19 +21,17 @@ const Neovim: FC = () => {
     };
   }, []);
 
-  if (view === 'loading') {
-    return (
-      <>
-        <Loading />
-      </>
-    );
+  if (editorState === 'loading') {
+    return <Loading />;
   }
 
-  if (view === 'nvim') {
+  if (editorState === 'nvim') {
     return (
-      <>
-        <Editor />
-      </>
+      <Editor
+        fileContent={fileContent}
+        setView={setView}
+        isTerminalFocused={isTerminalFocused}
+      />
     );
   }
 

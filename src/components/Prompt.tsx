@@ -173,6 +173,7 @@ const Prompt: FC<{
           commandRef.current = '';
         }
       };
+
       const handleKeyUp = (e: KeyboardEvent) => {
         const { key } = e;
         dispatch({ type: 'keyUp', payload: { key } });

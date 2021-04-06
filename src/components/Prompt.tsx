@@ -1,17 +1,10 @@
 import React, { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import commandsList from '../shared/commands';
-import files from '../shared/files';
 import usePromptState, { Command } from '../hooks/usePrompState';
 import { View } from './Terminal';
-
-const searchForOptions = (term: string): string[] => {
-  const o = Object.values(files)
-    .filter((x) => x.searchText.filter((x) => x.startsWith(term)).length > 0)
-    .map((x) => x.display);
-
-  return o;
-};
+import autocomplete from '../utils/autocomplete';
+import getFileContents from '../utils/getFileContents';
 
 const Prompt: FC<{
   isTerminalFocused: boolean;
@@ -91,7 +84,7 @@ const Prompt: FC<{
         if (key === 'Tab') {
           e.preventDefault();
           if (cmd === 'ls' || cmd === 'cat') {
-            const results = searchForOptions(file);
+            const results = autocomplete('/', file); // searchForOptions(file);
             if (results.length > 1) {
               const output = results.join(' ');
               const command: Command = {
@@ -112,7 +105,7 @@ const Prompt: FC<{
               }
             }
           } else if (cmd === 'nvim') {
-            const results = searchForOptions(file);
+            const results = autocomplete('/', file);
             if (results[0]) {
               const newCommand = `${cmd} ${results[0]}`;
               dispatch({
@@ -154,9 +147,9 @@ const Prompt: FC<{
             const co = commandsList[currentCommand ?? ''];
             output = co();
           } else if (cmd === 'cat') {
-            output = files[file]?.content;
+            output = getFileContents('/', file);
           } else if (cmd === 'nvim') {
-            output = files[file]?.content;
+            output = getFileContents('/', file);
             if (output) {
               setView('nvim');
               setFileContent(output);

@@ -107,7 +107,6 @@ const Grid = styled.div`
   display: grid;
   grid-gap: 5px;
   grid-template-columns: repeat(4, 1fr);
-  // grid-template-rows: 80px;
   grid-template-areas:
     'left-side left-side right-top right-top'
     'left-side left-side right-top right-top'
@@ -115,7 +114,6 @@ const Grid = styled.div`
 `;
 const BasePanel = styled.div`
   border-radius: 5px;
-  // background: rgb(51, 50, 55);
   background: rgb(27 27 29 / 50%);
   backdrop-filter: blur(75px);
 `;
@@ -125,7 +123,6 @@ const LeftColumn = styled(BasePanel)`
 `;
 const DnDCircleButton = styled(CircleButton)`
   flex-shrink: 0;
-  background: rgb(94, 92, 230);
 `;
 const RightColumnTop = styled(BasePanel)`
   display: flex;

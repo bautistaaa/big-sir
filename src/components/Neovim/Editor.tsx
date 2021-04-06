@@ -1,9 +1,19 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
+import { Controlled as CodeMirror } from 'react-codemirror2';
 import ModeLine from './ModeLine';
 import CommandLine from './CommandLine';
 import useEditorState from '../../hooks/useEditorState';
 import { View } from '../Terminal';
+require('codemirror/mode/htmlmixed/htmlmixed');
+require('codemirror/keymap/vim');
+
+const options = {
+  theme: 'dracula',
+  lineNumbers: true,
+  keyMap: 'vim',
+  mode: 'htmlmixed',
+};
 
 const Editor: FC<{
   isTerminalFocused: boolean;
@@ -11,7 +21,7 @@ const Editor: FC<{
   setView: React.Dispatch<React.SetStateAction<View>>;
 }> = ({ isTerminalFocused, fileContent, setView }) => {
   const [state, dispatch] = useEditorState();
-  const fileContentTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [code, setCode] = useState(fileContent);
   const commandTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const stateRef = useRef(state);
@@ -19,12 +29,6 @@ const Editor: FC<{
   useEffect(() => {
     stateRef.current = state;
   });
-
-  useEffect(() => {
-    if (fileContentTextAreaRef.current) {
-      fileContentTextAreaRef.current.value = fileContent;
-    }
-  }, [fileContent]);
 
   useEffect(() => {
     if (isTerminalFocused) {
@@ -44,6 +48,9 @@ const Editor: FC<{
 
       // command mode
       if (key === ':') {
+        if (commandTextAreaRef.current) {
+          commandTextAreaRef.current.focus();
+        }
         dispatch({ type: 'modeChanged', payload: { mode: 'command' } });
       } else if (stateRef.current.mode === 'command') {
         if (key === 'Enter') {
@@ -93,19 +100,24 @@ const Editor: FC<{
   return (
     <>
       <Wrapper>
-        <FileContent>{fileContent}</FileContent>
+        <FileContent>
+          <CodeMirror
+            options={options}
+            value={code}
+            onBeforeChange={(editor, data, value) => {
+              setCode(value);
+            }}
+            onChange={(editor, data, value) => {
+              setCode(value);
+            }}
+          />
+        </FileContent>
         <ModeLine mode={state.mode} />
         <CommandLine command={state.command} />
-        <HiddenTextArea ref={fileContentTextAreaRef} />
         <HiddenTextArea
           ref={commandTextAreaRef}
           onChange={(e) => {
             commandRef.current = e.target.value;
-          }}
-          onBlur={() => {
-            if (isTerminalFocused && commandTextAreaRef.current) {
-              commandTextAreaRef.current.focus();
-            }
           }}
         />
       </Wrapper>
@@ -118,9 +130,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   color: white;
   height: 100%;
+  background: #282a36;
 `;
-const FileContent = styled.pre`
-  margin-left: 15px;
+const FileContent = styled.div`
   flex: 1;
 `;
 const HiddenTextArea = styled.textarea`

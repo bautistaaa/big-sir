@@ -117,7 +117,6 @@ const Console = styled.div`
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   overflow: scroll;
-  pointer-events: none;
 `;
 const Wrapper = styled.div<{
   isWindowMinimized: boolean;

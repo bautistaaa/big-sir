@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   justify-content: flex-start;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  height: 22px;
+  height: 30px;
   padding: 7px;
   background: rgb(56, 56, 56);
 `;
@@ -32,8 +32,8 @@ const BaseButton = styled.button`
   padding: 0;
   margin: 0;
   border-radius: 50%;
-  height: 10px;
-  width: 10px;
+  height: 12px;
+  width: 12px;
   & + & {
     margin-left: 5px;
   }

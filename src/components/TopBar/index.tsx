@@ -65,7 +65,7 @@ const StyledMenuItems = styled.ul`
   top: 24px;
   padding: 5px;
   border-radius: 5px;
-  width: 270px;
+  width: 260px;
 `;
 const StyledMenuItem = styled.li`
   padding-bottom: 7px;

@@ -24,7 +24,7 @@ const ButtonItem: FC<ButtonItemProps> = ({
   const [active, setActive] = useState(true);
   return (
     <Wrapper onClick={() => setActive(!active)}>
-      <CircleButton icon={type} />
+      <CircleButton icon={type} active={active}/>
       <TextWrapper>
         <MainText>{mainText}</MainText>
         <StatusText>{active ? activeText : inactiveText}</StatusText>

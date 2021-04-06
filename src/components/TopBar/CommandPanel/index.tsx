@@ -37,7 +37,7 @@ const CommandPanel: FC = () => {
           <Settings />
         </Menu.Button>
         <Menu.Items as={StyledMenuItems}>
-          <Menu.Item as={StyledMenuItem}>
+          <StyledMenuItem>
             <Grid>
               <LeftColumn>
                 <ButtonList>
@@ -63,7 +63,7 @@ const CommandPanel: FC = () => {
                 <MirroringText>Screen Mirroring</MirroringText>
               </RightItem>
             </Grid>
-          </Menu.Item>
+          </StyledMenuItem>
         </Menu.Items>
       </Menu>
     </Wrapper>
@@ -93,7 +93,7 @@ const StyledMenuItems = styled.ul`
   top: 24px;
   padding: 10px;
   border-radius: 10px;
-  width: 290px;
+  width: 320px;
 `;
 const StyledMenuItem = styled.li``;
 const Grid = styled.div`

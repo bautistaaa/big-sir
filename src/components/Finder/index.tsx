@@ -102,63 +102,91 @@ const Finder: ForwardRefRenderFunction<
       zIndex={finderState?.zIndex}
     >
       <Wrapper isWindowMinimized={isMinimized} ref={ref}>
-        <Sidebar>
-          <ActionBar>
-            <CloseButton onClick={handleCloseClick} />
-            <MinimizeButton onClick={handleMinimizeClick} />
-            <FullScreenButton />
-          </ActionBar>
-          <Title>Favorites</Title>
-          <Items>
-            {SideBarItems.map((item, i) => {
-              return (
-                <Item key={i}>
-                  <img src={SidebarItemIconMap[item.type]} alt="" />
-                  <ItemName>{item.name}</ItemName>
-                </Item>
-              );
-            })}
-          </Items>
-        </Sidebar>
-        <Content>
-          <UtilityBar>
-            <ButtonsWrapper>
-              <LeftButton
-                onClick={() => {
-                  setView('Icon');
-                }}
-                isActive={isIconView}
-              >
-                <Icons fill={isIconView ? 'rgb(64,64,64)' : 'white'} />
-              </LeftButton>
-              <MiddleButton
-                onClick={() => {
-                  setView('List');
-                }}
-                isActive={isListView}
-              >
-                <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
-              </MiddleButton>
-              <RightButton
-                onClick={() => {
-                  setView('Detail');
-                }}
-                isActive={isDetailView}
-              >
-                <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
-              </RightButton>
-            </ButtonsWrapper>
-          </UtilityBar>
-          {isIconView && <IconView files={files} />}
-          {isListView && <ListView files={files} />}
-          {isDetailView && <DetailView files={files} />}
-        </Content>
+        <TopBar className="action-bar">
+          <LeftSide>
+            <ActionBar>
+              <CloseButton onClick={handleCloseClick} />
+              <MinimizeButton onClick={handleMinimizeClick} />
+              <FullScreenButton />
+            </ActionBar>
+          </LeftSide>
+          <RightSide>
+            <UtilityBar>
+              <ButtonsWrapper>
+                <LeftButton
+                  onClick={() => {
+                    setView('Icon');
+                  }}
+                  isActive={isIconView}
+                >
+                  <Icons fill={isIconView ? 'rgb(64,64,64)' : 'white'} />
+                </LeftButton>
+                <MiddleButton
+                  onClick={() => {
+                    setView('List');
+                  }}
+                  isActive={isListView}
+                >
+                  <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
+                </MiddleButton>
+                <RightButton
+                  onClick={() => {
+                    setView('Detail');
+                  }}
+                  isActive={isDetailView}
+                >
+                  <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
+                </RightButton>
+              </ButtonsWrapper>
+            </UtilityBar>
+          </RightSide>
+        </TopBar>
+        <Bottom>
+          <Sidebar>
+            <Title>Favorites</Title>
+            <Items>
+              {SideBarItems.map((item, i) => {
+                return (
+                  <Item key={i}>
+                    <img src={SidebarItemIconMap[item.type]} alt="" />
+                    <ItemName>{item.name}</ItemName>
+                  </Item>
+                );
+              })}
+            </Items>
+          </Sidebar>
+          <Content>
+            {isIconView && <IconView files={files} />}
+            {isListView && <ListView files={files} />}
+            {isDetailView && <DetailView files={files} />}
+          </Content>
+        </Bottom>
       </Wrapper>
     </Window>
   );
 };
 
+const TopBar = styled.div`
+  display: flex;
+  height: 50px;
+  width: calc(100% + 150px);
+`;
+const LeftSide = styled.div`
+  width: 150px;
+  height: 100%;
+  background: rgb(42 42 42 / 65%);
+  border-top-left-radius: 12px;
+  padding-left: 10px;
+  padding-top: 10px;
+  backdrop-filter: blur(12px);
+`;
+const RightSide = styled.div`
+  background: rgb(59, 52, 56);
+  width: calc(100% - 150px);
+  border-top-right-radius: 12px;
+`;
 const UtilityBar = styled.div`
+  height: 100%;
   padding-left: 10px;
 `;
 const Items = styled.div`
@@ -198,15 +226,14 @@ const Sidebar = styled.div`
   top: 0;
   height: 100%;
   width: 150px;
-  box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
-  border-top-left-radius: 12px;
+  // box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
   border-bottom-left-radius: 12px;
   background: rgb(42 42 42 / 65%);
   backdrop-filter: blur(12px);
   &::after {
     content: '';
     position: absolute;
-    background: black;
+    // background: black;
     height: 100%;
     width: 1px;
     top: 0;
@@ -215,19 +242,24 @@ const Sidebar = styled.div`
   }
 `;
 const Content = styled.div`
-  margin-left: 148px;
+  margin-left: 150px;
   background: rgb(41, 35, 38);
   width: 100%;
   height: 100%;
-  border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
-  clip-path: inset(0px 0px 0px 2px);
-  box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
+  // clip-path: inset(0px 0px 0px 2px);
+  // box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
 `;
 const Title = styled.div`
   font-size: 10px;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
+`;
+const Bottom = styled.div`
+  position: relative;
+  display: flex;
+  height: calc(100% - 50px);
+  width: calc(100% + 150px);
 `;
 const BaseButton = styled.button`
   border: none;
@@ -278,6 +310,7 @@ const BaseUtilButton = styled.button<{ isActive: boolean }>`
   height: 22px;
   background: rgb(107, 107, 107);
   margin-right: 1px;
+  z-index: 120;
   ${({ isActive }) =>
     isActive &&
     `

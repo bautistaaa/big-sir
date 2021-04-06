@@ -9,6 +9,7 @@ interface DockItem {
 const minimizedImages: { [k: string]: string } = {
   finder: 'finder-min.png',
   terminal: 'minimized.png',
+  aboutThisMac: 'about-min.png',
 };
 const items: DockItem[] = [
   {
@@ -17,7 +18,11 @@ const items: DockItem[] = [
   },
   {
     name: 'terminal',
-    path: './terminal.png',
+    path: './iterm.png',
+  },
+  {
+    name: 'chrome',
+    path: './chrome.png',
   },
 ];
 
@@ -105,7 +110,7 @@ const MinimizedWindow = styled.div`
   img {
     width: 40px;
     height: 31px;
-    object-fit: cover;
+    object-fit: contain;
     margin-right: 5px;
   }
 `;
@@ -148,9 +153,6 @@ const Button = styled.button<{ active?: boolean }>`
     width: 100%;
     height: 100%;
     object-fit: contain;
-  }
-  & + & {
-    margin-left: 10px;
   }
   ${({ active }) =>
     active &&

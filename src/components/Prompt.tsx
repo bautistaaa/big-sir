@@ -24,11 +24,9 @@ const Prompt: FC<{
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
 
-  // update ref every time state changes
-  // so we can access in event listener callbacks
   useEffect(() => {
     stateRef.current = state;
-  }, [state]);
+  });
 
   useEffect(() => {
     if (isTerminalFocused) {
@@ -38,9 +36,12 @@ const Prompt: FC<{
     }
   }, [isTerminalFocused]);
 
-  const clear = () => {
+  const clearRefs = () => {
     textAreaRef.current!.value = '';
     commandRef.current = '';
+  };
+  const clear = () => {
+    clearRefs();
     dispatch({ type: 'clear' });
   };
 
@@ -72,8 +73,7 @@ const Prompt: FC<{
         output: '',
       };
 
-      textAreaRef.current!.value = '';
-      commandRef.current = '';
+      clearRefs();
       dispatch({ type: 'addCommand', payload: { command } });
     }
   }, [keysCurrentlyPressed]);
@@ -84,14 +84,14 @@ const Prompt: FC<{
         const { key } = e;
         let output = '';
         const currentCommand = commandRef.current ?? '';
-        const [cmd, ...args] = currentCommand.split(' ');
+        const [cmd, file, ...args] = currentCommand.split(' ');
 
         dispatch({ type: 'keyDown', payload: { key } });
 
         if (key === 'Tab') {
           e.preventDefault();
           if (cmd === 'ls' || cmd === 'cat') {
-            const results = searchForOptions(args[0]);
+            const results = searchForOptions(file);
             if (results.length > 1) {
               const output = results.join(' ');
               const command: Command = {
@@ -100,9 +100,7 @@ const Prompt: FC<{
                 output,
               };
               dispatch({ type: 'addCommand', payload: { command } });
-              commandRef.current = '';
-              textAreaRef.current!.value = '';
-              commandRef.current = '';
+              clearRefs();
             } else {
               if (results[0]) {
                 const newCommand = `${cmd} ${results[0]}`;
@@ -114,7 +112,7 @@ const Prompt: FC<{
               }
             }
           } else if (cmd === 'nvim') {
-            const results = searchForOptions(args[0]);
+            const results = searchForOptions(file);
             if (results[0]) {
               const newCommand = `${cmd} ${results[0]}`;
               dispatch({
@@ -156,13 +154,24 @@ const Prompt: FC<{
             const co = commandsList[currentCommand ?? ''];
             output = co();
           } else if (cmd === 'cat') {
-            const file = args[0];
-            output = files[file].content;
+            output = files[file]?.content;
           } else if (cmd === 'nvim') {
-            const file = args[0];
-            output = files[file].content;
-            setView('nvim');
-            setFileContent(output);
+            output = files[file]?.content;
+            if (output) {
+              setView('nvim');
+              setFileContent(output);
+            } else {
+              const command: Command = {
+                input: currentCommand,
+                type: 'fake',
+                output: 'File not found.',
+              };
+
+              textAreaRef.current!.value = '';
+              commandRef.current = '';
+              dispatch({ type: 'addCommand', payload: { command } });
+              return;
+            }
           }
           const command: Command = {
             input: commandRef.current!,
@@ -191,19 +200,19 @@ const Prompt: FC<{
 
   return (
     <Wrapper>
-      <pre
-        style={{
-          background: 'white',
-          position: 'absolute',
-          top: '-100px',
-          padding: '10px',
-          borderRadius: '10px',
-          fontWeight: 'bold',
-          fontSize: '20px',
-        }}
-      >
-        {state.keysCurrentlyPressed.join(' ')}
-      </pre>
+      {/* <pre */}
+      {/*   style={{ */}
+      {/*     background: 'white', */}
+      {/*     position: 'absolute', */}
+      {/*     top: '-100px', */}
+      {/*     padding: '10px', */}
+      {/*     borderRadius: '10px', */}
+      {/*     fontWeight: 'bold', */}
+      {/*     fontSize: '20px', */}
+      {/*   }} */}
+      {/* > */}
+      {/*   {state.keysCurrentlyPressed.join(' ')} */}
+      {/* </pre> */}
       <HiddenTextArea
         ref={textAreaRef}
         onChange={(e) => {

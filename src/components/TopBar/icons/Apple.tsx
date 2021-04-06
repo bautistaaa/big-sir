@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-const AppleIcon: FC = () => {
+const Apple: FC = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -14,4 +14,4 @@ const AppleIcon: FC = () => {
   );
 };
 
-export default AppleIcon;
+export default Apple;

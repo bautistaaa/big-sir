@@ -5,15 +5,14 @@ import { RED, YELLOW, GREEN } from '../shared/constants';
 const ActionBar: FC<{
   handleCloseClick: () => void;
   handleMinimizeClick: () => void;
-}> = ({ handleCloseClick, handleMinimizeClick }) => {
+  className?: string
+}> = ({ handleCloseClick, handleMinimizeClick, className }) => {
   return (
-    <>
-      <Wrapper>
-        <CloseButton onClick={() => handleCloseClick()} />
-        <MinimizeButton onClick={() => handleMinimizeClick()} />
-        <FullScreenButton />
-      </Wrapper>
-    </>
+    <Wrapper className={`${className} action-bar`}>
+      <CloseButton onClick={() => handleCloseClick()} />
+      <MinimizeButton onClick={() => handleMinimizeClick()} />
+      <FullScreenButton />
+    </Wrapper>
   );
 };
 
@@ -21,8 +20,8 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   height: 22px;
   padding: 7px;
   background: rgb(56, 56, 56);

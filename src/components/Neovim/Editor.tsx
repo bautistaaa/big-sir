@@ -15,7 +15,6 @@ const Editor: FC<{
   const commandTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const stateRef = useRef(state);
-  console.log(state);
 
   useEffect(() => {
     stateRef.current = state;
@@ -43,6 +42,7 @@ const Editor: FC<{
     const handleKeyDown = (e: KeyboardEvent) => {
       const { key } = e;
 
+      // command mode
       if (key === ':') {
         dispatch({ type: 'modeChanged', payload: { mode: 'command' } });
       } else if (stateRef.current.mode === 'command') {
@@ -92,10 +92,6 @@ const Editor: FC<{
 
   return (
     <>
-      <div style={{ background: 'white', fontSize: '15px', padding: '10px' }}>
-        {state.keysCurrentlyQueued.join(' ')} adasdasdasd
-      </div>
-
       <Wrapper>
         <FileContent>{fileContent}</FileContent>
         <ModeLine mode={state.mode} />
@@ -124,6 +120,7 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 const FileContent = styled.pre`
+  margin-left: 15px;
   flex: 1;
 `;
 const HiddenTextArea = styled.textarea`

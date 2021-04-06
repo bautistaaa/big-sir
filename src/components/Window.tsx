@@ -87,7 +87,13 @@ const Window: FC<{
 
   return (
     <Rnd
-      style={{ position: 'fixed', ...overrideStyle, zIndex }}
+      style={{
+        cursor: 'auto !important',
+        position: 'fixed',
+        ...overrideStyle,
+        zIndex,
+      }}
+      dragHandleClassName="action-bar"
       onDragStop={handleOnDragStop}
       onResizeStop={handleResizeStop}
       minHeight={300}

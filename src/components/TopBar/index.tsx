@@ -1,21 +1,76 @@
 import { FC } from 'react';
 import styled from 'styled-components/macro';
-import AppleIcon from './AppleIcon';
+import { Menu } from '@headlessui/react';
+import { Apple } from './icons';
+import CommandPanel from './CommandPanel';
 import Clock from './Clock';
+import { useAppContext } from '../../AppContext';
 
-const TopBar: FC = () => {
+const TopBar: FC<{ ref: any }> = ({ ref }) => {
+  const { dispatch } = useAppContext();
+
+  const handleAboutThisMacClick = () => {
+    dispatch({
+      type: 'focusWindow',
+      payload: { name: 'aboutThisMac', ref: ref as any },
+    });
+  };
   return (
     <Wrapper>
       <LeftSide>
-        <AppleIcon />
+        <Menu as={StyledMenu}>
+          <Menu.Button as={StyledMenuButton}>
+            <Apple />
+          </Menu.Button>
+          <Menu.Items as={StyledMenuItems}>
+            <Menu.Item as={StyledMenuItem}>
+              <MenuButton onClick={handleAboutThisMacClick}>
+                About This Mac
+              </MenuButton>
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
       </LeftSide>
       <RightSide>
+        <CommandPanel />
         <Clock />
       </RightSide>
     </Wrapper>
   );
 };
 
+const MenuButton = styled.div`
+  padding: 5px 9px;
+  position: relative;
+  border-radius: 2px;
+  &:hover {
+    background: rgb(26, 109, 196);
+  }
+`;
+const StyledMenu = styled.div`
+  position: relative;
+`;
+const StyledMenuButton = styled.button`
+  background: transparent;
+  border: none;
+  outline: none;
+`;
+const StyledMenuItems = styled.ul`
+  outline: none;
+  position: absolute;
+  background: rgb(27 27 29 / 30%);
+  backdrop-filter: blur(72px);
+  box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
+  left: 0;
+  top: 24px;
+  padding: 5px;
+  border-radius: 5px;
+  width: 270px;
+`;
+const StyledMenuItem = styled.li`
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+`;
 const Wrapper = styled.div`
   display: flex;
   align-items: center;

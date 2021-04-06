@@ -1,5 +1,4 @@
-const RESUME = `
-const name = 'Chris Bautista';
+const RESUME = `const name = 'Chris Bautista';
 
 const experience = [
   {

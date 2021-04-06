@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import { Menu } from '@headlessui/react';
 import CircleButton from './CircleButton';
@@ -30,6 +30,7 @@ const buttonListItems: ButtonListItem[] = [
   },
 ];
 const CommandPanel: FC = () => {
+  const [isDndActive, setIsDndActive] = useState(true);
   return (
     <Wrapper>
       <Menu as={StyledMenu}>
@@ -51,7 +52,12 @@ const CommandPanel: FC = () => {
                 </ButtonList>
               </LeftColumn>
               <RightColumnTop>
-                <DnDCircleButton icon={SettingsEnum.dnd} />
+                <span onClick={() => setIsDndActive(!isDndActive)}>
+                  <DnDCircleButton
+                    active={isDndActive}
+                    icon={SettingsEnum.dnd}
+                  />
+                </span>
                 <DndText>Do Not Disturb</DndText>
               </RightColumnTop>
               <LeftItem>

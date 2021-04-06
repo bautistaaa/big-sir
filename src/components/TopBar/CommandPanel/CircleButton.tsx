@@ -16,13 +16,13 @@ const CircleButton: FC<{
   };
 
   return (
-    <Wrapper active={active} className={className}>
+    <Wrapper active={active} icon={icon} className={className}>
       {svgMap[icon]}
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div<{ active: boolean }>`
+const Wrapper = styled.div<{ active: boolean; icon: Settings }>`
   display: flex;
   height: 28px;
   width: 28px;
@@ -30,8 +30,12 @@ const Wrapper = styled.div<{ active: boolean }>`
   align-items: center;
   justify-content: center;
 
-  background: ${({ active }) =>
-    active ? 'rgb(26, 109, 196)' : 'rgb(75, 72, 77)'};
+  background: ${({ active, icon }) =>
+    active
+      ? icon === Settings.dnd
+        ? 'rgb(94, 92, 230)'
+        : 'rgb(26, 109, 196)'
+      : 'rgb(75, 72, 77)'};
 `;
 
 export default CircleButton;

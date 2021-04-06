@@ -9,6 +9,7 @@ const Window: FC<{
   minimizedTargetRect: RectResult;
   isWindowMinimized: boolean;
   zIndex: number | undefined;
+  resizeable?: boolean;
 }> = ({
   width,
   height,
@@ -16,6 +17,7 @@ const Window: FC<{
   minimizedTargetRect,
   isWindowMinimized,
   zIndex,
+  resizeable = true,
 }) => {
   const [, setRefresh] = useState(0);
   const [previousPosition, setPreviousPosition] = useState<
@@ -104,6 +106,7 @@ const Window: FC<{
         width: `${width}px`,
         height: `${height}px`,
       }}
+      enableResizing={resizeable}
     >
       {children}
     </Rnd>

@@ -55,6 +55,7 @@ const AboutThisMac: ForwardRefRenderFunction<
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isMinimized}
       zIndex={aboutThisMacState?.zIndex}
+      resizeable={false}
     >
       <Wrapper isWindowMinimized={isMinimized} ref={ref}>
         <ActionBar

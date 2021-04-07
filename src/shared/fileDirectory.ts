@@ -1,8 +1,9 @@
 import { resume } from './Files/';
 
 export type Contents = Record<string, File> | string;
+type FileType = 'file' | 'directory' ;
 export interface File {
-  type: string;
+  fileType: FileType;
   display: string;
   searchText: string[];
   contents: Contents;
@@ -10,43 +11,57 @@ export interface File {
 const fileDirectory: Record<string, File> = {
   '/': {
     display: '/',
-    type: 'directory',
+    fileType: 'directory',
     searchText: ['/'],
     contents: {
-      'Resume.js': {
-        display: 'Resume.js',
-        type: 'file',
-        contents: resume,
-        searchText: ['Resume', 'js'],
-      },
-      projects: {
-        type: 'directory',
-        display: 'projects',
-        searchText: ['projects'],
+      home: {
+        display: 'home',
+        fileType: 'directory',
+        searchText: ['home'],
         contents: {
-          NarutoQL: {
-            display: 'NarutoQL',
-            type: 'file',
-            contents: `file contents`,
-            searchText: ['Naruto'],
+          personal: {
+            display: 'personal',
+            fileType: 'directory',
+            searchText: ['personal'],
+            contents: {
+              'Resume.js': {
+                display: 'Resume.js',
+                fileType: 'file',
+                contents: resume,
+                searchText: ['Resume', 'js'],
+              },
+            },
           },
-          Spotify: {
-            display: 'Spotify City',
-            type: 'file',
-            contents: `file contents`,
-            searchText: ['Spotify'],
-          },
-          vimfolio: {
-            display: 'Vimfolio',
-            type: 'file',
-            contents: `file contents`,
-            searchText: ['vim'],
-          },
-          vimdaddy: {
-            display: 'Vim Daddy',
-            type: 'file',
-            contents: `file contents`,
-            searchText: ['vim'],
+          projects: {
+            fileType: 'directory',
+            display: 'projects',
+            searchText: ['projects'],
+            contents: {
+              NarutoQL: {
+                display: 'NarutoQL',
+                fileType: 'file',
+                contents: `file contents`,
+                searchText: ['Naruto'],
+              },
+              Spotify: {
+                display: 'Spotify City',
+                fileType: 'file',
+                contents: `file contents`,
+                searchText: ['Spotify'],
+              },
+              vimfolio: {
+                display: 'Vimfolio',
+                fileType: 'file',
+                contents: `file contents`,
+                searchText: ['vim'],
+              },
+              vimdaddy: {
+                display: 'Vim Daddy',
+                fileType: 'file',
+                contents: `file contents`,
+                searchText: ['vim'],
+              },
+            },
           },
         },
       },

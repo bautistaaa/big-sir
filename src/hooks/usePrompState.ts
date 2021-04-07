@@ -1,7 +1,10 @@
 import { useReducer } from 'react';
+import fileDirectory, { Contents } from '../shared/fileDirectory';
+import getDirectoryContents from '../utils/getDirectoryContents';
 
 export const ADD_COMMAND = 'addCommand';
 export const CLEAR = 'clear';
+export const CHANGE_DIRECTORY = 'changeDirectory';
 export const DECREMENT_HISTORY = 'decrementHistory';
 export const INCREMENT_HISTORY = 'incrementHistory';
 export const KEY_DOWN = 'keyDown';
@@ -20,10 +23,16 @@ interface PrompState {
   commands: Command[];
   keysCurrentlyPressed: string[];
   currentCommand: string;
+  cwd: string;
+  cwdContents: Contents;
 }
 export type Action =
   | { type: typeof ADD_COMMAND; payload: { command: Command } }
   | { type: typeof CLEAR }
+  | {
+      type: typeof CHANGE_DIRECTORY;
+      payload: { path: string };
+    }
   | { type: typeof DECREMENT_HISTORY }
   | { type: typeof INCREMENT_HISTORY }
   | { type: typeof KEY_DOWN; payload: { key: string } }
@@ -44,7 +53,37 @@ const reducer = (state: PrompState, action: Action) => {
         index: newIndex,
         historyIndex: newIndex,
         commands: [...state.commands, action.payload.command],
-        currentCommand: ''
+        currentCommand: '',
+      };
+    case CHANGE_DIRECTORY:
+      let newCwd = state.cwd;
+      let newCwdContents = state.cwdContents;
+      const {
+        payload: { path },
+      } = action;
+      const pathParts = state.cwd.split('/');
+
+      switch (path) {
+        case '..':
+          if (state.cwd !== '/') {
+            newCwd = pathParts.slice(0, pathParts.length - 1).join('/') || '/';
+            newCwdContents = getDirectoryContents(
+              newCwd === '/' ? [] : newCwd.split('/')
+            );
+          }
+          break;
+        default:
+          for (const [key, value] of Object.entries(state.cwdContents)) {
+            if (key === path) {
+              newCwdContents = value.contents;
+              newCwd = `${state.cwd === '/' ? '' : state.cwd}/${path}`;
+            }
+          }
+      }
+      return {
+        ...state,
+        cwd: newCwd,
+        cwdContents: newCwdContents,
       };
     case DECREMENT_HISTORY:
       return {
@@ -89,6 +128,7 @@ const reducer = (state: PrompState, action: Action) => {
       };
     case CLEAR:
       return {
+        ...state,
         index: 0,
         historyIndex: 0,
         commands: [],
@@ -107,6 +147,8 @@ const usePromptState = () => {
     commands: [],
     keysCurrentlyPressed: [],
     currentCommand: '',
+    cwd: '/',
+    cwdContents: fileDirectory['/'].contents,
   });
 };
 

@@ -47,6 +47,7 @@ const AboutThisMac: ForwardRefRenderFunction<
   const handleCloseClick = () => {
     dispatch({ type: 'removeWindow', payload: { name: 'aboutThisMac' } });
   };
+  const handleMaximizeClick = () => {};
 
   return (
     <Window
@@ -61,6 +62,7 @@ const AboutThisMac: ForwardRefRenderFunction<
         <ActionBar
           handleMinimizeClick={handleMinimizeClick}
           handleCloseClick={handleCloseClick}
+          handleMaximizeClick={handleMaximizeClick}
         />
         <Content>
           <Circle>
@@ -72,8 +74,8 @@ const AboutThisMac: ForwardRefRenderFunction<
             </Name>
             <Version>Version 420.69</Version>
             <P>MacBooks Are Awful (32-inch, 2087)</P>
-            <P>Processor  A very good one</P>
-            <P>Memory  A good amount of it</P>
+            <P>Processor A very good one</P>
+            <P>Memory A good amount of it</P>
           </Text>
         </Content>
       </Wrapper>

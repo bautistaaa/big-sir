@@ -27,7 +27,7 @@ const App: FC = () => {
 
   return (
     <Wrapper>
-      <TopBar ref={aboutThisMacRef} />
+      <TopBar atmRef={aboutThisMacRef} />
       {isTerminalActive && (
         <Terminal ref={terminalRef} minimizedTargetRect={minimizedTargetRect} />
       )}

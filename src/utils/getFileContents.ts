@@ -1,12 +1,15 @@
-import fileDirectory, { Contents } from '../shared/fileDirectory';
+import fileDirectory from '../shared/fileDirectory';
 
-const getFileContents = (cwd: string, file: string): Contents | undefined => {
-  const root = fileDirectory[cwd];
+const getFileContents = (file: string): string => {
+  const root = fileDirectory['/'];
   if (typeof root.contents !== 'string') {
-    return root?.contents[file]?.contents;
+    const f = root?.contents[file];
+    if (f.fileType === 'file') {
+      return root?.contents[file]?.contents as string;
+    }
   }
 
-  return;
+  return '';
 };
 
 export default getFileContents;

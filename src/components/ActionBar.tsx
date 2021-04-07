@@ -5,13 +5,19 @@ import { RED, YELLOW, GREEN } from '../shared/constants';
 const ActionBar: FC<{
   handleCloseClick: () => void;
   handleMinimizeClick: () => void;
-  className?: string
-}> = ({ handleCloseClick, handleMinimizeClick, className }) => {
+  handleMaximizeClick: () => void;
+  className?: string;
+}> = ({
+  handleCloseClick,
+  handleMinimizeClick,
+  handleMaximizeClick,
+  className,
+}) => {
   return (
     <Wrapper className={`${className} action-bar`}>
       <CloseButton onClick={() => handleCloseClick()} />
       <MinimizeButton onClick={() => handleMinimizeClick()} />
-      <FullScreenButton />
+      <FullScreenButton onClick={() => handleMaximizeClick()} />
     </Wrapper>
   );
 };

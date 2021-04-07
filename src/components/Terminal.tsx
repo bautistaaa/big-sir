@@ -25,6 +25,7 @@ const Terminal: ForwardRefRenderFunction<
   const { state, dispatch } = useAppContext();
   const [view, setView] = useState<View>('terminal');
   const [fileContent, setFileContent] = useState('');
+  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
   const terminalState = state.activeWindows.find(
     (aw) => aw.name === 'terminal'
   );
@@ -58,11 +59,19 @@ const Terminal: ForwardRefRenderFunction<
   const handleCloseClick = () => {
     dispatch({ type: 'removeWindow', payload: { name: 'terminal' } });
   };
+  const handleMaximizeClick = () => {
+    if (window) {
+      setDimensions({
+        height: window.innerHeight,
+        width: window.innerWidth,
+      });
+    }
+  };
 
   return (
     <Window
-      height={400}
-      width={800}
+      height={dimensions.height}
+      width={dimensions.width}
       minimizedTargetRect={minimizedTargetRect}
       isWindowMinimized={isMinimized}
       zIndex={terminalState?.zIndex}
@@ -71,6 +80,7 @@ const Terminal: ForwardRefRenderFunction<
         <ActionBar
           handleMinimizeClick={handleMinimizeClick}
           handleCloseClick={handleCloseClick}
+          handleMaximizeClick={handleMaximizeClick}
         />
         <Console ref={consoleRef}>
           {view === 'terminal' && (

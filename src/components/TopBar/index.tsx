@@ -6,13 +6,13 @@ import CommandPanel from './CommandPanel';
 import Clock from './Clock';
 import { useAppContext } from '../../AppContext';
 
-const TopBar: FC<{ ref: any }> = ({ ref }) => {
+const TopBar: FC<{ atmRef: any }> = ({ atmRef }) => {
   const { dispatch } = useAppContext();
 
   const handleAboutThisMacClick = () => {
     dispatch({
       type: 'focusWindow',
-      payload: { name: 'aboutThisMac', ref: ref as any },
+      payload: { name: 'aboutThisMac', ref: atmRef as any },
     });
   };
   return (

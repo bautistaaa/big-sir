@@ -1,10 +1,8 @@
 import React, { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import commandsList from '../shared/commands';
 import usePromptState, { Command } from '../hooks/usePrompState';
 import { View } from './Terminal';
 import autocomplete from '../utils/autocomplete';
-import getFileContents from '../utils/getFileContents';
 
 const Prompt: FC<{
   isTerminalFocused: boolean;
@@ -77,14 +75,14 @@ const Prompt: FC<{
         const { key } = e;
         let output = '';
         const currentCommand = commandRef.current ?? '';
-        const [cmd, file, ...args] = currentCommand.split(' ');
+        const [cmd, ...args] = currentCommand.split(' ');
 
         dispatch({ type: 'keyDown', payload: { key } });
 
         if (key === 'Tab') {
           e.preventDefault();
-          if (cmd === 'ls' || cmd === 'cat') {
-            const results = autocomplete('/', file); // searchForOptions(file);
+          if (cmd === 'ls' || cmd === 'cat' || cmd === 'cd') {
+            const results = autocomplete(stateRef.current.cwdContents, args[0]);
             if (results.length > 1) {
               const output = results.join(' ');
               const command: Command = {
@@ -105,7 +103,7 @@ const Prompt: FC<{
               }
             }
           } else if (cmd === 'nvim') {
-            const results = autocomplete('/', file);
+            const results = autocomplete(stateRef.current.cwdContents, args[0]);
             if (results[0]) {
               const newCommand = `${cmd} ${results[0]}`;
               dispatch({
@@ -143,13 +141,14 @@ const Prompt: FC<{
             textAreaRef.current.value = '';
           }
 
-          if (commandsList[currentCommand!]) {
-            const co = commandsList[currentCommand ?? ''];
-            output = co();
-          } else if (cmd === 'cat') {
-            output = getFileContents('/', file);
+          if (cmd === 'cat') {
+            if (typeof stateRef.current.cwdContents !== 'string') {
+              output = stateRef.current.cwdContents[args[0]].contents as string;
+            }
           } else if (cmd === 'nvim') {
-            output = getFileContents('/', file);
+            if (typeof stateRef.current.cwdContents !== 'string') {
+              output = stateRef.current.cwdContents[args[0]].contents as string;
+            }
             if (output) {
               setView('nvim');
               setFileContent(output);
@@ -165,6 +164,16 @@ const Prompt: FC<{
               dispatch({ type: 'addCommand', payload: { command } });
               return;
             }
+          } else if (cmd === 'cd') {
+            const path = args[0];
+            dispatch({
+              type: 'changeDirectory',
+              payload: { path },
+            });
+          } else if (cmd === 'ls') {
+            output = Object.values(stateRef.current.cwdContents)
+              .map((x) => x.display)
+              .join(' ');
           }
           const command: Command = {
             input: commandRef.current!,
@@ -226,7 +235,7 @@ const Prompt: FC<{
         return (
           <React.Fragment key={i}>
             <Line>
-              <User>[root ~]$&nbsp;</User>
+              <User>[{state.cwd}]$&nbsp;</User>
               <Input>{line.input}</Input>
             </Line>
             {output && <pre style={{ color: 'white' }}>{output}</pre>}
@@ -234,7 +243,7 @@ const Prompt: FC<{
         );
       })}
       <Line>
-        <User>[root ~]$&nbsp;</User>
+        <User>[{state.cwd}]$&nbsp;</User>
         <Input>{currentCommand}</Input>
         {isTerminalFocused && <Cursor />}
       </Line>

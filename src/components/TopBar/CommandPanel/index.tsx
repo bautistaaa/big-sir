@@ -44,7 +44,7 @@ const CommandPanel: FC = () => {
                 <ButtonList>
                   {buttonListItems.map((bli) => {
                     return (
-                      <ButtonListItem>
+                      <ButtonListItem key={bli.type}>
                         <ButtonItem {...bli} />
                       </ButtonListItem>
                     );

@@ -34,6 +34,7 @@ const Window: FC<{
   const [overrideStyle, setOverrideStyle] = useState<
     CSSProperties | undefined
   >();
+  const [test, setTest] = useState<CSSProperties | undefined>();
 
   useEffect(() => {
     if (isWindowMinimized) {
@@ -53,6 +54,12 @@ const Window: FC<{
       }
     }
   }, [isWindowMinimized]);
+  useEffect(() => {
+    setTest({
+      height: `${height}px`,
+      width: `${width}px`,
+    });
+  }, [height, width]);
 
   useEffect(() => {
     if (!isWindowMinimized) {
@@ -93,6 +100,7 @@ const Window: FC<{
         cursor: 'auto !important',
         position: 'fixed',
         ...overrideStyle,
+        ...test,
         zIndex,
       }}
       dragHandleClassName="action-bar"

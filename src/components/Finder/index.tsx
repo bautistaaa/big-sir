@@ -119,7 +119,7 @@ const Finder: ForwardRefRenderFunction<
                   }}
                   isActive={isIconView}
                 >
-                  <Icons fill={isIconView ? 'rgb(64,64,64)' : 'white'} />
+                  <Icons />
                 </LeftButton>
                 <MiddleButton
                   onClick={() => {
@@ -187,7 +187,6 @@ const RightSide = styled.div`
 `;
 const UtilityBar = styled.div`
   height: 100%;
-  padding-left: 10px;
 `;
 const Items = styled.div`
   padding-left: 10px;
@@ -295,9 +294,11 @@ const ActionBar = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   height: 100%;
   width: 100%;
+  background: rgb(41, 35, 38);
+  border-top-right-radius: 12px;
 `;
 const BaseUtilButton = styled.button<{ isActive: boolean }>`
   display: flex;
@@ -308,23 +309,18 @@ const BaseUtilButton = styled.button<{ isActive: boolean }>`
   outline: none;
   width: 30px;
   height: 22px;
-  background: rgb(107, 107, 107);
+  background: rgb(41, 35, 38);
   margin-right: 1px;
   z-index: 120;
+  border-radius: 5px;
   ${({ isActive }) =>
     isActive &&
     `
-    background: rgb(204, 204, 204);
+    background: rgb(54, 54, 54);
     `}
 `;
-const LeftButton = styled(BaseUtilButton)`
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-`;
+const LeftButton = styled(BaseUtilButton)``;
 const MiddleButton = styled(BaseUtilButton)``;
-const RightButton = styled(BaseUtilButton)`
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-`;
+const RightButton = styled(BaseUtilButton)``;
 
 export default forwardRef(Finder);

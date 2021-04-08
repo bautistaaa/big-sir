@@ -9,6 +9,7 @@ const getDirectoryContents = (path: string[]) => {
       root = root?.[current]?.contents;
     }
   }
+  console.log(root);
 
   return root;
 };

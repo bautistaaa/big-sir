@@ -1,17 +1,26 @@
 import { FC } from 'react';
 
-const Details: FC<{ stroke: string }> = ({ stroke }) => {
+const Details: FC<{ stroke: string }> = () => {
   return (
     <svg
-      width="29"
-      height="18"
-      viewBox="0 0 29 18"
+      width="31"
+      height="28"
+      viewBox="0 0 31 28"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect x="0.5" y="0.5" width="28" height="17" stroke={stroke} />
-      <line x1="9.5" x2="9.5" y2="18" stroke={stroke} />
-      <line x1="19.5" x2="19.5" y2="18" stroke={stroke} />
+      <rect
+        x="1.97348"
+        y="2.05299"
+        width="27"
+        height="24"
+        rx="3"
+        transform="rotate(-0.21561 1.97348 2.05299)"
+        stroke="white"
+        stroke-width="2"
+      />
+      <path d="M11.0675 2.5L11.0675 25" stroke="white" stroke-width="2" />
+      <path d="M20.0674 2.5L20.0674 25" stroke="white" stroke-width="2" />
     </svg>
   );
 };

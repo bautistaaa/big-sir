@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import usePromptState, { Command } from '../hooks/usePrompState';
+import usePromptState, { Command } from '../hooks/usePromptState';
 import { View } from './Terminal';
 import autocomplete from '../utils/autocomplete';
 
@@ -62,6 +62,7 @@ const Prompt: FC<{
         input: currentCommand,
         type: 'fake',
         output: '',
+        cwd: stateRef.current.cwd,
       };
 
       clearRefs();
@@ -89,6 +90,7 @@ const Prompt: FC<{
                 input: commandRef.current!,
                 type: 'real',
                 output,
+                cwd: stateRef.current.cwd,
               };
               dispatch({ type: 'addCommand', payload: { command } });
               clearRefs();
@@ -100,6 +102,9 @@ const Prompt: FC<{
                   payload: { command: newCommand },
                 });
                 commandRef.current = newCommand;
+                if (textAreaRef.current) {
+                  textAreaRef.current.value = newCommand;
+                }
               }
             }
           } else if (cmd === 'nvim') {
@@ -157,6 +162,7 @@ const Prompt: FC<{
                 input: currentCommand,
                 type: 'fake',
                 output: 'File not found.',
+                cwd: stateRef.current.cwd,
               };
 
               textAreaRef.current!.value = '';
@@ -179,6 +185,7 @@ const Prompt: FC<{
             input: commandRef.current!,
             type: 'real',
             output,
+            cwd: stateRef.current.cwd,
           };
           dispatch({ type: 'addCommand', payload: { command } });
           commandRef.current = '';
@@ -231,11 +238,11 @@ const Prompt: FC<{
         }}
       />
       {state.commands.map((line, i) => {
-        const { output } = line;
+        const { output, cwd } = line;
         return (
           <React.Fragment key={i}>
             <Line>
-              <User>[{state.cwd}]$&nbsp;</User>
+              <User>[{cwd}]$&nbsp;</User>
               <Input>{line.input}</Input>
             </Line>
             {output && <pre style={{ color: 'white' }}>{output}</pre>}

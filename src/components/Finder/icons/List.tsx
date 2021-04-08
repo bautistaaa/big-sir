@@ -1,18 +1,77 @@
 import { FC } from 'react';
 
-const List: FC<{ stroke: string }> = ({ stroke = '#848484' }) => {
+const List: FC<{ stroke: string }> = () => {
   return (
-    <svg
-      width="17"
-      height="10"
-      viewBox="0 0 17 10"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <line y1="0.5" x2="17" y2="0.5" stroke={stroke} />
-      <line y1="9.5" x2="17" y2="9.5" stroke={stroke} />
-      <line y1="6.5" x2="17" y2="6.5" stroke={stroke} />
-      <line y1="3.5" x2="17" y2="3.5" stroke={stroke} />
+    <svg width="15px" height="15px" viewBox="0 0 22 22">
+      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-528.000000, -547.000000)" fill="#D8D8D8">
+          <g id="Group-2" transform="translate(528.000000, 547.000000)">
+            <rect
+              id="Rectangle"
+              fill="#d1d1d1"
+              x="0"
+              y="0"
+              width="4"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy"
+              fill="#d1d1d1"
+              x="6"
+              y="0"
+              width="16"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy-8"
+              fill="#d1d1d1"
+              x="6"
+              y="6"
+              width="16"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy-9"
+              fill="#d1d1d1"
+              x="6"
+              y="12"
+              width="16"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy-10"
+              fill="#d1d1d1"
+              x="6"
+              y="18"
+              width="16"
+              height="4"
+            ></rect>
+            <rect
+              fill="#d1d1d1"
+              id="Rectangle-Copy-4"
+              x="0"
+              y="6"
+              width="4"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy-5"
+              x="0"
+              y="12"
+              width="4"
+              height="4"
+            ></rect>
+            <rect
+              id="Rectangle-Copy-6"
+              x="0"
+              y="18"
+              fill="#d1d1d1"
+              width="4"
+              height="4"
+            ></rect>
+          </g>
+        </g>
+      </g>
     </svg>
   );
 };

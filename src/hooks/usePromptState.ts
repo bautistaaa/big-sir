@@ -16,8 +16,9 @@ export interface Command {
   input: string;
   type: CommandType;
   output: string;
+  cwd: string;
 }
-interface PrompState {
+interface PromptState {
   index: number;
   historyIndex: number;
   commands: Command[];
@@ -43,7 +44,7 @@ const filterDuplicates = (arr: string[], key: string) => {
   return arr.filter((k) => k !== key);
 };
 
-const reducer = (state: PrompState, action: Action) => {
+const reducer = (state: PromptState, action: Action) => {
   switch (action.type) {
     case ADD_COMMAND:
       const newIndex =
@@ -61,11 +62,11 @@ const reducer = (state: PrompState, action: Action) => {
       const {
         payload: { path },
       } = action;
-      const pathParts = state.cwd.split('/');
 
       switch (path) {
         case '..':
           if (state.cwd !== '/') {
+            const pathParts = state.cwd.split('/').filter(Boolean);
             newCwd = pathParts.slice(0, pathParts.length - 1).join('/') || '/';
             newCwdContents = getDirectoryContents(
               newCwd === '/' ? [] : newCwd.split('/')
@@ -73,11 +74,17 @@ const reducer = (state: PrompState, action: Action) => {
           }
           break;
         default:
-          for (const [key, value] of Object.entries(state.cwdContents)) {
-            if (key === path) {
-              newCwdContents = value.contents;
-              newCwd = `${state.cwd === '/' ? '' : state.cwd}/${path}`;
+          const parts = path.split('/').filter(Boolean);
+          if (parts.length === 1) {
+            for (const [key, value] of Object.entries(state.cwdContents)) {
+              if (key === path) {
+                newCwdContents = value.contents;
+                newCwd = `${state.cwd === '/' ? '' : state.cwd}/${path}`;
+              }
             }
+          } else {
+            newCwdContents = getDirectoryContents(parts);
+            newCwd = parts.join('/');
           }
       }
       return {

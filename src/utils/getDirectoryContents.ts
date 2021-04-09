@@ -1,7 +1,8 @@
-import fileDirectory from '../shared/fileDirectory';
+import fileDirectory, { Contents } from '../shared/fileDirectory';
 
-const getDirectoryContents = (path: string[]) => {
+const getDirectoryContents = (path: string[]): Contents => {
   let root = fileDirectory['/']?.contents;
+
   for (let i = 0; i < path.length; i++) {
     const current = path[i] || '/';
     if (typeof root !== 'string') {
@@ -9,7 +10,6 @@ const getDirectoryContents = (path: string[]) => {
       root = root?.[current]?.contents;
     }
   }
-  console.log(root);
 
   return root;
 };

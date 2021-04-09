@@ -83,7 +83,7 @@ const Prompt: FC<{
         if (key === 'Tab') {
           e.preventDefault();
           if (cmd === 'ls' || cmd === 'cat' || cmd === 'cd') {
-            const results = autocomplete(stateRef.current.cwdContents, args[0]);
+            const results = autocomplete(args[0], stateRef.current.cwdContents);
             if (results.length > 1) {
               const output = results.join(' ');
               const command: Command = {
@@ -96,7 +96,12 @@ const Prompt: FC<{
               clearRefs();
             } else {
               if (results[0]) {
-                const newCommand = `${cmd} ${results[0]}`;
+                const term = args[0].split('/');
+                const parts = term[term.length - 2];
+                const path = [parts, results[0]].filter(Boolean);
+                const newCommand = `${cmd} ${
+                  path.length > 1 ? path.join('/') : path
+                }`;
                 dispatch({
                   type: 'setCurrentCommand',
                   payload: { command: newCommand },
@@ -108,7 +113,7 @@ const Prompt: FC<{
               }
             }
           } else if (cmd === 'nvim') {
-            const results = autocomplete(stateRef.current.cwdContents, args[0]);
+            const results = autocomplete(args[0], stateRef.current.cwdContents);
             if (results[0]) {
               const newCommand = `${cmd} ${results[0]}`;
               dispatch({
@@ -172,6 +177,7 @@ const Prompt: FC<{
             }
           } else if (cmd === 'cd') {
             const path = args[0];
+            // todo: validate if its a directory
             dispatch({
               type: 'changeDirectory',
               payload: { path },

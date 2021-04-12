@@ -64,6 +64,10 @@ const reducer = (state: PromptState, action: Action) => {
       } = action;
 
       switch (path) {
+        case '/':
+          newCwd = '/';
+          newCwdContents = getDirectoryContents([]);
+          break;
         case '..':
           if (state.cwd !== '/') {
             const pathParts = state.cwd.split('/').filter(Boolean);

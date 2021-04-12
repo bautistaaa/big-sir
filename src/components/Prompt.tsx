@@ -14,7 +14,6 @@ const Prompt: FC<{
   const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
-  console.log(state);
 
   useEffect(() => {
     stateRef.current = state;
@@ -72,6 +71,18 @@ const Prompt: FC<{
   }, [keysCurrentlyPressed]);
 
   useEffect(() => {
+    const displayFileNotFound = (currentCommand: string, cwd: string) => {
+      const command: Command = {
+        input: currentCommand,
+        type: 'fake',
+        output: 'File not found.',
+        cwd,
+      };
+
+      textAreaRef.current!.value = '';
+      commandRef.current = '';
+      dispatch({ type: 'addCommand', payload: { command } });
+    };
     if (isTerminalFocused) {
       const handleKeyDown = (e: KeyboardEvent) => {
         const { key } = e;
@@ -154,26 +165,25 @@ const Prompt: FC<{
 
           if (cmd === 'cat') {
             if (typeof stateRef.current.cwdContents !== 'string') {
-              output = stateRef.current.cwdContents[args[0]].contents as string;
+              output = stateRef.current.cwdContents?.[args[0]]
+                ?.contents as string;
+              if (!output) {
+                displayFileNotFound(currentCommand, stateRef.current.cwd);
+                return;
+              }
             }
+          } else if (cmd === 'pwd') {
+            output = `/${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
             if (typeof stateRef.current.cwdContents !== 'string') {
-              output = stateRef.current.cwdContents[args[0]].contents as string;
+              output = stateRef.current.cwdContents?.[args[0]]
+                ?.contents as string;
             }
             if (output) {
               setView('nvim');
               setFileContent(output);
             } else {
-              const command: Command = {
-                input: currentCommand,
-                type: 'fake',
-                output: 'File not found.',
-                cwd: stateRef.current.cwd,
-              };
-
-              textAreaRef.current!.value = '';
-              commandRef.current = '';
-              dispatch({ type: 'addCommand', payload: { command } });
+              displayFileNotFound(currentCommand, stateRef.current.cwd);
               return;
             }
           } else if (cmd === 'cd') {

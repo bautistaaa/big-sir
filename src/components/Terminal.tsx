@@ -14,6 +14,7 @@ import ActionBar from '../components/ActionBar';
 import { RectResult } from '../hooks/useRect';
 import { useAppContext } from '../AppContext';
 import useIsFocused from '../hooks/useIsFocused';
+import usePromptState from '../hooks/usePromptState';
 
 export type View = 'terminal' | 'nvim';
 const Terminal: ForwardRefRenderFunction<
@@ -22,6 +23,7 @@ const Terminal: ForwardRefRenderFunction<
     minimizedTargetRect: RectResult;
   }
 > = ({ minimizedTargetRect }, ref) => {
+  const prompState = usePromptState();
   const { state, dispatch } = useAppContext();
   const [view, setView] = useState<View>('terminal');
   const [fileContent, setFileContent] = useState('');
@@ -93,21 +95,24 @@ const Terminal: ForwardRefRenderFunction<
           handleMaximizeClick={handleMaximizeClick}
         />
         <Console ref={consoleRef}>
-          <div
-            style={{
-              height: '100%',
-              width: '100%',
-              padding: '3px',
-              visibility: view === 'terminal' ? 'visible' : 'hidden',
-            }}
-          >
-            <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
-            <Prompt
-              isTerminalFocused={isTerminalFocused}
-              setView={setView}
-              setFileContent={setFileContent}
-            ></Prompt>
-          </div>
+          {view === 'terminal' && (
+            <div
+              style={{
+                height: '100%',
+                width: '100%',
+                padding: '3px',
+                // visibility: view === 'terminal' ? 'visible' : 'hidden',
+              }}
+            >
+              <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
+              <Prompt
+                isTerminalFocused={isTerminalFocused}
+                setView={setView}
+                setFileContent={setFileContent}
+                promptState={prompState}
+              ></Prompt>
+            </div>
+          )}
           {view === 'nvim' && (
             <>
               <Neovim

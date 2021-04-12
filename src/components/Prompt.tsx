@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import usePromptState, { Command } from '../hooks/usePromptState';
+import { Action, Command, PromptState } from '../hooks/usePromptState';
 import { View } from './Terminal';
 import autocomplete from '../utils/autocomplete';
 
@@ -8,8 +8,9 @@ const Prompt: FC<{
   isTerminalFocused: boolean;
   setView: React.Dispatch<React.SetStateAction<View>>;
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ isTerminalFocused, setView, setFileContent }) => {
-  const [state, dispatch] = usePromptState();
+  promptState: [PromptState, React.Dispatch<Action>]
+}> = ({ isTerminalFocused, setView, setFileContent, promptState }) => {
+  const [state, dispatch] = promptState;
   const { currentCommand, keysCurrentlyPressed } = state;
   const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);

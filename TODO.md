@@ -3,6 +3,7 @@ www.big-sir.com
 =============================
 TODO
 =============================
+- fix auto complete for cat/nvim
 - fix cd command for files
 - enable ../../ navigation
 - tie filesystem to finder
@@ -27,7 +28,9 @@ DONE
 - fix typo in usePromptState(file name is wrong) ** DONE**
 - fix finder styles, create svgs in Figma ** DONE **
 - autocomplete needs to actually update the ref ** DONE **
+
 - when you enter vim it takes you back to the root directory ** DONE **
 - / should take you to root ** DONE **
 - pwd command ** DONE **
 - show file not found for vim/cat/anything ** DONE ** REFACTOR CODE LATER
+- strip `/` from path parts ** DONE **

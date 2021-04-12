@@ -18,7 +18,7 @@ export interface Command {
   output: string;
   cwd: string;
 }
-interface PromptState {
+export interface PromptState {
   index: number;
   historyIndex: number;
   commands: Command[];
@@ -78,13 +78,13 @@ const reducer = (state: PromptState, action: Action) => {
           }
           break;
         default:
-          const parts = path.split('/');
-          console.log(parts);
+          const strippedPath = path.replace(/\/$/, '');
+          const parts = strippedPath.split('/');
           if (parts.length === 1) {
             for (const [key, value] of Object.entries(state.cwdContents)) {
-              if (key === path) {
+              if (key === strippedPath) {
                 newCwdContents = value.contents;
-                newCwd = `${state.cwd === '/' ? '' : state.cwd}/${path}`;
+                newCwd = `${state.cwd === '/' ? '' : state.cwd}/${strippedPath}`;
               }
             }
           } else {

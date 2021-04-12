@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import { Action, Command, PromptState } from '../hooks/usePromptState';
 import { View } from './Terminal';
 import autocomplete from '../utils/autocomplete';
+import { getFileContents } from '../utils';
 
 const Prompt: FC<{
   isTerminalFocused: boolean;
@@ -95,7 +96,7 @@ const Prompt: FC<{
 
         if (key === 'Tab') {
           e.preventDefault();
-          if (cmd === 'ls' || cmd === 'cat' || cmd === 'cd') {
+          if (cmd === 'ls' || cmd === 'cat' || cmd === 'cd' || cmd === 'nvim') {
             const results = autocomplete(args[0], stateRef.current.cwdContents);
             if (results.length > 1) {
               const output = results.join(' ');
@@ -124,16 +125,6 @@ const Prompt: FC<{
                   textAreaRef.current.value = newCommand;
                 }
               }
-            }
-          } else if (cmd === 'nvim') {
-            const results = autocomplete(args[0], stateRef.current.cwdContents);
-            if (results[0]) {
-              const newCommand = `${cmd} ${results[0]}`;
-              dispatch({
-                type: 'setCurrentCommand',
-                payload: { command: newCommand },
-              });
-              commandRef.current = newCommand;
             }
           }
         } else if (key === 'ArrowDown') {
@@ -166,8 +157,11 @@ const Prompt: FC<{
 
           if (cmd === 'cat') {
             if (typeof stateRef.current.cwdContents !== 'string') {
-              output = stateRef.current.cwdContents?.[args[0]]
-                ?.contents as string;
+              const term = args[0].split('/');
+              const parts = term.slice(0, term.length - 1);
+              const last = term.slice(-1)[0];
+              output = getFileContents(parts, last) as string;
+
               if (!output) {
                 displayFileNotFound(currentCommand, stateRef.current.cwd);
                 return;
@@ -176,10 +170,11 @@ const Prompt: FC<{
           } else if (cmd === 'pwd') {
             output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
-            if (typeof stateRef.current.cwdContents !== 'string') {
-              output = stateRef.current.cwdContents?.[args[0]]
-                ?.contents as string;
-            }
+            const term = args[0].split('/');
+            const parts = term.slice(0, term.length - 1);
+            const last = term.slice(-1)[0];
+            output = getFileContents(parts, last) as string;
+
             if (output) {
               setView('nvim');
               setFileContent(output);

@@ -3,7 +3,6 @@ www.big-sir.com
 =============================
 TODO
 =============================
-- fix auto complete for cat/nvim
 - fix cd command for files
 - enable ../../ navigation
 - tie filesystem to finder
@@ -34,3 +33,4 @@ DONE
 - pwd command ** DONE **
 - show file not found for vim/cat/anything ** DONE ** REFACTOR CODE LATER
 - strip `/` from path parts ** DONE **
+- fix auto complete for cat/nvim ** DONE **

@@ -3,7 +3,7 @@ import { FC } from 'react';
 const List: FC<{ stroke: string }> = () => {
   return (
     <svg width="15px" height="15px" viewBox="0 0 22 22">
-      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g stroke="none" stroke-width="1" fill="none" fillRule="evenodd">
         <g transform="translate(-528.000000, -547.000000)" fill="#D8D8D8">
           <g id="Group-2" transform="translate(528.000000, 547.000000)">
             <rect

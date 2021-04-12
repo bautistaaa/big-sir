@@ -8,7 +8,7 @@ const Prompt: FC<{
   isTerminalFocused: boolean;
   setView: React.Dispatch<React.SetStateAction<View>>;
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
-  promptState: [PromptState, React.Dispatch<Action>]
+  promptState: [PromptState, React.Dispatch<Action>];
 }> = ({ isTerminalFocused, setView, setFileContent, promptState }) => {
   const [state, dispatch] = promptState;
   const { currentCommand, keysCurrentlyPressed } = state;
@@ -174,7 +174,7 @@ const Prompt: FC<{
               }
             }
           } else if (cmd === 'pwd') {
-            output = `/${stateRef.current.cwd}`;
+            output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
             if (typeof stateRef.current.cwdContents !== 'string') {
               output = stateRef.current.cwdContents?.[args[0]]

@@ -18,7 +18,7 @@ const autocomplete = (
   path: string,
   currentDirectoryContents: Contents
 ): string[] => {
-  const parts = path.split('/').filter(Boolean);
+  const parts = path.split('/');
   const pathToGrep = parts.slice(0, parts.length - 1);
 
   const contents = getDirectoryContents(pathToGrep, currentDirectoryContents);
@@ -33,7 +33,7 @@ const autocomplete = (
     return options;
   }
 
-  return []
+  return [];
 };
 
 export default autocomplete;

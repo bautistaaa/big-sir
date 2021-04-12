@@ -84,7 +84,9 @@ const reducer = (state: PromptState, action: Action) => {
             for (const [key, value] of Object.entries(state.cwdContents)) {
               if (key === strippedPath) {
                 newCwdContents = value.contents;
-                newCwd = `${state.cwd === '/' ? '' : state.cwd}/${strippedPath}`;
+                newCwd = `${
+                  state.cwd === '/' ? '' : state.cwd
+                }/${strippedPath}`;
               }
             }
           } else {

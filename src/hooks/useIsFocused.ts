@@ -20,7 +20,7 @@ function useIsFocused(ref: MutableRefObject<HTMLDivElement | null>) {
     };
   }, [ref]);
 
-  return isFocused;
+  return { isFocused, setIsFocused };
 }
 
 export default useIsFocused;

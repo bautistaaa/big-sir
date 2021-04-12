@@ -21,7 +21,7 @@ const AboutThisMac: ForwardRefRenderFunction<
     (mw) => mw.name === 'aboutThisMac'
   );
   const consoleRef = useRef<HTMLDivElement | null>(null);
-  const isAboutThisMacFocused = useIsFocused(ref as any);
+  const { isFocused: isAboutThisMacFocused } = useIsFocused(ref as any);
 
   useEffect(() => {
     if (isAboutThisMacFocused) {

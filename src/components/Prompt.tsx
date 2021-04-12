@@ -14,6 +14,7 @@ const Prompt: FC<{
   const stateRef = useRef(state);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
+  console.log(state);
 
   useEffect(() => {
     stateRef.current = state;
@@ -97,8 +98,8 @@ const Prompt: FC<{
             } else {
               if (results[0]) {
                 const term = args[0].split('/');
-                const parts = term[term.length - 2];
-                const path = [parts, results[0]].filter(Boolean);
+                const parts = term.slice(0, term.length - 1);
+                const path = [...parts, results[0]].filter(Boolean);
                 const newCommand = `${cmd} ${
                   path.length > 1 ? path.join('/') : path
                 }`;
@@ -177,7 +178,9 @@ const Prompt: FC<{
             }
           } else if (cmd === 'cd') {
             const path = args[0];
-            // todo: validate if its a directory
+            // try catch change directories
+            // if caught means directory doesnt exist and add appropriate command
+            // and output and return
             dispatch({
               type: 'changeDirectory',
               payload: { path },

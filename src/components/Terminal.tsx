@@ -33,7 +33,9 @@ const Terminal: ForwardRefRenderFunction<
     (mw) => mw.name === 'terminal'
   );
   const consoleRef = useRef<HTMLDivElement | null>(null);
-  const isTerminalFocused = useIsFocused(ref as any);
+  const { isFocused: isTerminalFocused, setIsFocused } = useIsFocused(
+    ref as any
+  );
 
   useEffect(() => {
     if (isTerminalFocused) {
@@ -43,6 +45,14 @@ const Terminal: ForwardRefRenderFunction<
       });
     }
   }, [isTerminalFocused]);
+
+  useEffect(() => {
+    if (view === 'terminal') {
+      setIsFocused(true);
+    } else {
+      setIsFocused(false);
+    }
+  }, [view]);
 
   const callback = () => {
     if (consoleRef.current) {
@@ -83,22 +93,21 @@ const Terminal: ForwardRefRenderFunction<
           handleMaximizeClick={handleMaximizeClick}
         />
         <Console ref={consoleRef}>
-          {view === 'terminal' && (
-            <div
-              style={{
-                height: '100%',
-                width: '100%',
-                padding: '3px',
-              }}
-            >
-              <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
-              <Prompt
-                isTerminalFocused={isTerminalFocused}
-                setView={setView}
-                setFileContent={setFileContent}
-              ></Prompt>
-            </div>
-          )}
+          <div
+            style={{
+              height: '100%',
+              width: '100%',
+              padding: '3px',
+              visibility: view === 'terminal' ? 'visible' : 'hidden',
+            }}
+          >
+            <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
+            <Prompt
+              isTerminalFocused={isTerminalFocused}
+              setView={setView}
+              setFileContent={setFileContent}
+            ></Prompt>
+          </div>
           {view === 'nvim' && (
             <>
               <Neovim

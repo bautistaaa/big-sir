@@ -74,7 +74,8 @@ const reducer = (state: PromptState, action: Action) => {
           }
           break;
         default:
-          const parts = path.split('/').filter(Boolean);
+          const parts = path.split('/');
+          console.log(parts);
           if (parts.length === 1) {
             for (const [key, value] of Object.entries(state.cwdContents)) {
               if (key === path) {
@@ -83,9 +84,15 @@ const reducer = (state: PromptState, action: Action) => {
               }
             }
           } else {
-            newCwdContents = getDirectoryContents(parts);
+            newCwdContents = getDirectoryContents(parts, state.cwdContents);
             newCwd = parts.join('/');
           }
+      }
+
+      if (typeof newCwdContents === 'string') {
+        return {
+          ...state,
+        };
       }
       return {
         ...state,

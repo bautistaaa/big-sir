@@ -1,7 +1,10 @@
 import fileDirectory, { Contents } from '../shared/fileDirectory';
 
-const getDirectoryContents = (path: string[]): Contents => {
-  let root = fileDirectory['/']?.contents;
+const getDirectoryContents = (
+  path: string[],
+  cwdContents?: Contents
+): Contents => {
+  let root = cwdContents ?? fileDirectory['/']?.contents;
 
   for (let i = 0; i < path.length; i++) {
     const current = path[i] || '/';

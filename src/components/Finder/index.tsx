@@ -75,7 +75,7 @@ const Finder: ForwardRefRenderFunction<
   const isDetailView = view === 'Detail';
   const isListView = view === 'List';
 
-  const isFinderFocused = useIsFocused(ref as any);
+  const { isFocused: isFinderFocused } = useIsFocused(ref as any);
 
   useEffect(() => {
     if (isFinderFocused) {

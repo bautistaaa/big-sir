@@ -160,7 +160,13 @@ const Prompt: FC<{
               const term = args[0].split('/');
               const parts = term.slice(0, term.length - 1);
               const last = term.slice(-1)[0];
-              output = getFileContents(parts, last) as string;
+
+              if (term.length > 1) {
+                output = getFileContents(parts, last) as string;
+              } else {
+                output = stateRef.current.cwdContents?.[args[0]]
+                  ?.contents as string;
+              }
 
               if (!output) {
                 displayFileNotFound(currentCommand, stateRef.current.cwd);
@@ -170,17 +176,25 @@ const Prompt: FC<{
           } else if (cmd === 'pwd') {
             output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
-            const term = args[0].split('/');
-            const parts = term.slice(0, term.length - 1);
-            const last = term.slice(-1)[0];
-            output = getFileContents(parts, last) as string;
+            if (typeof stateRef.current.cwdContents !== 'string') {
+              const term = args[0].split('/');
+              const parts = term.slice(0, term.length - 1);
+              const last = term.slice(-1)[0];
 
-            if (output) {
-              setView('nvim');
-              setFileContent(output);
-            } else {
-              displayFileNotFound(currentCommand, stateRef.current.cwd);
-              return;
+              if (term.length > 1) {
+                output = getFileContents(parts, last) as string;
+              } else {
+                output = stateRef.current.cwdContents?.[args[0]]
+                  ?.contents as string;
+              }
+
+              if (output) {
+                setView('nvim');
+                setFileContent(output);
+              } else {
+                displayFileNotFound(currentCommand, stateRef.current.cwd);
+                return;
+              }
             }
           } else if (cmd === 'cd') {
             const path = args[0];

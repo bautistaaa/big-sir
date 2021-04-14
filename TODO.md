@@ -34,3 +34,4 @@ DONE
 - show file not found for vim/cat/anything ** DONE ** REFACTOR CODE LATER
 - strip `/` from path parts ** DONE **
 - fix auto complete for cat/nvim ** DONE **
+- fix cat nvim command when in same directory ** DONE **

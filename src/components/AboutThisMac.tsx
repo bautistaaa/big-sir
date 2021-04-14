@@ -30,7 +30,7 @@ const AboutThisMac: ForwardRefRenderFunction<
         payload: { name: 'aboutThisMac', ref: ref as any },
       });
     }
-  }, [isAboutThisMacFocused]);
+  }, [isAboutThisMacFocused, dispatch, ref]);
 
   const callback = () => {
     if (consoleRef.current) {
@@ -66,7 +66,7 @@ const AboutThisMac: ForwardRefRenderFunction<
         />
         <Content>
           <Circle>
-            <img src="about.jpg" />
+            <img src="about.jpg" alt="about"/>
           </Circle>
           <Text>
             <Name>

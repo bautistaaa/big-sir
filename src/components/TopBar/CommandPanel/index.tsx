@@ -8,8 +8,8 @@ import ButtonItem, {
   Settings as SettingsEnum,
 } from './ButtonItem';
 
-export interface ButtonListItem extends ButtonItemProps {}
-const buttonListItems: ButtonListItem[] = [
+export interface ButtonItem extends ButtonItemProps {}
+const buttonListItems: ButtonItem[] = [
   {
     type: SettingsEnum.wifi,
     mainText: 'Wi-Fi',

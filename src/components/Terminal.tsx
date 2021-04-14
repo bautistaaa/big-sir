@@ -46,7 +46,7 @@ const Terminal: ForwardRefRenderFunction<
         payload: { name: 'terminal', ref: ref as any },
       });
     }
-  }, [isTerminalFocused]);
+  }, [isTerminalFocused, dispatch, ref]);
 
   useEffect(() => {
     if (view === 'terminal') {
@@ -54,7 +54,7 @@ const Terminal: ForwardRefRenderFunction<
     } else {
       setIsFocused(false);
     }
-  }, [view]);
+  }, [view, setIsFocused]);
 
   const callback = () => {
     if (consoleRef.current) {

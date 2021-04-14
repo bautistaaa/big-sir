@@ -85,7 +85,7 @@ const Editor: FC<{
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      const { key } = e;
+      // const { key } = e;
     };
 
     window.addEventListener('keydown', handleKeyDown);

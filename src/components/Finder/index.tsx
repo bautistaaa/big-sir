@@ -84,7 +84,7 @@ const Finder: ForwardRefRenderFunction<
         payload: { name: 'finder', ref: ref as any },
       });
     }
-  }, [isFinderFocused]);
+  }, [isFinderFocused, dispatch, ref]);
 
   const handleMinimizeClick = () => {
     dispatch({ type: 'minimizedWindow', payload: { name: 'finder' } });

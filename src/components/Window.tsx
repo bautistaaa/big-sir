@@ -53,7 +53,8 @@ const Window: FC<{
         setPosition(previousPosition);
       }
     }
-  }, [isWindowMinimized, minimizedTargetRect.left, minimizedTargetRect.width, previousPosition]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWindowMinimized]);
   useEffect(() => {
     setTest({
       height: `${height}px`,

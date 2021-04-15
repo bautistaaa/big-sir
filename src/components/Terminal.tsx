@@ -101,7 +101,6 @@ const Terminal: ForwardRefRenderFunction<
                 height: '100%',
                 width: '100%',
                 padding: '3px',
-                // visibility: view === 'terminal' ? 'visible' : 'hidden',
               }}
             >
               <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
@@ -134,7 +133,7 @@ const LastLogin = styled.div`
 `;
 const Console = styled.div`
   font-family: 'Roboto Mono', monospace;
-  height: calc(100% - 22px);
+  height: calc(100% - 30px);
   width: 100%;
   background: #151516;
   flex: 1;
@@ -153,6 +152,8 @@ const Wrapper = styled.div<{
   transform-origin: top left;
   width: 100%;
   height: 100%;
+  border-radius: 10px;
+  box-shadow: rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px;
 `;
 
 export default forwardRef(Terminal);

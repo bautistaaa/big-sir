@@ -10,6 +10,7 @@ const minimizedImages: { [k: string]: string } = {
   finder: 'finder-min.png',
   terminal: 'minimized.png',
   aboutThisMac: 'about-min.png',
+  spotify: 'spotify.svg',
 };
 const items: DockItem[] = [
   {
@@ -23,6 +24,10 @@ const items: DockItem[] = [
   {
     name: 'chrome',
     path: './chrome.png',
+  },
+  {
+    name: 'spotify',
+    path: './spotify.svg',
   },
 ];
 

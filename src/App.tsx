@@ -4,6 +4,7 @@ import Dock from './components/Dock';
 import Terminal from './components/Terminal';
 import Finder from './components/Finder';
 import AboutThisMac from './components/AboutThisMac';
+import Chrome from './components/Chrome';
 import styled from 'styled-components/macro';
 import useRect from './hooks/useRect';
 import { useAppContext } from './AppContext';
@@ -13,6 +14,7 @@ const App: FC = () => {
   const isTerminalActive = state.activeWindows.some(
     (aw) => aw.name === 'terminal'
   );
+  const isChromeActive = state.activeWindows.some((aw) => aw.name === 'chrome');
   const isFinderActive = state.activeWindows.some((aw) => aw.name === 'finder');
   const isAboutThisMacActive = state.activeWindows.some(
     (aw) => aw.name === 'aboutThisMac'
@@ -21,6 +23,7 @@ const App: FC = () => {
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const finderRef = useRef<HTMLDivElement | null>(null);
   const aboutThisMacRef = useRef<HTMLDivElement | null>(null);
+  const chromeRef = useRef<HTMLDivElement | null>(null);
 
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
@@ -38,6 +41,13 @@ const App: FC = () => {
 
       {isAboutThisMacActive && (
         <AboutThisMac
+          ref={chromeRef}
+          minimizedTargetRect={minimizedTargetRect}
+        />
+      )}
+
+      {isChromeActive && (
+        <Chrome
           ref={aboutThisMacRef}
           minimizedTargetRect={minimizedTargetRect}
         />

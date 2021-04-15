@@ -42,7 +42,7 @@ const TopBar: FC<{ atmRef: any }> = ({ atmRef }) => {
 const MenuButton = styled.div`
   padding: 5px 9px;
   position: relative;
-  border-radius: 2px;
+  border-radius: 4px;
   &:hover {
     background: rgb(26, 109, 196);
   }

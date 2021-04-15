@@ -162,7 +162,11 @@ const Prompt: FC<{
               const last = term.slice(-1)[0];
 
               if (term.length > 1) {
-                output = getFileContents(parts, last) as string;
+                output = getFileContents(
+                  parts,
+                  last,
+                  stateRef.current.cwdContents
+                ) as string;
               } else {
                 output = stateRef.current.cwdContents?.[args[0]]
                   ?.contents as string;
@@ -182,7 +186,11 @@ const Prompt: FC<{
               const last = term.slice(-1)[0];
 
               if (term.length > 1) {
-                output = getFileContents(parts, last) as string;
+                output = getFileContents(
+                  parts,
+                  last,
+                  stateRef.current.cwdContents
+                ) as string;
               } else {
                 output = stateRef.current.cwdContents?.[args[0]]
                   ?.contents as string;

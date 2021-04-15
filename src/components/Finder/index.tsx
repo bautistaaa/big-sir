@@ -169,7 +169,7 @@ const Finder: ForwardRefRenderFunction<
 const TopBar = styled.div`
   display: flex;
   height: 50px;
-  width: calc(100% + 150px);
+  // width: calc(100% + 150px);
 `;
 const LeftSide = styled.div`
   width: 150px;
@@ -181,7 +181,7 @@ const LeftSide = styled.div`
   backdrop-filter: blur(12px);
 `;
 const RightSide = styled.div`
-  background: rgb(59, 52, 56);
+  background: rgb(56, 56, 60);
   width: calc(100% - 150px);
   border-top-right-radius: 12px;
 `;
@@ -214,9 +214,10 @@ const Wrapper = styled.div<{
       : `transform: scale(1); opacity: 1;`}
   transition: transform .7s, opacity .4s;
   transform-origin: top left;
-  width: calc(100% - 150px);
   height: 100%;
   z-index: 100;
+  border-radius: 12px;
+  box-shadow: rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px;
 `;
 const Sidebar = styled.div`
   padding: 15px;
@@ -225,14 +226,12 @@ const Sidebar = styled.div`
   top: 0;
   height: 100%;
   width: 150px;
-  // box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
   border-bottom-left-radius: 12px;
   background: rgb(42 42 42 / 65%);
   backdrop-filter: blur(12px);
   &::after {
     content: '';
     position: absolute;
-    // background: black;
     height: 100%;
     width: 1px;
     top: 0;
@@ -246,8 +245,6 @@ const Content = styled.div`
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 12px;
-  // clip-path: inset(0px 0px 0px 2px);
-  // box-shadow: inset 0px 0px 0px 0.3px rgb(255 255 255 / 35%);
 `;
 const Title = styled.div`
   font-size: 10px;
@@ -258,7 +255,6 @@ const Bottom = styled.div`
   position: relative;
   display: flex;
   height: calc(100% - 50px);
-  width: calc(100% + 150px);
 `;
 const BaseButton = styled.button`
   border: none;
@@ -297,7 +293,6 @@ const ButtonsWrapper = styled.div`
   justify-content: center;
   height: 100%;
   width: 100%;
-  background: rgb(41, 35, 38);
   border-top-right-radius: 12px;
 `;
 const BaseUtilButton = styled.button<{ isActive: boolean }>`

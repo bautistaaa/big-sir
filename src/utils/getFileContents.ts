@@ -1,7 +1,11 @@
-import fileDirectory, { Contents } from '../shared/fileDirectory';
+import { Contents } from '../shared/fileDirectory';
 
-const getFileContents = (path: string[], fileName: string): Contents => {
-  let root = fileDirectory['/']?.contents;
+const getFileContents = (
+  path: string[],
+  fileName: string,
+  cwdContents: Contents
+): Contents => {
+  let root = cwdContents;
 
   for (let i = 0; i < path.length; i++) {
     const current = path[i] || '/';

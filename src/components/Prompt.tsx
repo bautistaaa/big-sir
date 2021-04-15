@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import { Action, Command, PromptState } from '../hooks/usePromptState';
 import { View } from './Terminal';
@@ -33,10 +33,10 @@ const Prompt: FC<{
     textAreaRef.current!.value = '';
     commandRef.current = '';
   };
-  const clear = () => {
+  const clear = useCallback(() => {
     clearRefs();
     dispatch({ type: 'clear' });
-  };
+  }, [dispatch]);
 
   const getRealCommands = () => {
     return stateRef.current.commands.filter(
@@ -70,7 +70,7 @@ const Prompt: FC<{
       clearRefs();
       dispatch({ type: 'addCommand', payload: { command } });
     }
-  }, [keysCurrentlyPressed]);
+  }, [keysCurrentlyPressed, clear, dispatch]);
 
   useEffect(() => {
     const displayFileNotFound = (currentCommand: string, cwd: string) => {
@@ -242,7 +242,7 @@ const Prompt: FC<{
         window.removeEventListener('keyup', handleKeyUp);
       };
     }
-  }, [isTerminalFocused]);
+  }, [isTerminalFocused, dispatch, setFileContent, setView]);
 
   return (
     <Wrapper>

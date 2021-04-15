@@ -2,7 +2,7 @@ import { forwardRef, ForwardRefRenderFunction } from 'react';
 import styled from 'styled-components';
 import ActionBar from '../../components/ActionBar';
 import Window from '../../components/Window';
-import useIsFocused from '../../hooks/useIsFocused';
+// import useIsFocused from '../../hooks/useIsFocused';
 import { RectResult } from '../../hooks/useRect';
 import { useAppContext } from '../../AppContext';
 
@@ -13,9 +13,9 @@ const Chrome: ForwardRefRenderFunction<
   }
 > = ({ minimizedTargetRect }, ref) => {
   const { state, dispatch } = useAppContext();
-  const { isFocused: isTerminalFocused, setIsFocused } = useIsFocused(
-    ref as any
-  );
+  // const { isFocused: isTerminalFocused, setIsFocused } = useIsFocused(
+  //   ref as any
+  // );
   const chromeState = state.activeWindows.find((aw) => aw.name === 'chrome');
   const isMinimized = !!state.minimizedWindows.find(
     (mw) => mw.name === 'chrome'

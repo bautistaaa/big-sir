@@ -4,12 +4,12 @@ import { Menu } from '@headlessui/react';
 import CircleButton from './CircleButton';
 import { Brightness, Mirroring, Settings } from '../icons';
 import ButtonItem, {
-  ButtonItemProps,
+  ButtonItemProps as BaseButtonItemProps,
   Settings as SettingsEnum,
 } from './ButtonItem';
 
-export interface ButtonItem extends ButtonItemProps {}
-const buttonListItems: ButtonItem[] = [
+export interface ButtonItemProps extends BaseButtonItemProps {}
+const buttonListItems: ButtonItemProps[] = [
   {
     type: SettingsEnum.wifi,
     mainText: 'Wi-Fi',

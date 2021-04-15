@@ -53,7 +53,7 @@ const Window: FC<{
         setPosition(previousPosition);
       }
     }
-  }, [isWindowMinimized]);
+  }, [isWindowMinimized, minimizedTargetRect.left, minimizedTargetRect.width, previousPosition]);
   useEffect(() => {
     setTest({
       height: `${height}px`,

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const usePreviousState = (initialState) => {
+const usePreviousState = (initialState: unknown) => {
   let previousState = useRef(initialState);
   useEffect(() => {
     previousState.current = initialState;

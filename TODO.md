@@ -3,7 +3,6 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- cd with no arg breaks
 - commands in general with no args act weird
 =============================
 TODO
@@ -42,6 +41,7 @@ DONE
 - strip `/` from path parts ** DONE **
 - fix auto complete for cat/nvim ** DONE **
 - fix cat nvim command when in same directory ** DONE **
+- cd with no arg breaks ** DONE **
 
 =============================
 FEEDBACK

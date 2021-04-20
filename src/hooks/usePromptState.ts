@@ -60,7 +60,7 @@ const reducer = (state: PromptState, action: Action) => {
       let newCwd = state.cwd;
       let newCwdContents = state.cwdContents;
       const {
-        payload: { path },
+        payload: { path = '' },
       } = action;
 
       switch (path) {

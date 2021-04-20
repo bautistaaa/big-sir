@@ -39,10 +39,6 @@ const Editor: FC<{
   }, [isTerminalFocused]);
 
   useEffect(() => {
-    // if (commandTextAreaRef.current) {
-    //   commandTextAreaRef.current.focus();
-    // }
-
     const handleKeyDown = (e: KeyboardEvent) => {
       const { key } = e;
 

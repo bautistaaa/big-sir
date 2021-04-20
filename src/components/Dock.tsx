@@ -8,6 +8,7 @@ interface DockItem {
   path: string;
 }
 const minimizedImages: { [k: string]: string } = {
+  chrome: 'minimized.png',
   finder: 'finder-min.png',
   terminal: 'minimized.png',
   aboutThisMac: 'about-min.png',

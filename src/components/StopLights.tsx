@@ -46,6 +46,12 @@ const Wrapper = styled.div<{ variant: string }>`
     top: 10px;
     left: 10px;
     `}
+  ${({ variant }) =>
+    variant === 'chrome' &&
+    `
+    top: 5px;
+    left: 10px;
+    `}
 `;
 const BaseButton = styled.button`
   border: none;

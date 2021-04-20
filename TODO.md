@@ -1,8 +1,15 @@
 =============================
 www.big-sir.com
 =============================
+BUGS
+=============================
+- cd with no arg breaks
+- commands in general with no args act weird
+=============================
 TODO
 =============================
+- Refactor WINDOW
+  - redo minimize logic
 - fix cd command for files
 - enable ../../ navigation
 - tie filesystem to finder
@@ -35,3 +42,15 @@ DONE
 - strip `/` from path parts ** DONE **
 - fix auto complete for cat/nvim ** DONE **
 - fix cat nvim command when in same directory ** DONE **
+
+=============================
+FEEDBACK
+=============================
+WINDOW (pass name, resolve state itself)
+	- Define stoplight variant as a prop.
+VARIANTS via SWITCH
+	- None (idk but probably exists)
+	- Inline Compact (VSCode / Discord)
+	- Inline (Finder)
+	- Standard (Terminal)
+

@@ -2,35 +2,50 @@ import { FC } from 'react';
 import styled from 'styled-components/macro';
 import { RED, YELLOW, GREEN } from '../shared/constants';
 
-const ActionBar: FC<{
-  handleCloseClick: () => void;
-  handleMinimizeClick: () => void;
-  handleMaximizeClick: () => void;
+const StopLights: FC<{
+  variant: string;
+  handleCloseClick(args: unknown): void;
+  handleMinimizeClick(args: unknown): void;
+  handleMaximizeClick(args: unknown): void;
   className?: string;
 }> = ({
+  variant,
   handleCloseClick,
   handleMinimizeClick,
   handleMaximizeClick,
   className,
 }) => {
   return (
-    <Wrapper className={`${className} action-bar`}>
-      <CloseButton onClick={() => handleCloseClick()} />
-      <MinimizeButton onClick={() => handleMinimizeClick()} />
-      <FullScreenButton onClick={() => handleMaximizeClick()} />
+    <Wrapper className={`${className ?? ''}`} variant={variant}>
+      <CloseButton onClick={handleCloseClick} />
+      <MinimizeButton onClick={handleMinimizeClick} />
+      <FullScreenButton onClick={handleMaximizeClick} />
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div`
-  display: flex;
+const Wrapper = styled.div<{ variant: string }>`
+  position: absolute;
+  display: inline-flex;
   align-items: center;
   justify-content: flex-start;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 30px;
   padding: 7px;
-  background: rgb(56, 56, 56);
+  z-index: 500;
+  ${({ variant }) =>
+    variant === 'aboutThisMac' &&
+    `
+    top: 6px;
+    left: 6px;
+    `}
+  ${({ variant }) =>
+    variant === 'finder' &&
+    `
+    top: 10px;
+    left: 10px;
+    `}
 `;
 const BaseButton = styled.button`
   border: none;
@@ -54,4 +69,4 @@ const FullScreenButton = styled(BaseButton)`
   background: ${GREEN};
 `;
 
-export default ActionBar;
+export default StopLights;

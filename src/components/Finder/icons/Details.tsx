@@ -17,10 +17,10 @@ const Details: FC<{ stroke: string }> = () => {
         rx="3"
         transform="rotate(-0.21561 1.97348 2.05299)"
         stroke="white"
-        stroke-width="2"
+        strokeWidth="2"
       />
-      <path d="M11.0675 2.5L11.0675 25" stroke="white" stroke-width="2" />
-      <path d="M20.0674 2.5L20.0674 25" stroke="white" stroke-width="2" />
+      <path d="M11.0675 2.5L11.0675 25" stroke="white" strokeWidth="2" />
+      <path d="M20.0674 2.5L20.0674 25" stroke="white" strokeWidth="2" />
     </svg>
   );
 };

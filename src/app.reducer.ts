@@ -1,30 +1,29 @@
-import { MutableRefObject } from 'react';
+import { AppType } from './shared/configs';
 
 export const REMOVE_WINDOW = 'removeWindow';
 export const FOCUS_WINDOW = 'focusWindow';
 export const MINIMIZE_WINDOW = 'minimizedWindow';
 export const UNMINIMIZE_WINDOW = 'unminimizedWindow';
+
 const INITIAL_ZINDEX = 100;
 
 export type Action =
   | {
       type: typeof FOCUS_WINDOW;
-      payload: { name: string; ref: MutableRefObject<HTMLElement | null> };
+      payload: { name: AppType };
     }
-  | { type: typeof MINIMIZE_WINDOW; payload: { name: string } }
-  | { type: typeof UNMINIMIZE_WINDOW; payload: { name: string } }
+  | { type: typeof MINIMIZE_WINDOW; payload: { name: AppType } }
+  | { type: typeof UNMINIMIZE_WINDOW; payload: { name: AppType } }
   | { type: typeof REMOVE_WINDOW; payload: { name: string } };
 
 interface ActiveWindow {
-  name: string;
-  ref: MutableRefObject<HTMLElement | null>;
+  name: AppType;
   zIndex: number;
   focused: boolean;
 }
 interface MinimizedWindow {
-  name: string;
+  name: AppType;
 }
-
 export interface AppState {
   activeWindows: ActiveWindow[];
   minimizedWindows: MinimizedWindow[];
@@ -67,7 +66,7 @@ export function reducer(state: AppState, action: Action) {
       const activeWindows = [
         {
           name: action.payload.name,
-          ref: action.payload.ref,
+          // ref: action.payload.ref,
           zIndex: maxZIndex + 1,
           focused: true,
         },

@@ -1,55 +1,15 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
-import styled from 'styled-components';
-import ActionBar from '../../components/ActionBar';
-import Window from '../../components/Window';
-// import useIsFocused from '../../hooks/useIsFocused';
-import { RectResult } from '../../hooks/useRect';
-import { useAppContext } from '../../AppContext';
+import { FC } from 'react';
+import styled from 'styled-components/macro';
 
-const Chrome: ForwardRefRenderFunction<
-  HTMLDivElement,
-  {
-    minimizedTargetRect: RectResult;
-  }
-> = ({ minimizedTargetRect }, ref) => {
-  const { state, dispatch } = useAppContext();
-  // const { isFocused: isTerminalFocused, setIsFocused } = useIsFocused(
-  //   ref as any
-  // );
-  const chromeState = state.activeWindows.find((aw) => aw.name === 'chrome');
-  const isMinimized = !!state.minimizedWindows.find(
-    (mw) => mw.name === 'chrome'
-  );
-
-  const handleMaximizeClick = () => {};
-  const handleMinimizeClick = () => {
-    dispatch({ type: 'minimizedWindow', payload: { name: 'chrome' } });
-  };
-  const handleCloseClick = () => {
-    dispatch({ type: 'removeWindow', payload: { name: 'chrome' } });
-  };
-
+const Chrome: FC = () => {
   return (
-    <Window
-      height={500}
-      width={600}
-      minimizedTargetRect={minimizedTargetRect}
-      isWindowMinimized={isMinimized}
-      zIndex={chromeState?.zIndex}
-    >
-      <Wrapper>
-        <TopBar>
-          <ActionBar
-            handleMaximizeClick={handleMaximizeClick}
-            handleMinimizeClick={handleMinimizeClick}
-            handleCloseClick={handleCloseClick}
-          />
-          <UtilBar></UtilBar>
-          <BrowserBar></BrowserBar>
-        </TopBar>
-        <Content>asdasdasdasdasd</Content>
-      </Wrapper>
-    </Window>
+    <Wrapper>
+      <TopBar>
+        <UtilBar></UtilBar>
+        <BrowserBar></BrowserBar>
+      </TopBar>
+      <Content>asdasdasdasdasd</Content>
+    </Wrapper>
   );
 };
 
@@ -67,4 +27,4 @@ const Content = styled.div`
   overflow: scroll;
 `;
 
-export default forwardRef(Chrome);
+export default Chrome;

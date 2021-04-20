@@ -39,9 +39,9 @@ const Editor: FC<{
   }, [isTerminalFocused]);
 
   useEffect(() => {
-    if (commandTextAreaRef.current) {
-      commandTextAreaRef.current.focus();
-    }
+    // if (commandTextAreaRef.current) {
+    //   commandTextAreaRef.current.focus();
+    // }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const { key } = e;
@@ -84,9 +84,7 @@ const Editor: FC<{
       }
     };
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      // const { key } = e;
-    };
+    const handleKeyUp = () => {};
 
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
@@ -95,7 +93,7 @@ const Editor: FC<{
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -118,7 +116,9 @@ const Editor: FC<{
         <HiddenTextArea
           ref={commandTextAreaRef}
           onChange={(e) => {
-            commandRef.current = e.target.value;
+            if (state.mode === 'command') {
+              commandRef.current = e.target.value;
+            }
           }}
         />
       </Wrapper>

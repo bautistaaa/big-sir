@@ -1,19 +1,9 @@
-import {
-  useState,
-  ForwardRefRenderFunction,
-  forwardRef,
-  useEffect,
-} from 'react';
+import { useState, FC } from 'react';
 import styled from 'styled-components/macro';
-import { RectResult } from '../../hooks/useRect';
 import { Icons, Details, List } from './icons/';
-import Window from '../Window';
 import IconView from './IconView';
 import ListView from './ListView';
 import DetailView from './DetailView';
-import { RED, YELLOW, GREEN } from '../../shared/constants';
-import { useAppContext } from '../../AppContext';
-import useIsFocused from '../../hooks/useIsFocused';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -59,117 +49,74 @@ const SideBarItems: SidebarItem[] = [
 ];
 type View = 'Icon' | 'Detail' | 'List';
 
-const Finder: ForwardRefRenderFunction<
-  HTMLDivElement,
-  {
-    minimizedTargetRect: RectResult;
-  }
-> = ({ minimizedTargetRect }, ref) => {
-  const { state, dispatch } = useAppContext();
-  const isMinimized = !!state.minimizedWindows.find(
-    (mw) => mw.name === 'finder'
-  );
-  const finderState = state.activeWindows.find((aw) => aw.name === 'finder');
+const Finder: FC = () => {
   const [view, setView] = useState<View>('Icon');
   const isIconView = view === 'Icon';
   const isDetailView = view === 'Detail';
   const isListView = view === 'List';
 
-  const { isFocused: isFinderFocused } = useIsFocused(ref as any);
-
-  useEffect(() => {
-    if (isFinderFocused) {
-      dispatch({
-        type: 'focusWindow',
-        payload: { name: 'finder', ref: ref as any },
-      });
-    }
-  }, [isFinderFocused, dispatch, ref]);
-
-  const handleMinimizeClick = () => {
-    dispatch({ type: 'minimizedWindow', payload: { name: 'finder' } });
-  };
-  const handleCloseClick = () => {
-    dispatch({ type: 'removeWindow', payload: { name: 'finder' } });
-  };
-
   return (
-    <Window
-      height={400}
-      width={800}
-      minimizedTargetRect={minimizedTargetRect}
-      isWindowMinimized={isMinimized}
-      zIndex={finderState?.zIndex}
-    >
-      <Wrapper isWindowMinimized={isMinimized} ref={ref}>
-        <TopBar className="action-bar">
-          <LeftSide>
-            <ActionBar>
-              <CloseButton onClick={handleCloseClick} />
-              <MinimizeButton onClick={handleMinimizeClick} />
-              <FullScreenButton />
-            </ActionBar>
-          </LeftSide>
-          <RightSide>
-            <UtilityBar>
-              <ButtonsWrapper>
-                <LeftButton
-                  onClick={() => {
-                    setView('Icon');
-                  }}
-                  isActive={isIconView}
-                >
-                  <Icons />
-                </LeftButton>
-                <MiddleButton
-                  onClick={() => {
-                    setView('List');
-                  }}
-                  isActive={isListView}
-                >
-                  <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
-                </MiddleButton>
-                <RightButton
-                  onClick={() => {
-                    setView('Detail');
-                  }}
-                  isActive={isDetailView}
-                >
-                  <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
-                </RightButton>
-              </ButtonsWrapper>
-            </UtilityBar>
-          </RightSide>
-        </TopBar>
-        <Bottom>
-          <Sidebar>
-            <Title>Favorites</Title>
-            <Items>
-              {SideBarItems.map((item, i) => {
-                return (
-                  <Item key={i}>
-                    <img src={SidebarItemIconMap[item.type]} alt="" />
-                    <ItemName>{item.name}</ItemName>
-                  </Item>
-                );
-              })}
-            </Items>
-          </Sidebar>
-          <Content>
-            {isIconView && <IconView files={files} />}
-            {isListView && <ListView files={files} />}
-            {isDetailView && <DetailView files={files} />}
-          </Content>
-        </Bottom>
-      </Wrapper>
-    </Window>
+    <Wrapper>
+      <TopBar className="action-bar">
+        <LeftSide></LeftSide>
+        <RightSide>
+          <UtilityBar>
+            <ButtonsWrapper>
+              <LeftButton
+                onClick={() => {
+                  setView('Icon');
+                }}
+                isActive={isIconView}
+              >
+                <Icons />
+              </LeftButton>
+              <MiddleButton
+                onClick={() => {
+                  setView('List');
+                }}
+                isActive={isListView}
+              >
+                <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
+              </MiddleButton>
+              <RightButton
+                onClick={() => {
+                  setView('Detail');
+                }}
+                isActive={isDetailView}
+              >
+                <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
+              </RightButton>
+            </ButtonsWrapper>
+          </UtilityBar>
+        </RightSide>
+      </TopBar>
+      <Bottom>
+        <Sidebar>
+          <Title>Favorites</Title>
+          <Items>
+            {SideBarItems.map((item, i) => {
+              return (
+                <Item key={i}>
+                  <img src={SidebarItemIconMap[item.type]} alt="" />
+                  <ItemName>{item.name}</ItemName>
+                </Item>
+              );
+            })}
+          </Items>
+        </Sidebar>
+        <Content>
+          {isIconView && <IconView files={files} />}
+          {isListView && <ListView files={files} />}
+          {isDetailView && <DetailView files={files} />}
+        </Content>
+      </Bottom>
+    </Wrapper>
   );
 };
 
 const TopBar = styled.div`
   display: flex;
   height: 50px;
-  // width: calc(100% + 150px);
 `;
 const LeftSide = styled.div`
   width: 150px;
@@ -205,14 +152,7 @@ const ItemName = styled.div`
   color: #ffffff;
   font-size: 12px;
 `;
-const Wrapper = styled.div<{
-  isWindowMinimized: boolean;
-}>`
-  ${({ isWindowMinimized }) =>
-    isWindowMinimized
-      ? `transform: scale(0.2); opacity: 0;`
-      : `transform: scale(1); opacity: 1;`}
-  transition: transform .7s, opacity .4s;
+const Wrapper = styled.div`
   transform-origin: top left;
   height: 100%;
   z-index: 100;
@@ -256,37 +196,6 @@ const Bottom = styled.div`
   display: flex;
   height: calc(100% - 50px);
 `;
-const BaseButton = styled.button`
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 50%;
-  height: 10px;
-  width: 10px;
-  & + & {
-    margin-left: 5px;
-  }
-`;
-const CloseButton = styled(BaseButton)`
-  background: ${RED};
-`;
-const MinimizeButton = styled(BaseButton)`
-  background: ${YELLOW};
-`;
-const FullScreenButton = styled(BaseButton)`
-  background: ${GREEN};
-`;
-const ActionBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
-  height: 22px;
-  padding: 7px;
-  margin-bottom: 10px;
-`;
 const ButtonsWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -318,4 +227,4 @@ const LeftButton = styled(BaseUtilButton)``;
 const MiddleButton = styled(BaseUtilButton)``;
 const RightButton = styled(BaseUtilButton)``;
 
-export default forwardRef(Finder);
+export default Finder;

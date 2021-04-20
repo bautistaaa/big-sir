@@ -1,9 +1,10 @@
 import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
+import { AppType } from '../shared/configs';
 
 interface DockItem {
-  name: string;
+  name: AppType;
   path: string;
 }
 const minimizedImages: { [k: string]: string } = {
@@ -25,10 +26,10 @@ const items: DockItem[] = [
     name: 'chrome',
     path: './chrome.png',
   },
-  {
-    name: 'spotify',
-    path: './spotify.svg',
-  },
+  // {
+  //   name: 'spotify',
+  //   path: './spotify.svg',
+  // },
 ];
 
 const Dock: FC<{
@@ -38,15 +39,6 @@ const Dock: FC<{
 }> = ({ terminalRef, finderRef, minimizedTargetRef }) => {
   const { state, dispatch } = useAppContext();
 
-  const getRefByName = (name: string) => {
-    if (name === 'terminal') {
-      return terminalRef;
-    } else if (name === 'finder') {
-      return finderRef;
-    }
-
-    return { current: null } as MutableRefObject<HTMLElement | null>;
-  };
 
   return (
     <Wrapper>
@@ -61,7 +53,7 @@ const Dock: FC<{
                 onClick={() =>
                   dispatch({
                     type: 'focusWindow',
-                    payload: { name, ref: getRefByName(name) },
+                    payload: { name },
                   })
                 }
               >

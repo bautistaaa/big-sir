@@ -1,57 +1,30 @@
 import { FC, useRef } from 'react';
 import TopBar from './components/TopBar';
 import Dock from './components/Dock';
-import Terminal from './components/Terminal';
-import Finder from './components/Finder';
-import AboutThisMac from './components/AboutThisMac';
-import Chrome from './components/Chrome';
+import Window from './components/Window';
 import styled from 'styled-components/macro';
-import useRect from './hooks/useRect';
 import { useAppContext } from './AppContext';
+import useRect from './hooks/useRect';
 
 const App: FC = () => {
   const { state } = useAppContext();
-  const isTerminalActive = state.activeWindows.some(
-    (aw) => aw.name === 'terminal'
-  );
-  const isChromeActive = state.activeWindows.some((aw) => aw.name === 'chrome');
-  const isFinderActive = state.activeWindows.some((aw) => aw.name === 'finder');
-  const isAboutThisMacActive = state.activeWindows.some(
-    (aw) => aw.name === 'aboutThisMac'
-  );
 
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const finderRef = useRef<HTMLDivElement | null>(null);
-  const aboutThisMacRef = useRef<HTMLDivElement | null>(null);
-  const chromeRef = useRef<HTMLDivElement | null>(null);
-
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
   return (
     <Wrapper>
-      <TopBar atmRef={aboutThisMacRef} />
-      {isTerminalActive && (
-        <Terminal ref={terminalRef} minimizedTargetRect={minimizedTargetRect} />
-      )}
+      <TopBar />
 
-      {isFinderActive && (
-        <Finder ref={finderRef} minimizedTargetRect={minimizedTargetRect} />
-      )}
-
-      {isAboutThisMacActive && (
-        <AboutThisMac
-          ref={chromeRef}
+      {state.activeWindows.map((aw) => (
+        <Window
+          key={aw.name}
+          name={aw.name}
           minimizedTargetRect={minimizedTargetRect}
         />
-      )}
-
-      {isChromeActive && (
-        <Chrome
-          ref={aboutThisMacRef}
-          minimizedTargetRect={minimizedTargetRect}
-        />
-      )}
+      ))}
 
       <Dock
         terminalRef={terminalRef}

@@ -16,7 +16,7 @@ const Mirroring: FC = () => {
         height="3.5"
         rx="0.75"
         stroke="white"
-        stroke-width="0.5"
+        strokeWidth="0.5"
       />
       <rect
         x="1.25"

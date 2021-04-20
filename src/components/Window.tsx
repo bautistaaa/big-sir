@@ -1,125 +1,226 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
-import { CSSProperties } from 'styled-components/macro';
+import styled from 'styled-components/macro';
+import StopLights from './StopLights';
+import { useAppContext } from '../AppContext';
+import configs, { AppType } from '../shared/configs';
+import Chrome from './Chrome';
+import Finder from './Finder';
+import Terminal from './Terminal';
+import AboutThisMac from './AboutThisMac';
 import { RectResult } from '../hooks/useRect';
+import useWindowState from '../hooks/useWindowState';
+import useMaximizeWindow from '../hooks/useMaximizeWindow';
+import extractPositionFromTransformStyle from '../utils/extractTransformStyles';
+import useIsFocused from '../hooks/useIsFocused';
 
-const Window: FC<{
-  width: number;
-  height: number;
+export type WindowSize = {
+  width: string | number;
+  height: string | number;
+};
+
+export type WindowPosition = {
+  x: number;
+  y: number;
+};
+
+interface WindowProps {
+  name: AppType;
   minimizedTargetRect: RectResult;
-  isWindowMinimized: boolean;
-  zIndex: number | undefined;
-  resizeable?: boolean;
-}> = ({
-  width,
-  height,
-  children,
-  minimizedTargetRect,
-  isWindowMinimized,
-  zIndex,
-  resizeable = true,
-}) => {
-  const [, setRefresh] = useState(0);
-  const [previousPosition, setPreviousPosition] = useState<
-    | {
-        x: number;
-        y: number;
-      }
-    | undefined
-  >();
-  const [position, setPosition] = useState<{ x: number; y: number }>({
-    x: window.innerWidth / 2 - width / 2,
-    y: window.innerHeight / 2 - height / 2,
+}
+const Window: FC<WindowProps> = ({ name, minimizedTargetRect }) => {
+  const x: { [K in AppType]: React.ComponentType<any> } = {
+    aboutThisMac: AboutThisMac,
+    chrome: Chrome,
+    finder: Finder,
+    terminal: Terminal,
+  };
+  const Component = x[name];
+
+  const { state, dispatch } = useAppContext();
+  const [{ mode, previous }, windowDispatch] = useWindowState();
+  const ref = useRef<HTMLDivElement | null>(null);
+  const { isFocused } = useIsFocused(ref);
+
+  const isMinimized = !!state.minimizedWindows.find((mw) => mw.name === name);
+  const appState = state.activeWindows.find((aw) => aw.name === name);
+  const { width: windowWidth, height: windowHeight, resizeable } = configs[
+    name
+  ];
+  const mounted = useRef(false);
+  const windowRef = useRef<Rnd>();
+  const transitionClearanceRef = useRef<number>();
+  const originalSizeRef = useRef<WindowSize>({
+    height: windowHeight,
+    width: windowWidth,
   });
-  const [overrideStyle, setOverrideStyle] = useState<
-    CSSProperties | undefined
-  >();
-  const [test, setTest] = useState<CSSProperties | undefined>();
-
-  useEffect(() => {
-    if (isWindowMinimized) {
-      setOverrideStyle({
-        transition: 'transform .7s, opacity 0.5s',
-      });
-      setPosition((pos) => {
-        setPreviousPosition(pos);
-        return {
-          x: minimizedTargetRect.left - minimizedTargetRect.width,
-          y: window.innerHeight,
-        };
-      });
-    } else {
-      if (previousPosition) {
-        setPosition(previousPosition);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWindowMinimized]);
-  useEffect(() => {
-    setTest({
-      height: `${height}px`,
-      width: `${width}px`,
-    });
-  }, [height, width]);
-
-  useEffect(() => {
-    if (!isWindowMinimized) {
-      const to = setTimeout(() => {
-        setOverrideStyle(undefined);
-      }, 700);
-
-      return () => {
-        clearTimeout(to);
-      };
-    }
-  }, [isWindowMinimized]);
-
-  const handleOnDragStop = (_: any, d: any) => {
-    setRefresh((x) => x + 1);
-    const { x, y } = d;
-    setPosition({
-      x,
-      y,
+  const originalPositionRef = useRef<WindowPosition>({
+    x: window.innerWidth / 2 - windowWidth / 2,
+    y: window.innerHeight / 2 - windowHeight / 2,
+  });
+  const maximizeApp = useMaximizeWindow(
+    windowRef,
+    { height: windowHeight, width: windowWidth },
+    windowDispatch
+  );
+  const focusWindow = () => {
+    dispatch({
+      type: 'focusWindow',
+      payload: { name },
     });
   };
 
-  // export declare type RndResizeCallback = (e: MouseEvent | TouchEvent, dir: ResizeDirection, elementRef: HTMLElement, delta: ResizableDelta, position: Position) => void;
-  // @ts-ignore
-  const handleResizeStop = (...args) => {
-    const [, , , , position] = args;
-    setRefresh((x) => x + 1);
-    const { x, y } = position;
-    setPosition({
-      x,
-      y,
-    });
+  useEffect(() => {
+    switch (mode) {
+      case 'idle':
+        if (previous === 'minimized') {
+          windowDispatch({ type: 'modeChanged', payload: { mode: 'idle' } });
+          if (windowRef.current?.resizableElement.current) {
+            windowRef.current.resizableElement.current.style.transition =
+              'height .6s, width .6s, transform .6s, opacity .6s';
+            windowRef.current.resizableElement.current.style.opacity = '1';
+            window.setTimeout(() => {
+              if (windowRef.current?.resizableElement.current) {
+                windowRef.current.resizableElement.current.style.transition =
+                  '';
+              }
+            }, 1000);
+          }
+          windowRef.current?.updatePosition({
+            x: originalPositionRef.current.x,
+            y: originalPositionRef.current.y,
+          });
+          windowRef.current?.updateSize(originalSizeRef.current);
+          windowRef.current?.updatePosition(originalPositionRef.current);
+        }
+        break;
+      case 'maximized':
+        if (previous === 'maximized') {
+        }
+        break;
+      case 'minimized':
+        if (previous !== 'minimized') {
+          if (!windowRef?.current?.resizableElement?.current) {
+            return;
+          }
+          const {
+            clientWidth: windowWidth,
+            clientHeight: windowHeight,
+          } = windowRef.current.resizableElement.current;
+          const {
+            x: windowLeft,
+            y: windowTop,
+          } = extractPositionFromTransformStyle(
+            windowRef.current.resizableElement.current.style.transform
+          );
+          originalPositionRef.current = { x: windowLeft, y: windowTop };
+          originalSizeRef.current = {
+            width: windowWidth,
+            height: windowHeight,
+          };
+
+          windowRef.current.resizableElement.current.style.transition =
+            'height .6s, width .6s, transform .6s, opacity .5s';
+
+          windowRef.current.resizableElement.current.style.opacity = '0';
+
+          clearTimeout(transitionClearanceRef.current);
+
+          transitionClearanceRef.current = window.setTimeout(() => {
+            if (windowRef.current?.resizableElement.current) {
+              windowRef.current.resizableElement.current.style.transition = '';
+            }
+            transitionClearanceRef.current = 0;
+          }, 500);
+
+          windowRef.current.updateSize({
+            height: '300px',
+            width: '300px',
+          });
+
+          windowRef.current.updatePosition({
+            x: minimizedTargetRect.left,
+            y: document.body.clientHeight,
+          });
+        }
+        break;
+    }
+  }, [mode, previous, minimizedTargetRect.left, windowDispatch]);
+
+  useEffect(() => {
+    if (mounted.current) {
+      if (!isMinimized) {
+        windowDispatch({ type: 'modeChanged', payload: { mode: 'idle' } });
+      }
+    }
+  }, [isMinimized, windowDispatch]);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      dispatch({
+        type: 'focusWindow',
+        payload: { name },
+      });
+    }
+  }, [isFocused, dispatch, name]);
+
+  const handleMinimizeClick = (e: Event) => {
+    e.stopPropagation();
+    dispatch({ type: 'minimizedWindow', payload: { name } });
+    windowDispatch({ type: 'modeChanged', payload: { mode: 'minimized' } });
+  };
+  const handleCloseClick = (e: Event) => {
+    e.stopPropagation();
+    dispatch({ type: 'removeWindow', payload: { name } });
+  };
+  const handleMaximizeClick = (e: Event) => {
+    e.stopPropagation();
+    maximizeApp();
   };
 
   return (
     <Rnd
+      ref={(c) => {
+        if (c) windowRef.current = c;
+      }}
       style={{
         cursor: 'auto !important',
-        position: 'fixed',
-        ...overrideStyle,
-        ...test,
-        zIndex,
+        zIndex: appState?.zIndex ?? 0,
       }}
       dragHandleClassName="action-bar"
-      onDragStop={handleOnDragStop}
-      onResizeStop={handleResizeStop}
       minHeight={300}
       minWidth={300}
-      position={position}
       default={{
-        ...position,
-        width: `${width}px`,
-        height: `${height}px`,
+        x: window.innerWidth / 2 - windowWidth / 2,
+        y: window.innerHeight / 2 - windowHeight / 2,
+        width: `${windowWidth}px`,
+        height: `${windowHeight}px`,
       }}
       enableResizing={resizeable}
+      onDragStart={focusWindow}
     >
-      {children}
+      <span ref={ref}>
+        <Wrapper onClick={focusWindow}>
+          <StopLights
+            variant={name}
+            handleMinimizeClick={handleMinimizeClick}
+            handleCloseClick={handleCloseClick}
+            handleMaximizeClick={handleMaximizeClick}
+          />
+        </Wrapper>
+        <Component />
+      </span>
     </Rnd>
   );
 };
+
+const Wrapper = styled.div``;
 
 export default Window;

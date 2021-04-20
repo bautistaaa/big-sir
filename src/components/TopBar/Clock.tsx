@@ -22,15 +22,15 @@ const Clock: FC = () => {
   const [time, setTime] = useState(formatDate());
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timeout = setTimeout(() => {
       const date = formatDate();
       setTime(date);
     }, 1000);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout);
     };
-  }, []);
+  }, [time]);
 
   return <>{time}</>;
 };

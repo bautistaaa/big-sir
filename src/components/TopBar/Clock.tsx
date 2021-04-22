@@ -1,29 +1,12 @@
 import { FC, useEffect, useState } from 'react';
-
-const formatDate = (): string => {
-  const weekday = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-  }).format(new Date());
-
-  const date = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date());
-
-  const time = new Intl.DateTimeFormat('en-US', {
-    hour12: true,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date());
-  return `${weekday} ${date}  ${time}`;
-};
+import { formatDate } from '../../utils/';
 
 const Clock: FC = () => {
-  const [time, setTime] = useState(formatDate());
+  const [time, setTime] = useState(formatDate(new Date()));
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const date = formatDate();
+      const date = formatDate(new Date());
       setTime(date);
     }, 1000);
 

@@ -6,22 +6,36 @@ import { LeftArrow, RightArrow, Refresh as BaseRefresh } from './icons';
 interface Bookmark {
   favico: string;
   url: string;
+  title: string;
 }
 const bookmarks: Bookmark[] = [
-  { url: 'https://www.narutoql.com', favico: 'favico.svg' },
-  { url: 'https://spotify-city.netlify.app', favico: 'favico.svg' },
+  { url: 'https://www.narutoql.com', favico: 'favico.svg', title: 'NarutoQL' },
+  {
+    url: 'https://spotify-city.netlify.app',
+    favico: 'favico.svg',
+    title: 'Spotify City',
+  },
   {
     url: 'https://bautistaaa.github.io/react-coverfl0w/index.html',
     favico: 'favico.svg',
+    title: 'React Coverfl0w',
   },
 ];
 
+interface UrlInfo {
+  url: string;
+  title?: string;
+}
+const DEFAULT_URL = {
+  url: 'https://www.narutoql.com',
+  title: 'NarutoQL',
+};
 const Chrome: FC = memo(
   () => {
     const wrapperRef = useRef<HTMLDivElement | null>(null);
     const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-    const [url, setUrl] = useState('https://www.tailwindcss.com');
-    const [history, setHistory] = useState(['https://www.tailwindcss.com']);
+    const [url, setUrl] = useState<UrlInfo>(DEFAULT_URL);
+    const [history, setHistory] = useState<UrlInfo[]>([DEFAULT_URL]);
     const src = history[history.length - 1];
 
     const handleRefreshClick = () => {};
@@ -31,14 +45,16 @@ const Chrome: FC = memo(
       e.preventDefault();
       setHistory((history) => [...history, url]);
     };
-    const handleBookmarkItemClick = (url: string) => {
-      setHistory((history) => [...history, url]);
+    const handleBookmarkItemClick = (url: string, title: string) => {
+      const urlInfo = { url, title };
+      setHistory((history) => [...history, urlInfo]);
+      setUrl(urlInfo);
     };
 
     return (
       <Wrapper ref={wrapperRef}>
         <TopBar className="action-bar"></TopBar>
-        <BrowserBar title="NANI TF!!!">
+        <BrowserBar title={url.title ?? ''}>
           <ActionButtonsWrapper>
             <ClearButton onClick={handlePreviousClick}>
               <LeftArrow />
@@ -53,17 +69,20 @@ const Chrome: FC = memo(
           <Form onSubmit={handleSubmit}>
             <UrlBar
               ref={hiddenInputRef}
-              value={url}
+              value={url.url}
               onChange={(e) => {
-                setUrl(e.target.value);
+                setUrl({ url: e.target.value });
               }}
             />
           </Form>
         </BrowserBar>
         <Bookmarks>
-          {bookmarks.map(({ url, favico }: Bookmark) => {
+          {bookmarks.map(({ url, favico, title }: Bookmark) => {
             return (
-              <BookmarkItem onClick={() => handleBookmarkItemClick(url)}>
+              <BookmarkItem
+                key={url}
+                onClick={() => handleBookmarkItemClick(url, title)}
+              >
                 <BookmarkFavIcon src={favico} />
                 <BookmarkUrl>{url}</BookmarkUrl>
               </BookmarkItem>
@@ -72,7 +91,7 @@ const Chrome: FC = memo(
         </Bookmarks>
 
         <Content>
-          <IFrame src={src}></IFrame>
+          <IFrame src={src.url}></IFrame>
         </Content>
       </Wrapper>
     );

@@ -131,6 +131,10 @@ const Wrapper = styled.div`
 `;
 const FileContent = styled.div`
   flex: 1;
+  .react-codemirror2,
+  .CodeMirror {
+    height: 100%;
+  }
 `;
 const HiddenTextArea = styled.textarea`
   position: absolute;

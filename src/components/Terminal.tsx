@@ -1,10 +1,12 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Neovim from '../components/Neovim';
 import Prompt from '../components/Prompt';
 import usePromptState from '../hooks/usePromptState';
 import useIsFocused from '../hooks/useIsFocused';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { formatDate } from '../utils';
 
 export type View = 'terminal' | 'nvim';
 
@@ -12,8 +14,20 @@ const Terminal: FC = () => {
   const prompState = usePromptState();
   const [view, setView] = useState<View>('terminal');
   const [fileContent, setFileContent] = useState('');
+  const [lastLogin, setLastLogin] = useLocalStorage(
+    'lastLogin',
+    formatDate(new Date())
+  );
   const ref = useRef<HTMLDivElement | null>(null);
   const consoleRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      setLastLogin(formatDate(new Date()));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const callback = () => {
     if (consoleRef.current) {
       const scrollHeight = consoleRef.current.scrollHeight;
@@ -28,8 +42,8 @@ const Terminal: FC = () => {
   return (
     <Wrapper ref={ref}>
       <TopBar className="action-bar" />
-      <Console ref={consoleRef}>
-        {view === 'terminal' && (
+      {view === 'terminal' && (
+        <Console ref={consoleRef}>
           <div
             style={{
               height: '100%',
@@ -37,7 +51,7 @@ const Terminal: FC = () => {
               padding: '3px',
             }}
           >
-            <LastLogin>Last login: Sun Mar 14 23:14:25 on ttys001</LastLogin>
+            <LastLogin>{`Last login: ${lastLogin} on ttys001`}</LastLogin>
             <Prompt
               isTerminalFocused={isFocused}
               setView={setView}
@@ -45,17 +59,17 @@ const Terminal: FC = () => {
               promptState={prompState}
             ></Prompt>
           </div>
-        )}
-        {view === 'nvim' && (
-          <>
-            <Neovim
-              fileContent={fileContent}
-              setView={setView}
-              isTerminalFocused={true}
-            />
-          </>
-        )}
-      </Console>
+        </Console>
+      )}
+      {view === 'nvim' && (
+        <Console>
+          <Neovim
+            fileContent={fileContent}
+            setView={setView}
+            isTerminalFocused={true}
+          />
+        </Console>
+      )}
     </Wrapper>
   );
 };

@@ -22,6 +22,7 @@ const Editor: FC<{
 }> = ({ isTerminalFocused, fileContent, setView }) => {
   const [state, dispatch] = useEditorState();
   const [code, setCode] = useState(fileContent);
+  const ref = useRef<HTMLDivElement | null>(null);
   const commandTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const stateRef = useRef(state);
@@ -37,6 +38,15 @@ const Editor: FC<{
       }
     }
   }, [isTerminalFocused]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (ref.current) {
+        const scrollHeight = ref.current.scrollHeight;
+        ref.current.scrollTo(0, scrollHeight);
+      }
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -94,7 +104,7 @@ const Editor: FC<{
 
   return (
     <>
-      <Wrapper>
+      <Wrapper ref={ref}>
         <FileContent>
           <CodeMirror
             options={options}

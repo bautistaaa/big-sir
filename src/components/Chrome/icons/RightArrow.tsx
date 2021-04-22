@@ -1,13 +1,13 @@
 import { FC } from 'react';
 
-const RightArrow: FC = () => {
+const RightArrow: FC<{ disabled: boolean }> = ({ disabled }) => {
   return (
     <svg
       width="17"
       height="17"
       viewBox="0 0 24 24"
       strokeWidth="2"
-      stroke="white"
+      stroke={disabled ? 'gray' : 'white'}
       fill="none"
       strokeLinecap="round"
       strokeLinejoin="round"

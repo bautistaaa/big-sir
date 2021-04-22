@@ -3,12 +3,13 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- tabs in chrome
-- open up chrome when opening html file
-- looking into previous, forward, refresh commands on chrome
 =============================
 TODO
 =============================
+- tabs in chrome
+- open up chrome when opening html file
+- looking into previous, forward, refresh commands on chrome
+- clicking dock icon of active app should open it back up
 - Refactor WINDOW
   - redo minimize logic
 - enable ../../ navigation

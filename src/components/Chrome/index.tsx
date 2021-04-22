@@ -1,4 +1,4 @@
-import { FC, FormEvent, memo, useRef, useState } from 'react';
+import { FC, FormEvent, memo, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import ClearButton from '../../components/ClearButton';
 import { LeftArrow, RightArrow, Refresh as BaseRefresh } from './icons';
@@ -7,6 +7,10 @@ interface Bookmark {
   favico: string;
   url: string;
   title: string;
+}
+interface UrlInfo {
+  url: string;
+  title?: string;
 }
 const bookmarks: Bookmark[] = [
   { url: 'https://www.narutoql.com', favico: 'favico.svg', title: 'NarutoQL' },
@@ -22,45 +26,57 @@ const bookmarks: Bookmark[] = [
   },
 ];
 
-interface UrlInfo {
-  url: string;
-  title?: string;
-}
 const DEFAULT_URL = {
-  url: 'https://www.narutoql.com',
-  title: 'NarutoQL',
+  url: 'https://www.google.com/webhp?igu=1',
+  title: 'Google',
 };
 const Chrome: FC = memo(
   () => {
+    const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const wrapperRef = useRef<HTMLDivElement | null>(null);
     const hiddenInputRef = useRef<HTMLInputElement | null>(null);
     const [url, setUrl] = useState<UrlInfo>(DEFAULT_URL);
     const [history, setHistory] = useState<UrlInfo[]>([DEFAULT_URL]);
-    const src = history[history.length - 1];
+    const [activeIndex, setActiveIndex] = useState(history.length - 1);
+    const [k, setK] = useState(Math.random());
+    const hasPrevious = !!history[activeIndex - 1];
+    const hasNext = !!history[activeIndex + 1];
 
-    const handleRefreshClick = () => {};
-    const handleForwardClick = () => {};
-    const handlePreviousClick = () => {};
+    const handleRefreshClick = () => {
+      setK(Math.random());
+    };
+    const handleForwardClick = () => {
+      setActiveIndex((ai) => ai + 1);
+    };
+    const handlePreviousClick = () => {
+      setActiveIndex((ai) => ai - 1);
+    };
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setHistory((history) => [...history, url]);
+      setActiveIndex(history.length);
     };
     const handleBookmarkItemClick = (url: string, title: string) => {
       const urlInfo = { url, title };
       setHistory((history) => [...history, urlInfo]);
+      setActiveIndex(history.length);
       setUrl(urlInfo);
     };
+
+    useEffect(() => {
+      setUrl(history[activeIndex]);
+    }, [activeIndex, setUrl, history]);
 
     return (
       <Wrapper ref={wrapperRef}>
         <TopBar className="action-bar"></TopBar>
         <BrowserBar title={url.title ?? ''}>
           <ActionButtonsWrapper>
-            <ClearButton onClick={handlePreviousClick}>
-              <LeftArrow />
+            <ClearButton onClick={handlePreviousClick} disabled={!hasPrevious}>
+              <LeftArrow disabled={!hasPrevious} />
             </ClearButton>
-            <ClearButton onClick={handleForwardClick}>
-              <RightArrow />
+            <ClearButton onClick={handleForwardClick} disabled={!hasNext}>
+              <RightArrow disabled={!hasNext} />
             </ClearButton>
             <ClearButton onClick={handleRefreshClick}>
               <Refresh />
@@ -91,7 +107,7 @@ const Chrome: FC = memo(
         </Bookmarks>
 
         <Content>
-          <IFrame src={src.url}></IFrame>
+          <IFrame key={k} ref={iframeRef} src={url.url}></IFrame>
         </Content>
       </Wrapper>
     );
@@ -155,7 +171,7 @@ const Bookmarks = styled.div`
 const BookmarkItem = styled(ClearButton)`
   display: flex;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
   color: white;
   margin-right: 10px;
   border-radius: 20px;

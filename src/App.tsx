@@ -14,7 +14,6 @@ const App: FC = () => {
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
-  console.log(state.activeWindows);
   return (
     <Wrapper>
       <TopBar />

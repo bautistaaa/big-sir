@@ -3,20 +3,20 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- commands in general with no args act weird
+- tabs in chrome
+- open up chrome when opening html file
+- looking into previous, forward, refresh commands on chrome
 =============================
 TODO
 =============================
 - Refactor WINDOW
   - redo minimize logic
-- fix cd command for files
 - enable ../../ navigation
 - tie filesystem to finder
 - setup animations when you toggle things in the command panel
 =============================
 Priority
 - Top Bar Menu Items ( About This Mac / Settings );
-- Neovim ( navigation (ctrl e/y/u/d/f) )
 =============================
 Secondary
 =============================
@@ -29,6 +29,7 @@ Dead last
 =============================
 DONE
 =============================
+- Neovim ( navigation (ctrl e/y/u/d/f) ) ** DONE **
 - when you change directories we do not want to change dir display on previous ran commmands ** DONE **
 - fix typo in usePromptState(file name is wrong) ** DONE**
 - fix finder styles, create svgs in Figma ** DONE **

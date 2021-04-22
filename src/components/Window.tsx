@@ -1,6 +1,5 @@
-import { FC, useEffect, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
-import styled from 'styled-components/macro';
 import StopLights from './StopLights';
 import { useAppContext } from '../AppContext';
 import configs, { AppType } from '../shared/configs';
@@ -28,7 +27,7 @@ interface WindowProps {
   name: AppType;
   minimizedTargetRect: RectResult;
 }
-const Window: FC<WindowProps> = ({ name, minimizedTargetRect }) => {
+const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const x: { [K in AppType]: React.ComponentType<any> } = {
     aboutThisMac: AboutThisMac,
     chrome: Chrome,
@@ -92,10 +91,6 @@ const Window: FC<WindowProps> = ({ name, minimizedTargetRect }) => {
           });
           windowRef.current?.updateSize(originalSizeRef.current);
           windowRef.current?.updatePosition(originalPositionRef.current);
-        }
-        break;
-      case 'maximized':
-        if (previous === 'maximized') {
         }
         break;
       case 'minimized':
@@ -207,20 +202,18 @@ const Window: FC<WindowProps> = ({ name, minimizedTargetRect }) => {
       onDragStart={focusWindow}
     >
       <span ref={ref}>
-        <Wrapper onClick={focusWindow}>
+        <div onClick={focusWindow}>
           <StopLights
             variant={name}
             handleMinimizeClick={handleMinimizeClick}
             handleCloseClick={handleCloseClick}
             handleMaximizeClick={handleMaximizeClick}
           />
-        </Wrapper>
-        <Component />
+        </div>
+        <Component key={`${name}uhhh`}/>
       </span>
     </Rnd>
   );
-};
-
-const Wrapper = styled.div``;
+});
 
 export default Window;

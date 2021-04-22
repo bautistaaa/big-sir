@@ -66,7 +66,6 @@ export function reducer(state: AppState, action: Action) {
       const activeWindows = [
         {
           name: action.payload.name,
-          // ref: action.payload.ref,
           zIndex: maxZIndex + 1,
           focused: true,
         },

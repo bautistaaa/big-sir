@@ -1,7 +1,7 @@
 import { resume } from './Files/';
 
 export type Contents = Record<string, File> | string;
-type FileType = 'file' | 'directory' ;
+type FileType = 'file' | 'directory' | 'html' ;
 export interface File {
   fileType: FileType;
   display: string;
@@ -39,27 +39,21 @@ const fileDirectory: Record<string, File> = {
             contents: {
               NarutoQL: {
                 display: 'NarutoQL',
-                fileType: 'file',
-                contents: `file contents`,
+                fileType: 'html',
+                contents: `https://www.narutoql.com`,
                 searchText: ['Naruto'],
               },
               Spotify: {
                 display: 'Spotify City',
-                fileType: 'file',
-                contents: `file contents`,
+                fileType: 'html',
+                contents: `https://spotify-city.netlify.app/`,
                 searchText: ['Spotify'],
               },
-              vimfolio: {
-                display: 'Vimfolio',
-                fileType: 'file',
-                contents: `file contents`,
-                searchText: ['vim'],
-              },
-              vimdaddy: {
-                display: 'Vim Daddy',
-                fileType: 'file',
-                contents: `file contents`,
-                searchText: ['vim'],
+              ReactCoverflow: {
+                display: 'React Coverflow',
+                fileType: 'html',
+                contents: `https://bautistaaa.github.io/react-coverfl0w/index.html`,
+                searchText: ['React', 'Coverflow'],
               },
             },
           },

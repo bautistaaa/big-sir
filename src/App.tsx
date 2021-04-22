@@ -14,17 +14,20 @@ const App: FC = () => {
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
+  console.log(state.activeWindows);
   return (
     <Wrapper>
       <TopBar />
 
-      {state.activeWindows.map((aw) => (
-        <Window
-          key={aw.name}
-          name={aw.name}
-          minimizedTargetRect={minimizedTargetRect}
-        />
-      ))}
+      <>
+        {state.activeWindows.map((aw) => (
+          <Window
+            key={aw.name}
+            name={aw.name}
+            minimizedTargetRect={minimizedTargetRect}
+          />
+        ))}
+      </>
 
       <Dock
         terminalRef={terminalRef}

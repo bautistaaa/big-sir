@@ -5,13 +5,13 @@ const Clock: FC = () => {
   const [time, setTime] = useState(formatDate(new Date()));
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    const timeout = setInterval(() => {
       const date = formatDate(new Date());
       setTime(date);
     }, 1000);
 
     return () => {
-      clearTimeout(timeout);
+      clearInterval(timeout);
     };
   }, [time]);
 

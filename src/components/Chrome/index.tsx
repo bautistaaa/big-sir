@@ -1,5 +1,6 @@
 import { FC, FormEvent, memo, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
+import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
 import { LeftArrow, RightArrow, Refresh as BaseRefresh } from './icons';
 
@@ -32,11 +33,16 @@ const DEFAULT_URL = {
 };
 const Chrome: FC = memo(
   () => {
+    const { state } = useAppContext();
+    const windowState = state.activeWindows.find((x) => x.name === 'chrome');
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const wrapperRef = useRef<HTMLDivElement | null>(null);
     const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-    const [url, setUrl] = useState<UrlInfo>(DEFAULT_URL);
-    const [history, setHistory] = useState<UrlInfo[]>([DEFAULT_URL]);
+    const defaultUrl = windowState?.defaultUrl
+      ? { url: windowState.defaultUrl ?? '', title: '' }
+      : DEFAULT_URL;
+    const [url, setUrl] = useState<UrlInfo>(defaultUrl);
+    const [history, setHistory] = useState<UrlInfo[]>([defaultUrl]);
     const [activeIndex, setActiveIndex] = useState(history.length - 1);
     const [k, setK] = useState(Math.random());
     const hasPrevious = !!history[activeIndex - 1];

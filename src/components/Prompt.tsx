@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import { useAppContext } from '../AppContext';
 import { Action, Command, PromptState } from '../hooks/usePromptState';
 import { View } from './Terminal';
 import autocomplete from '../utils/autocomplete';
@@ -11,6 +12,7 @@ const Prompt: FC<{
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
   promptState: [PromptState, React.Dispatch<Action>];
 }> = ({ isTerminalFocused, setView, setFileContent, promptState }) => {
+  const { dispatch: appDispatch } = useAppContext();
   const [state, dispatch] = promptState;
   const { currentCommand, keysCurrentlyPressed } = state;
   const stateRef = useRef(state);
@@ -96,7 +98,13 @@ const Prompt: FC<{
 
         if (key === 'Tab') {
           e.preventDefault();
-          if (cmd === 'ls' || cmd === 'cat' || cmd === 'cd' || cmd === 'nvim') {
+          if (
+            cmd === 'ls' ||
+            cmd === 'cat' ||
+            cmd === 'cd' ||
+            cmd === 'nvim' ||
+            cmd === 'open'
+          ) {
             const results = autocomplete(args[0], stateRef.current.cwdContents);
             if (results.length > 1) {
               const output = results.join(' ');
@@ -217,7 +225,31 @@ const Prompt: FC<{
             output = Object.values(stateRef.current.cwdContents)
               .map((x) => x.display)
               .join(' ');
+          } else if (cmd === 'open') {
+            const term = args[0].split('/');
+            const parts = term.slice(0, term.length - 1);
+            const last = term.slice(-1)[0];
+            let defaultUrl = '';
+
+            if (term.length > 1) {
+              defaultUrl = getFileContents(
+                parts,
+                last,
+                stateRef.current.cwdContents
+              ) as string;
+            } else if (typeof stateRef.current.cwdContents !== 'string') {
+              defaultUrl = stateRef.current.cwdContents?.[args[0]]
+                ?.contents as string;
+            }
+            appDispatch({
+              type: 'focusWindow',
+              payload: {
+                name: 'chrome',
+                defaultUrl,
+              },
+            });
           }
+
           const command: Command = {
             input: commandRef.current!,
             type: 'real',
@@ -242,7 +274,7 @@ const Prompt: FC<{
         window.removeEventListener('keyup', handleKeyUp);
       };
     }
-  }, [isTerminalFocused, dispatch, setFileContent, setView]);
+  }, [isTerminalFocused, dispatch, setFileContent, setView, appDispatch]);
 
   return (
     <Wrapper>

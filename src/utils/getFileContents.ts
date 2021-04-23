@@ -12,7 +12,7 @@ const getFileContents = (
     if (typeof root !== 'string') {
       // @ts-ignore
       const f = root?.[current]?.contents?.[fileName];
-      if (f?.fileType === 'file') {
+      if (f && f?.fileType !== 'directory') {
         // @ts-ignore
         return root?.[current]?.contents?.[fileName]?.contents as string;
       }

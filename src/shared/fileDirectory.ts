@@ -37,23 +37,23 @@ const fileDirectory: Record<string, File> = {
             display: 'projects',
             searchText: ['projects'],
             contents: {
-              NarutoQL: {
-                display: 'NarutoQL',
+              'narutoql.html': {
+                display: 'narutoql.html',
                 fileType: 'html',
                 contents: `https://www.narutoql.com`,
-                searchText: ['Naruto'],
+                searchText: ['naruto'],
               },
-              Spotify: {
-                display: 'Spotify City',
+              'spotify-city.html': {
+                display: 'spotify-city.html',
                 fileType: 'html',
                 contents: `https://spotify-city.netlify.app/`,
-                searchText: ['Spotify'],
+                searchText: ['spotify'],
               },
-              ReactCoverflow: {
-                display: 'React Coverflow',
+              'react-coverfl0w.html': {
+                display: 'react-coverfl0w.html',
                 fileType: 'html',
                 contents: `https://bautistaaa.github.io/react-coverfl0w/index.html`,
-                searchText: ['React', 'Coverflow'],
+                searchText: ['react', 'coverflow'],
               },
             },
           },

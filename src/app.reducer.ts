@@ -10,7 +10,7 @@ const INITIAL_ZINDEX = 100;
 export type Action =
   | {
       type: typeof FOCUS_WINDOW;
-      payload: { name: AppType };
+      payload: { name: AppType; defaultUrl?: string };
     }
   | { type: typeof MINIMIZE_WINDOW; payload: { name: AppType } }
   | { type: typeof UNMINIMIZE_WINDOW; payload: { name: AppType } }
@@ -20,6 +20,7 @@ interface ActiveWindow {
   name: AppType;
   zIndex: number;
   focused: boolean;
+  defaultUrl?: string;
 }
 interface MinimizedWindow {
   name: AppType;
@@ -66,6 +67,7 @@ export function reducer(state: AppState, action: Action) {
       const activeWindows = [
         {
           name: action.payload.name,
+          defaultUrl: action.payload.defaultUrl,
           zIndex: maxZIndex + 1,
           focused: true,
         },

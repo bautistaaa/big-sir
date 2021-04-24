@@ -192,21 +192,22 @@ const Prompt: FC<{
               const term = args[0].split('/');
               const parts = term.slice(0, term.length - 1);
               const last = term.slice(-1)[0];
+              let nvimInput = '';
 
               if (term.length > 1) {
-                output = getFileContents(
+                nvimInput = getFileContents(
                   parts,
                   last,
                   stateRef.current.cwdContents
                 ) as string;
               } else {
-                output = stateRef.current.cwdContents?.[args[0]]
+                nvimInput = stateRef.current.cwdContents?.[args[0]]
                   ?.contents as string;
               }
 
-              if (output) {
+              if (nvimInput) {
                 setView('nvim');
-                setFileContent(output);
+                setFileContent(nvimInput);
               } else {
                 displayFileNotFound(currentCommand, stateRef.current.cwd);
                 return;

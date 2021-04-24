@@ -30,6 +30,7 @@ const Terminal: FC = () => {
 
   const callback = () => {
     if (consoleRef.current) {
+      console.log('&&&&&&&');
       const scrollHeight = consoleRef.current.scrollHeight;
       consoleRef.current.scrollTo(0, scrollHeight);
     }
@@ -93,7 +94,7 @@ const Console = styled.div`
   flex: 1;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  overflow: scroll;
+  overflow: auto;
 `;
 const Wrapper = styled.div`
   transition: transform 0.7s, opacity 0.4s;

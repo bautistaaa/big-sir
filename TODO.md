@@ -3,6 +3,11 @@ www.big-sir.com
 =============================
 BUGS
 =============================
+- opening resume in vim CATS the file as well
+- clicking on iframe doesnt switch windows
+- When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
+* Pressing up in the terminal puts the cursor at the beginning of the line instead of the end of the line
+* Typing in a domain name requires the protocol or we get big-sir inception. i.e. vin-e.com will get you big-sir where as https://vin-e.com/ opens the page
 =============================
 TODO
 =============================
@@ -44,6 +49,8 @@ DONE
 - fix auto complete for cat/nvim ** DONE **
 - fix cat nvim command when in same directory ** DONE **
 - cd with no arg breaks ** DONE **
+- All windows (terminal, chrome, about) all open with scrollbars enabled. ** DONE **
+- When someone does do a multiline command, for whatever reason, shouldn't the [/]$ should be top aligned ** DONE **
 
 =============================
 FEEDBACK

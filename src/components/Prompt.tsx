@@ -320,8 +320,14 @@ const Prompt: FC<{
       })}
       <Line>
         <User>[{state.cwd}]$&nbsp;</User>
-        <Input>{currentCommand}</Input>
-        {isTerminalFocused && <Cursor />}
+        <Input>
+          {currentCommand}
+          {isTerminalFocused && (
+            <CursorWrapper>
+              <Cursor />
+            </CursorWrapper>
+          )}
+        </Input>
       </Line>
     </Wrapper>
   );
@@ -330,7 +336,7 @@ const Prompt: FC<{
 const Wrapper = styled.div``;
 const Line = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
   line-height: 25px;
@@ -340,6 +346,8 @@ const User = styled.div`
 `;
 const Input = styled.pre`
   color: white;
+  position: relative;
+  bottom: 2px;
 `;
 const HiddenTextArea = styled.textarea`
   position: absolute;
@@ -358,10 +366,18 @@ const HiddenTextArea = styled.textarea`
   white-space: pre;
   text-indent: -9999em;
 `;
-const Cursor = styled.span`
+const CursorWrapper = styled.div`
   display: inline-block;
-  background: #b6b6b6;
+  position: relative;
   margin-left: 2px;
+  width: 12px;
+  height: 22px;
+`;
+const Cursor = styled.div`
+  position: absolute;
+  top: 5px;
+  left: 0;
+  background: #b6b6b6;
   width: 12px;
   height: 22px;
 `;

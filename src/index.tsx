@@ -47,6 +47,7 @@ const GlobalStyling = createGlobalStyle`
   body {
     font-family: -apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue','Helvetica','Arial',sans-serif;
     line-height: 1;
+    overflow: hidden;
   }
   ol, ul {
     list-style: none;

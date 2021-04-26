@@ -30,7 +30,6 @@ const Terminal: FC = () => {
 
   const callback = () => {
     if (consoleRef.current) {
-      console.log('&&&&&&&');
       const scrollHeight = consoleRef.current.scrollHeight;
       consoleRef.current.scrollTo(0, scrollHeight);
     }

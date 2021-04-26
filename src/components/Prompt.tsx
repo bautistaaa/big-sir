@@ -121,9 +121,8 @@ const Prompt: FC<{
                 const term = args[0].split('/');
                 const parts = term.slice(0, term.length - 1);
                 const path = [...parts, results[0]].filter(Boolean);
-                const newCommand = `${cmd} ${
-                  path.length > 1 ? path.join('/') : path
-                }`;
+                const newCommand = `${cmd} ${path.length > 1 ? path.join('/') : path
+                  }`;
                 dispatch({
                   type: 'setCurrentCommand',
                   payload: { command: newCommand },
@@ -147,6 +146,7 @@ const Prompt: FC<{
             textAreaRef.current!.value = cmd.input;
           }
         } else if (key === 'ArrowUp') {
+          e.preventDefault();
           dispatch({ type: 'decrementHistory' });
           const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
           if (cmd) {
@@ -155,6 +155,7 @@ const Prompt: FC<{
               payload: { command: cmd.input },
             });
             commandRef.current = cmd.input;
+            textAreaRef.current!.value = '';
             textAreaRef.current!.value = cmd.input;
           }
         } else if (key === 'Enter') {

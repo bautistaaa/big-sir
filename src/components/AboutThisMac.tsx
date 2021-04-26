@@ -56,7 +56,6 @@ const Content = styled.div`
   width: 100%;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  overflow: scroll;
 `;
 const Circle = styled.div`
   height: 150px;

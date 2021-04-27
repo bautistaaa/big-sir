@@ -3,7 +3,6 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- If you open html with chrome already opened, NOTHING happens
 - clicking on iframe doesnt switch windows
 - When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
 =============================
@@ -53,6 +52,7 @@ DONE
 - opening resume in vim CATS the file as well ** DONE **
 - Pressing up in the terminal puts the cursor at the beginning of the line instead of the end of the line ** DONE **
 - Typing in a domain name requires the protocol or we get big-sir inception. i.e. vin-e.com will get you big-sir where as https://vin-e.com/ opens the page ** DONE **
+- If you open html with chrome already opened, NOTHING happens ** DONE **
 
 =============================
 FEEDBACK

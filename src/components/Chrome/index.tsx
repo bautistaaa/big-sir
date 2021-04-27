@@ -13,6 +13,12 @@ interface UrlInfo {
   url: string;
   title?: string;
 }
+const urlFactory = (url: string, title = ''): UrlInfo => {
+  return {
+    url: formattingUrl(url),
+    title,
+  };
+};
 const formattingUrl = (url: string): string => {
   if (/(http(s?)):\/\//i.test(url)) {
     return url;
@@ -67,24 +73,13 @@ const Chrome: FC = (): JSX.Element => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setHistory((history) => [
-      ...history,
-      {
-        url: formattingUrl(url.url),
-        title: url.title,
-      },
-    ]);
+    const { url: urlToFormat, title } = url;
+    setHistory((history) => [...history, urlFactory(urlToFormat, title)]);
     setActiveIndex(history.length);
   };
   const handleBookmarkItemClick = (url: string, title: string) => {
     const urlInfo = { url, title };
-    setHistory((history) => [
-      ...history,
-      {
-        url: formattingUrl(url),
-        title,
-      },
-    ]);
+    setHistory((history) => [...history, urlFactory(url, title)]);
     setActiveIndex(history.length);
     setUrl(urlInfo);
   };
@@ -92,6 +87,17 @@ const Chrome: FC = (): JSX.Element => {
   useEffect(() => {
     setUrl(history[activeIndex]);
   }, [activeIndex, setUrl, history]);
+  useEffect(() => {
+    if (windowState?.defaultUrl) {
+      const urlInfo = {
+        url: formattingUrl(windowState.defaultUrl as string),
+        title: '',
+      };
+      setHistory((history) => [...history, urlInfo]);
+      setActiveIndex(history.length);
+      setUrl(urlInfo);
+    }
+  }, [windowState?.defaultUrl]);
 
   return (
     <Wrapper ref={wrapperRef}>

@@ -217,7 +217,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
             handleMaximizeClick={handleMaximizeClick}
           />
         </div>
-        <Component key={`${name}`} />
+        <Component key={name} />
       </span>
     </Rnd>
   );

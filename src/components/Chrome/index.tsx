@@ -97,6 +97,7 @@ const Chrome: FC = (): JSX.Element => {
       setActiveIndex(history.length);
       setUrl(urlInfo);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowState?.defaultUrl]);
 
   return (

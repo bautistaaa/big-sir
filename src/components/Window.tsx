@@ -199,6 +199,13 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
         height: `${windowHeight}px`,
       }}
       enableResizing={resizeable}
+      onDragStop={(_, d) => {
+        if (windowRef.current?.resizableElement.current) {
+          windowRef.current.resizableElement.current.style.transform = `translate(${Math.round(
+            d.x
+          )}px, ${Math.round(d.y)}px)`;
+        }
+      }}
       onDragStart={focusWindow}
     >
       <span ref={ref}>
@@ -210,7 +217,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
             handleMaximizeClick={handleMaximizeClick}
           />
         </div>
-        <Component key={`${name}uhhh`}/>
+        <Component key={`${name}`} />
       </span>
     </Rnd>
   );

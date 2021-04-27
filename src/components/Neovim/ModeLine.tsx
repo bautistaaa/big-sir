@@ -28,12 +28,12 @@ const Mode = styled.div<{ mode: string }>`
   &::after {
     content: '';
     position: absolute;
-    width: 0;
-    height: 0;
+    width: 0px;
+    height: 0px;
     border-style: solid;
-    border-width: 13px 0 13px 13px;
+    border-width: 8px 0px 8px 8px;
     border-color: transparent transparent transparent rgb(242, 157, 180);
-    right: -12px;
+    right: -8px;
   }
 `;
 

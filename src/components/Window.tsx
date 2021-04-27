@@ -193,8 +193,8 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
       minHeight={300}
       minWidth={300}
       default={{
-        x: window.innerWidth / 2 - windowWidth / 2,
-        y: window.innerHeight / 2 - windowHeight / 2,
+        x: Math.round(window.innerWidth / 2 - windowWidth / 2),
+        y: Math.round(window.innerHeight / 2 - windowHeight / 2),
         width: `${windowWidth}px`,
         height: `${windowHeight}px`,
       }}

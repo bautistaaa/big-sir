@@ -31,95 +31,93 @@ const DEFAULT_URL = {
   url: 'https://www.google.com/webhp?igu=1',
   title: 'Google',
 };
-const Chrome: FC = memo(
-  () => {
-    const { state } = useAppContext();
-    const windowState = state.activeWindows.find((x) => x.name === 'chrome');
-    const iframeRef = useRef<HTMLIFrameElement | null>(null);
-    const wrapperRef = useRef<HTMLDivElement | null>(null);
-    const hiddenInputRef = useRef<HTMLInputElement | null>(null);
-    const defaultUrl = windowState?.defaultUrl
-      ? { url: windowState.defaultUrl ?? '', title: '' }
-      : DEFAULT_URL;
-    const [url, setUrl] = useState<UrlInfo>(defaultUrl);
-    const [history, setHistory] = useState<UrlInfo[]>([defaultUrl]);
-    const [activeIndex, setActiveIndex] = useState(history.length - 1);
-    const [k, setK] = useState(Math.random());
-    const hasPrevious = !!history[activeIndex - 1];
-    const hasNext = !!history[activeIndex + 1];
+const Chrome: FC = (): JSX.Element => {
+  const { state } = useAppContext();
+  const windowState = state.activeWindows.find((x) => x.name === 'chrome');
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
+  const defaultUrl = windowState?.defaultUrl
+    ? { url: windowState.defaultUrl ?? '', title: '' }
+    : DEFAULT_URL;
+  const [url, setUrl] = useState<UrlInfo>(defaultUrl);
+  const [history, setHistory] = useState<UrlInfo[]>([defaultUrl]);
+  const [activeIndex, setActiveIndex] = useState(history.length - 1);
+  const [k, setK] = useState(Math.random());
+  const hasPrevious = !!history[activeIndex - 1];
+  const hasNext = !!history[activeIndex + 1];
+  const src = history[activeIndex];
 
-    const handleRefreshClick = () => {
-      setK(Math.random());
-    };
-    const handleForwardClick = () => {
-      setActiveIndex((ai) => ai + 1);
-    };
-    const handlePreviousClick = () => {
-      setActiveIndex((ai) => ai - 1);
-    };
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setHistory((history) => [...history, url]);
-      setActiveIndex(history.length);
-    };
-    const handleBookmarkItemClick = (url: string, title: string) => {
-      const urlInfo = { url, title };
-      setHistory((history) => [...history, urlInfo]);
-      setActiveIndex(history.length);
-      setUrl(urlInfo);
-    };
+  const handleRefreshClick = () => {
+    setK(Math.random());
+  };
+  const handleForwardClick = () => {
+    setActiveIndex((ai) => ai + 1);
+  };
+  const handlePreviousClick = () => {
+    setActiveIndex((ai) => ai - 1);
+  };
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setHistory((history) => [...history, url]);
+    setActiveIndex(history.length);
+  };
+  const handleBookmarkItemClick = (url: string, title: string) => {
+    const urlInfo = { url, title };
+    setHistory((history) => [...history, urlInfo]);
+    setActiveIndex(history.length);
+    setUrl(urlInfo);
+  };
 
-    useEffect(() => {
-      setUrl(history[activeIndex]);
-    }, [activeIndex, setUrl, history]);
+  useEffect(() => {
+    setUrl(history[activeIndex]);
+  }, [activeIndex, setUrl, history]);
 
-    return (
-      <Wrapper ref={wrapperRef}>
-        <TopBar className="action-bar"></TopBar>
-        <BrowserBar title={url.title ?? ''}>
-          <ActionButtonsWrapper>
-            <ClearButton onClick={handlePreviousClick} disabled={!hasPrevious}>
-              <LeftArrow disabled={!hasPrevious} />
-            </ClearButton>
-            <ClearButton onClick={handleForwardClick} disabled={!hasNext}>
-              <RightArrow disabled={!hasNext} />
-            </ClearButton>
-            <ClearButton onClick={handleRefreshClick}>
-              <Refresh />
-            </ClearButton>
-          </ActionButtonsWrapper>
-          <Form onSubmit={handleSubmit}>
-            <UrlBar
-              ref={hiddenInputRef}
-              value={url.url}
-              onChange={(e) => {
-                setUrl({ url: e.target.value });
-              }}
-            />
-          </Form>
-        </BrowserBar>
-        <Bookmarks>
-          {bookmarks.map(({ url, favico, title }: Bookmark) => {
-            return (
-              <BookmarkItem
-                key={url}
-                onClick={() => handleBookmarkItemClick(url, title)}
-              >
-                <BookmarkFavIcon src={favico} />
-                <BookmarkUrl>{url}</BookmarkUrl>
-              </BookmarkItem>
-            );
-          })}
-        </Bookmarks>
+  return (
+    <Wrapper ref={wrapperRef}>
+      <TopBar className="action-bar"></TopBar>
+      <BrowserBar title={url.title ?? ''}>
+        <ActionButtonsWrapper>
+          <ClearButton onClick={handlePreviousClick} disabled={!hasPrevious}>
+            <LeftArrow disabled={!hasPrevious} />
+          </ClearButton>
+          <ClearButton onClick={handleForwardClick} disabled={!hasNext}>
+            <RightArrow disabled={!hasNext} />
+          </ClearButton>
+          <ClearButton onClick={handleRefreshClick}>
+            <Refresh />
+          </ClearButton>
+        </ActionButtonsWrapper>
+        <Form onSubmit={handleSubmit}>
+          <UrlBar
+            ref={hiddenInputRef}
+            value={url.url}
+            onChange={(e) => {
+              setUrl({ url: e.target.value });
+            }}
+          />
+        </Form>
+      </BrowserBar>
+      <Bookmarks>
+        {bookmarks.map(({ url, favico, title }: Bookmark) => {
+          return (
+            <BookmarkItem
+              key={url}
+              onClick={() => handleBookmarkItemClick(url, title)}
+            >
+              <BookmarkFavIcon src={favico} />
+              <BookmarkUrl>{url}</BookmarkUrl>
+            </BookmarkItem>
+          );
+        })}
+      </Bookmarks>
 
-        <Content>
-          <IFrame key={k} ref={iframeRef} src={url.url}></IFrame>
-        </Content>
-      </Wrapper>
-    );
-  },
-  () => true
-);
+      <Content>
+        <IFrame key={k} ref={iframeRef} src={src?.url} id="iframe"></IFrame>
+      </Content>
+    </Wrapper>
+  );
+};
 
 const Wrapper = styled.div`
   height: calc(100% - 70px);
@@ -202,7 +200,6 @@ const Content = styled.div`
   flex: 1;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  overflow: scroll;
 `;
 const IFrame = styled.iframe`
   width: 100%;

@@ -1,4 +1,4 @@
-import { FC, FormEvent, memo, useEffect, useRef, useState } from 'react';
+import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
@@ -13,6 +13,13 @@ interface UrlInfo {
   url: string;
   title?: string;
 }
+const formattingUrl = (url: string): string => {
+  if (/(http(s?)):\/\//i.test(url)) {
+    return url;
+  }
+
+  return `https://${url}`;
+};
 const bookmarks: Bookmark[] = [
   { url: 'https://www.narutoql.com', favico: 'favico.svg', title: 'NarutoQL' },
   {
@@ -59,12 +66,25 @@ const Chrome: FC = (): JSX.Element => {
   };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setHistory((history) => [...history, url]);
+
+    setHistory((history) => [
+      ...history,
+      {
+        url: formattingUrl(url.url),
+        title: url.title,
+      },
+    ]);
     setActiveIndex(history.length);
   };
   const handleBookmarkItemClick = (url: string, title: string) => {
     const urlInfo = { url, title };
-    setHistory((history) => [...history, urlInfo]);
+    setHistory((history) => [
+      ...history,
+      {
+        url: formattingUrl(url),
+        title,
+      },
+    ]);
     setActiveIndex(history.length);
     setUrl(urlInfo);
   };

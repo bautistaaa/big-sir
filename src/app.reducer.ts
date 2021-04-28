@@ -56,27 +56,36 @@ export function reducer(state: AppState, action: Action) {
         ),
       };
     case FOCUS_WINDOW:
-      const filteredAndResetted = state.activeWindows
-        .filter((aw) => aw.name !== action.payload.name)
-        .map((v) => ({ ...v, focused: false }));
-
       const maxZIndex = Math.max(
-        ...filteredAndResetted.map((x) => x.zIndex),
+        ...state.activeWindows.map((x) => x.zIndex),
         INITIAL_ZINDEX
       );
-      const activeWindows = [
-        {
+
+      const refocusedWindows = state.activeWindows.map((aw) => {
+        if (aw.name === action.payload.name) {
+          return {
+            ...aw,
+            zIndex: maxZIndex + 1,
+            focused: true,
+          };
+        }
+
+        return { ...aw, focused: false };
+      });
+
+      // We need to open a new window:
+      if (!refocusedWindows.find(({ name }) => name === action.payload.name)) {
+        refocusedWindows.push({
           name: action.payload.name,
           defaultUrl: action.payload.defaultUrl,
           zIndex: maxZIndex + 1,
           focused: true,
-        },
-        ...filteredAndResetted,
-      ];
+        });
+      }
 
       return {
         ...state,
-        activeWindows,
+        activeWindows: refocusedWindows,
       };
     default:
       throw new Error();

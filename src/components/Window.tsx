@@ -6,6 +6,7 @@ import configs, { AppType } from '../shared/configs';
 import Chrome from './Chrome';
 import Finder from './Finder';
 import Terminal from './Terminal';
+import AboutThisDeveloper from './AboutThisDeveloper';
 import AboutThisMac from './AboutThisMac';
 import { RectResult } from '../hooks/useRect';
 import useWindowState from '../hooks/useWindowState';
@@ -29,6 +30,7 @@ interface WindowProps {
 }
 const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const x: { [K in AppType]: React.ComponentType<any> } = {
+    aboutThisDeveloper: AboutThisDeveloper,
     aboutThisMac: AboutThisMac,
     chrome: Chrome,
     finder: Finder,
@@ -177,6 +179,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   };
   const handleMaximizeClick = (e: Event) => {
     e.stopPropagation();
+    if (!resizeable) return;
     maximizeApp();
   };
 

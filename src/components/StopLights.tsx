@@ -35,8 +35,8 @@ const Wrapper = styled.div<{ variant: string }>`
   padding: 7px;
   z-index: 500;
   ${({ variant }) =>
-    variant === 'aboutThisMac' &&
-    `
+    (variant === 'aboutThisMac' || variant === 'aboutThisDeveloper') &&
+    ` 
     top: 6px;
     left: 6px;
     `}

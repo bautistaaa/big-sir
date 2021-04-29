@@ -9,8 +9,6 @@ import useRect from './hooks/useRect';
 const App: FC = () => {
   const { state } = useAppContext();
 
-  const terminalRef = useRef<HTMLDivElement | null>(null);
-  const finderRef = useRef<HTMLDivElement | null>(null);
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
@@ -29,8 +27,6 @@ const App: FC = () => {
       </>
 
       <Dock
-        terminalRef={terminalRef}
-        finderRef={finderRef}
         minimizedTargetRef={minimizedTargetRef}
       />
     </Wrapper>

@@ -15,6 +15,12 @@ const TopBar: FC = () => {
       payload: { name: 'aboutThisMac' },
     });
   };
+  const handleAboutThisDeveloperClick = () => {
+    dispatch({
+      type: 'focusWindow',
+      payload: { name: 'aboutThisDeveloper' },
+    });
+  };
   return (
     <Wrapper>
       <LeftSide>
@@ -26,6 +32,14 @@ const TopBar: FC = () => {
             <Menu.Item as={StyledMenuItem}>
               <MenuButton onClick={handleAboutThisMacClick}>
                 About This Mac
+              </MenuButton>
+            </Menu.Item>
+            <Menu.Item as={StyledMenuItem}>
+              <Separator />
+            </Menu.Item>
+            <Menu.Item as={StyledMenuItem}>
+              <MenuButton onClick={handleAboutThisDeveloperClick}>
+                About This Developer
               </MenuButton>
             </Menu.Item>
           </Menu.Items>
@@ -63,13 +77,23 @@ const StyledMenuItems = styled.ul`
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   left: 0;
   top: 24px;
-  padding: 5px;
   border-radius: 5px;
   width: 260px;
+  padding: 2px 0;
 `;
 const StyledMenuItem = styled.li`
-  padding-bottom: 7px;
+  position: relative;
+  padding: 3px 0;
+  margin: 0 5px;
+  }
+`;
+const Separator = styled.div`
+  position: relative;
+  width: 94%;
+  left: 8px;
+  padding: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  height: 1px;
 `;
 const Wrapper = styled.div`
   display: flex;
@@ -88,7 +112,6 @@ const Wrapper = styled.div`
   font-weight: 500;
   backdrop-filter: blur(72px);
 `;
-
 const LeftSide = styled.div`
   display: flex;
   align-items: center;

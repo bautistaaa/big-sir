@@ -39,7 +39,6 @@ const bookmarks: Bookmark[] = [
     title: 'React Coverfl0w',
   },
 ];
-
 const DEFAULT_URL = {
   url: 'https://www.google.com/webhp?igu=1',
   title: 'Google',
@@ -72,7 +71,6 @@ const Chrome: FC = (): JSX.Element => {
   };
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const { url: urlToFormat, title } = url;
     setHistory((history) => [...history, urlFactory(urlToFormat, title)]);
     setActiveIndex(history.length);
@@ -140,7 +138,7 @@ const Chrome: FC = (): JSX.Element => {
       </Bookmarks>
 
       <Content>
-        <IFrame key={k} ref={iframeRef} src={src?.url} id="iframe"></IFrame>
+        <IFrame key={k} ref={iframeRef} src={src?.url}></IFrame>
       </Content>
     </Wrapper>
   );

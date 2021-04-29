@@ -12,6 +12,7 @@ const minimizedImages: { [k: string]: string } = {
   finder: 'finder-min.png',
   terminal: 'minimized.png',
   aboutThisMac: 'about-min.png',
+  aboutThisDeveloper: 'about-min.png',
   spotify: 'spotify.svg',
 };
 const items: DockItem[] = [
@@ -34,12 +35,9 @@ const items: DockItem[] = [
 ];
 
 const Dock: FC<{
-  terminalRef: MutableRefObject<HTMLDivElement | null>;
-  finderRef: MutableRefObject<HTMLDivElement | null>;
   minimizedTargetRef: MutableRefObject<HTMLDivElement | null>;
-}> = ({ terminalRef, finderRef, minimizedTargetRef }) => {
+}> = ({ minimizedTargetRef }) => {
   const { state, dispatch } = useAppContext();
-
 
   return (
     <Wrapper>

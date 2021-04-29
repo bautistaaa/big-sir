@@ -1,18 +1,19 @@
-import React, { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, memo } from 'react';
 import { Rnd } from 'react-rnd';
-import StopLights from './StopLights';
-import { useAppContext } from '../AppContext';
-import configs, { AppType } from '../shared/configs';
-import Chrome from './Chrome';
-import Finder from './Finder';
-import Terminal from './Terminal';
-import AboutThisDeveloper from './AboutThisDeveloper';
-import AboutThisMac from './AboutThisMac';
-import { RectResult } from '../hooks/useRect';
-import useWindowState from '../hooks/useWindowState';
-import useMaximizeWindow from '../hooks/useMaximizeWindow';
-import extractPositionFromTransformStyle from '../utils/extractTransformStyles';
-import useIsFocused from '../hooks/useIsFocused';
+import { useMachine } from '@xstate/react';
+import windowMachine from './window.machine';
+import StopLights from '../StopLights';
+import { useAppContext } from '../../AppContext';
+import configs, { AppType } from '../../shared/configs';
+import Chrome from '../Chrome';
+import Finder from '../Finder';
+import Terminal from '../Terminal';
+import AboutThisDeveloper from '../AboutThisDeveloper';
+import AboutThisMac from '../AboutThisMac';
+import { RectResult } from '../../hooks/useRect';
+import useMaximizeWindow from '../../hooks/useMaximizeWindow';
+import extractPositionFromTransformStyle from '../../utils/extractTransformStyles';
+import useIsFocused from '../../hooks/useIsFocused';
 
 export type WindowSize = {
   width: string | number;
@@ -28,7 +29,7 @@ interface WindowProps {
   name: AppType;
   minimizedTargetRect: RectResult;
 }
-const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
+const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const x: { [K in AppType]: React.ComponentType<any> } = {
     aboutThisDeveloper: AboutThisDeveloper,
     aboutThisMac: AboutThisMac,
@@ -39,7 +40,9 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const Component = x[name];
 
   const { state, dispatch } = useAppContext();
-  const [{ mode, previous }, windowDispatch] = useWindowState();
+
+  const [current, send] = useMachine(windowMachine);
+
   const ref = useRef<HTMLDivElement | null>(null);
   const { isFocused } = useIsFocused(ref);
 
@@ -62,7 +65,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const maximizeApp = useMaximizeWindow(
     windowRef,
     { height: windowHeight, width: windowWidth },
-    windowDispatch
+    send
   );
   const focusWindow = () => {
     dispatch({
@@ -72,10 +75,17 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   };
 
   useEffect(() => {
-    switch (mode) {
-      case 'idle':
-        if (previous === 'minimized') {
-          windowDispatch({ type: 'modeChanged', payload: { mode: 'idle' } });
+    if (mounted.current) {
+      if (!isMinimized) {
+        send('FLOAT');
+      }
+    }
+  }, [isMinimized, send]);
+
+  useEffect(() => {
+    switch (current.value) {
+      case 'floating':
+        if (current.history?.matches('minimized')) {
           if (windowRef.current?.resizableElement.current) {
             windowRef.current.resizableElement.current.style.transition =
               'height .6s, width .6s, transform .6s, opacity .6s';
@@ -96,7 +106,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
         }
         break;
       case 'minimized':
-        if (previous !== 'minimized') {
+        if (!current.history?.matches('minimized')) {
           if (!windowRef?.current?.resizableElement?.current) {
             return;
           }
@@ -142,15 +152,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
         }
         break;
     }
-  }, [mode, previous, minimizedTargetRect.left, windowDispatch]);
-
-  useEffect(() => {
-    if (mounted.current) {
-      if (!isMinimized) {
-        windowDispatch({ type: 'modeChanged', payload: { mode: 'idle' } });
-      }
-    }
-  }, [isMinimized, windowDispatch]);
+  }, [current.value, minimizedTargetRect.left, current.history]);
 
   useEffect(() => {
     mounted.current = true;
@@ -171,7 +173,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const handleMinimizeClick = (e: Event) => {
     e.stopPropagation();
     dispatch({ type: 'minimizedWindow', payload: { name } });
-    windowDispatch({ type: 'modeChanged', payload: { mode: 'minimized' } });
+    send('MINIMIZE');
   };
   const handleCloseClick = (e: Event) => {
     e.stopPropagation();
@@ -180,6 +182,7 @@ const Window: FC<WindowProps> = React.memo(({ name, minimizedTargetRect }) => {
   const handleMaximizeClick = (e: Event) => {
     e.stopPropagation();
     if (!resizeable) return;
+    send('MAXIMIZE');
     maximizeApp();
   };
 

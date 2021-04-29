@@ -1,8 +1,7 @@
-import React, { MutableRefObject, useRef } from 'react';
+import { MutableRefObject, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import { WindowPosition, WindowSize } from '../components/Window';
 import extractPositionFromTransformStyle from '../utils/extractTransformStyles';
-import { Action } from './useWindowState';
 
 const TOP_BAR_HEIGHT = 25;
 const DOCK_HEIGHT = 55;
@@ -10,7 +9,7 @@ const DOCK_HEIGHT = 55;
 const useMaximizeWindow = (
   windowRef: MutableRefObject<Rnd | undefined>,
   { height, width }: { height: number; width: number },
-  windowDispatch: React.Dispatch<Action>
+  send: any
 ) => {
   const originalPositionRef = useRef<WindowPosition>({
     x: window.innerWidth / 2 - width / 2,
@@ -54,7 +53,7 @@ const useMaximizeWindow = (
     if (windowWidth === deskTopWidth && windowHeight === desktopHeight) {
       windowRef.current.updateSize(originalSizeRef.current);
       windowRef.current.updatePosition(originalPositionRef.current);
-      windowDispatch({ type: 'modeChanged', payload: { mode: 'idle' } });
+      send('FLOAT');
     } else {
       originalSizeRef.current = { width: windowWidth, height: windowHeight };
       originalPositionRef.current = { x: windowLeft, y: windowTop };

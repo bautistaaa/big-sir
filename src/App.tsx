@@ -26,9 +26,7 @@ const App: FC = () => {
         ))}
       </>
 
-      <Dock
-        minimizedTargetRef={minimizedTargetRef}
-      />
+      <Dock minimizedTargetRef={minimizedTargetRef} />
     </Wrapper>
   );
 };

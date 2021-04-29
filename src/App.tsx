@@ -32,8 +32,8 @@ const App: FC = () => {
 };
 
 const Wrapper = styled.div`
-  min-height: 100vh;
-  max-height: 100vh;
+  min-height: 100%;
+  height: 100%;
   background: url('./bg-3.jpg') no-repeat center top fixed;
   background-size: cover;
 `;

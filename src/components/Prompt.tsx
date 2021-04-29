@@ -121,8 +121,9 @@ const Prompt: FC<{
                 const term = args[0].split('/');
                 const parts = term.slice(0, term.length - 1);
                 const path = [...parts, results[0]].filter(Boolean);
-                const newCommand = `${cmd} ${path.length > 1 ? path.join('/') : path
-                  }`;
+                const newCommand = `${cmd} ${
+                  path.length > 1 ? path.join('/') : path
+                }`;
                 dispatch({
                   type: 'setCurrentCommand',
                   payload: { command: newCommand },

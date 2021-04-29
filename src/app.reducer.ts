@@ -67,6 +67,7 @@ export function reducer(state: AppState, action: Action) {
             ...aw,
             zIndex: maxZIndex + 1,
             focused: true,
+            defaultUrl: action.payload.defaultUrl,
           };
         }
 

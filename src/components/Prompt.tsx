@@ -12,7 +12,7 @@ const Prompt: FC<{
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
   promptState: [PromptState, React.Dispatch<Action>];
 }> = ({ isTerminalFocused, setView, setFileContent, promptState }) => {
-  const { dispatch: appDispatch } = useAppContext();
+  const { send: sendParent } = useAppContext();
   const [state, dispatch] = promptState;
   const { currentCommand, keysCurrentlyPressed } = state;
   const stateRef = useRef(state);
@@ -244,8 +244,8 @@ const Prompt: FC<{
               defaultUrl = stateRef.current.cwdContents?.[args[0]]
                 ?.contents as string;
             }
-            appDispatch({
-              type: 'focusWindow',
+            sendParent({
+              type: 'FOCUS_WINDOW',
               payload: {
                 name: 'chrome',
                 defaultUrl,
@@ -277,7 +277,7 @@ const Prompt: FC<{
         window.removeEventListener('keyup', handleKeyUp);
       };
     }
-  }, [isTerminalFocused, dispatch, setFileContent, setView, appDispatch]);
+  }, [isTerminalFocused, dispatch, setFileContent, setView, sendParent]);
 
   return (
     <Wrapper>

@@ -7,17 +7,17 @@ import Clock from './Clock';
 import { useAppContext } from '../../AppContext';
 
 const TopBar: FC = () => {
-  const { dispatch } = useAppContext();
+  const { send: sendParent } = useAppContext();
 
   const handleAboutThisMacClick = () => {
-    dispatch({
-      type: 'focusWindow',
+    sendParent({
+      type: 'FOCUS_WINDOW',
       payload: { name: 'aboutThisMac' },
     });
   };
   const handleAboutThisDeveloperClick = () => {
-    dispatch({
-      type: 'focusWindow',
+    sendParent({
+      type: 'FOCUS_WINDOW',
       payload: { name: 'aboutThisDeveloper' },
     });
   };

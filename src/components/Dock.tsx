@@ -37,7 +37,7 @@ const items: DockItem[] = [
 const Dock: FC<{
   minimizedTargetRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ minimizedTargetRef }) => {
-  const { state, dispatch } = useAppContext();
+  const { current, send } = useAppContext();
 
   return (
     <Wrapper>
@@ -47,14 +47,13 @@ const Dock: FC<{
             const { name, path } = item;
             return (
               <Button
-                active={!!state.activeWindows.find((aw) => aw.name === name)}
-                key={name}
-                onClick={() =>
-                  dispatch({
-                    type: 'focusWindow',
-                    payload: { name },
-                  })
+                active={
+                  !!current.context.activeWindows.find((aw) => aw.name === name)
                 }
+                key={name}
+                onClick={() => {
+                  send('FOCUS_WINDOW', { payload: { name } });
+                }}
               >
                 <img src={path} alt={name} />
               </Button>
@@ -63,11 +62,11 @@ const Dock: FC<{
         </IconsContainer>
         <TrashContainer>
           <Separator ref={minimizedTargetRef} />
-          {state.minimizedWindows.map(({ name }) => {
+          {current.context.minimizedWindows.map(({ name }) => {
             const imgSrc = minimizedImages[name];
             const handleMinimizedWindowClick = () => {
-              dispatch({
-                type: 'unminimizedWindow',
+              send({
+                type: 'UNMINIMIZE_WINDOW',
                 payload: { name },
               });
             };

@@ -1,17 +1,11 @@
 import { createMachine } from 'xstate';
-interface WindowSchema {
-  states: {
-    minimized: {};
-    maximized: {};
-    floating: {};
-  };
-}
-type WindowEvent =
+
+export type WindowEvent =
   | { type: 'FLOAT' }
   | { type: 'MINIMIZE' }
   | { type: 'MAXIMIZE' };
 
-const windowMachine = createMachine<any, WindowSchema, WindowEvent>({
+const windowMachine = createMachine<any, any, WindowEvent>({
   id: 'window',
   initial: 'floating',
   states: {

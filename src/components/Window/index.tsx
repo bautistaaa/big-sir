@@ -39,15 +39,19 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   };
   const Component = x[name];
 
-  const { state, dispatch } = useAppContext();
+  const { current: currentParent, send: sendParent } = useAppContext();
 
   const [current, send] = useMachine(windowMachine);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const { isFocused } = useIsFocused(ref);
 
-  const isMinimized = !!state.minimizedWindows.find((mw) => mw.name === name);
-  const appState = state.activeWindows.find((aw) => aw.name === name);
+  const isMinimized = !!currentParent.context.minimizedWindows.find(
+    (mw) => mw.name === name
+  );
+  const appState = currentParent.context.activeWindows.find(
+    (aw) => aw.name === name
+  );
   const { width: windowWidth, height: windowHeight, resizeable } = configs[
     name
   ];
@@ -68,8 +72,8 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     send
   );
   const focusWindow = () => {
-    dispatch({
-      type: 'focusWindow',
+    sendParent({
+      type: 'FOCUS_WINDOW',
       payload: { name },
     });
   };
@@ -163,21 +167,21 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
 
   useEffect(() => {
     if (isFocused) {
-      dispatch({
-        type: 'focusWindow',
+      sendParent({
+        type: 'FOCUS_WINDOW',
         payload: { name },
       });
     }
-  }, [isFocused, dispatch, name]);
+  }, [isFocused, sendParent, name]);
 
   const handleMinimizeClick = (e: Event) => {
     e.stopPropagation();
-    dispatch({ type: 'minimizedWindow', payload: { name } });
+    sendParent({ type: 'MINIMIZE_WINDOW', payload: { name } });
     send('MINIMIZE');
   };
   const handleCloseClick = (e: Event) => {
     e.stopPropagation();
-    dispatch({ type: 'removeWindow', payload: { name } });
+    sendParent({ type: 'REMOVE_WINDOW', payload: { name } });
   };
   const handleMaximizeClick = (e: Event) => {
     e.stopPropagation();

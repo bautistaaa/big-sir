@@ -7,17 +7,15 @@ import { useAppContext } from './AppContext';
 import useRect from './hooks/useRect';
 
 const App: FC = () => {
-  const { state } = useAppContext();
-
+  const { current } = useAppContext();
   const minimizedTargetRef = useRef(null);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
 
   return (
     <Wrapper>
       <TopBar />
-
       <>
-        {state.activeWindows.map((aw) => (
+        {current.context.activeWindows.map((aw) => (
           <Window
             key={aw.name}
             name={aw.name}
@@ -25,7 +23,6 @@ const App: FC = () => {
           />
         ))}
       </>
-
       <Dock minimizedTargetRef={minimizedTargetRef} />
     </Wrapper>
   );

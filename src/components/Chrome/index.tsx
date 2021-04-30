@@ -44,8 +44,8 @@ const DEFAULT_URL = {
   title: 'Google',
 };
 const Chrome: FC = (): JSX.Element => {
-  const { state } = useAppContext();
-  const windowState = state.activeWindows.find((x) => x.name === 'chrome');
+  const { current } = useAppContext();
+  const windowState = current.context.activeWindows.find((x) => x.name === 'chrome');
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const hiddenInputRef = useRef<HTMLInputElement | null>(null);

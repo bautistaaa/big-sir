@@ -64,7 +64,10 @@ const GlobalStyling = createGlobalStyle`
   table {
     border-collapse: collapse;
     border-spacing: 0;
-}
+  }
+  textarea {
+    caret-color: transparent;
+  }
 `;
 
 const theme = {};

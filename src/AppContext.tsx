@@ -1,31 +1,28 @@
-import React, { FC, useContext, useReducer } from 'react';
-import { reducer as appReducer, Action, AppState } from './app.reducer';
+import { useMachine } from '@xstate/react';
+import React, { FC, useContext } from 'react';
+import { Event, EventData, SCXML, SingleOrArray, State } from 'xstate';
+import appMachine, { Context, AppEvent } from './app.machine';
 
 interface AppContextValues {
-  state: AppState;
-  dispatch: React.Dispatch<Action>;
+  current: State<Context, AppEvent, any, any>;
+  send: (
+    event: SingleOrArray<Event<AppEvent>> | SCXML.Event<AppEvent>,
+    payload?: EventData | undefined
+  ) => State<Context, AppEvent, any, any>;
 }
 
 const AppContext = React.createContext<AppContextValues>({
-  state: {
-    activeWindows: [],
-    minimizedWindows: [],
-  },
-  dispatch: () => {},
+  current: {} as State<Context, AppEvent, any, any>,
+  send: () => ({} as State<Context, AppEvent, any, any>),
 });
 
 const useAppContext = () => useContext(AppContext);
 
-const initialState: AppState = {
-  activeWindows: [],
-  minimizedWindows: [],
-};
-
 const AppProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [current, send] = useMachine(appMachine, { devTools: true });
 
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider value={{ current, send }}>
       {children}
     </AppContext.Provider>
   );

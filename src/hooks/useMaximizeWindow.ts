@@ -1,5 +1,7 @@
 import { MutableRefObject, useRef } from 'react';
 import { Rnd } from 'react-rnd';
+import { Event, SingleOrArray, SCXML, EventData, State } from 'xstate';
+import { WindowEvent } from '../components/Window/window.machine';
 import { WindowPosition, WindowSize } from '../components/Window';
 import extractPositionFromTransformStyle from '../utils/extractTransformStyles';
 
@@ -9,7 +11,10 @@ const DOCK_HEIGHT = 55;
 const useMaximizeWindow = (
   windowRef: MutableRefObject<Rnd | undefined>,
   { height, width }: { height: number; width: number },
-  send: any
+  send: (
+    event: SingleOrArray<Event<WindowEvent>> | SCXML.Event<WindowEvent>,
+    payload?: EventData | undefined
+  ) => State<any, WindowEvent, any, any>
 ) => {
   const originalPositionRef = useRef<WindowPosition>({
     x: window.innerWidth / 2 - width / 2,

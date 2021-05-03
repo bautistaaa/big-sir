@@ -5,6 +5,7 @@ function useIsFocused(ref: MutableRefObject<HTMLDivElement | null>) {
   useEffect(() => {
     const listener = (event: any) => {
       if (!ref.current || ref.current.contains(event.target)) {
+        event.preventDefault();
         setIsFocused(true);
       } else {
         setIsFocused(false);

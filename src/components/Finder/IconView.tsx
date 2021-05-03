@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import styled from 'styled-components/macro';
-import { File, FileIconMap } from '.';
+import { FileIconMap } from '.';
 
 const IconView: FC<{ files: File[] }> = ({ files }) => {
   return (

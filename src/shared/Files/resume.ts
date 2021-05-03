@@ -19,7 +19,7 @@ const experience = [
   {
     name: 'Capital One',
     from: 'February 2018',
-    to: 'Febrary 2019',
+    to: 'February 2019',
     position: 'Senior Frontend Developer',
     tech: ['TypeScript', 'JavaScript', 'Angular']
   },
@@ -33,7 +33,7 @@ const experience = [
   {
     name: 'Booz Allen Hamilton',
     from: 'September 2014',
-    to: 'Febrary 2018',
+    to: 'February 2018',
     position: 'UI Team Lead',
     tech: ['.NET', 'ActionScript', 'Angular', 'AngularJS', 'Backbone', 'SQL Server']
   },

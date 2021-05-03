@@ -77,8 +77,8 @@ const Content = styled.div`
   backdrop-filter: blur(72px);
   height: calc(100% - 40px);
   width: 100%;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
 const Circle = styled.div`
   height: 150px;

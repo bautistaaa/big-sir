@@ -1,42 +1,62 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
-import { File, FileIconMap } from '.';
+import { FileIconMap } from '.';
+import { File, Contents } from '../../shared/fileDirectory';
+import { useAppContext } from '../../AppContext';
 
-const DetailView: FC<{ files: File[] }> = ({ files }) => {
+const DetailView: FC<{ files: Contents }> = ({ files }) => {
+  const { send } = useAppContext();
+  const [content, setContent] = useState<File | undefined>();
   return (
     <Wrapper>
       <SideBar>
-        {files.map((file) => {
+        {Object.keys(files).map((k) => {
+          const file = typeof files !== 'string' ? files[k] : ({} as File);
           return (
-            <Item>
-              <img src={FileIconMap[file.type]} alt="" />
-              <ItemName>{file.name}</ItemName>
+            <Item
+              onClick={() => {
+                setContent(file);
+              }}
+              onDoubleClick={() => {
+                send({
+                  type: 'FOCUS_WINDOW',
+                  payload: {
+                    name: 'chrome',
+                    defaultUrl: file.contents as string,
+                  },
+                });
+              }}
+            >
+              <img src={FileIconMap[file.fileType]} alt="" />
+              <ItemName>{k}</ItemName>
             </Item>
           );
         })}
       </SideBar>
-      <DetailsWrapper>
-        <Details>
-          <Preview></Preview>
-          <Metadata>
-            <FileName>Resume.js</FileName>
-            <FileSize>JavaScript script - 6 KB</FileSize>
-          </Metadata>
-          <Information>Information</Information>
-          <InformationItemWrapper>
-            <Label>Created</Label>
-            <Date>Wednesday, August 26, 2020 at 10:01 AM</Date>
-          </InformationItemWrapper>
-          <InformationItemWrapper>
-            <Label>Modified</Label>
-            <Date>Wednesday, August 26, 2020 at 10:01 AM</Date>
-          </InformationItemWrapper>
-          <InformationItemWrapper spacingLarge>
-            <Label>Last Opened</Label>
-            <Date>Wednesday, August 26, 2020 at 10:01 AM</Date>
-          </InformationItemWrapper>
-        </Details>
-      </DetailsWrapper>
+      {content && (
+        <DetailsWrapper>
+          <Details>
+            <Preview></Preview>
+            <Metadata>
+              <FileName>{content?.display}</FileName>
+              <FileSize>JavaScript script - 6 KB</FileSize>
+            </Metadata>
+            <Information>Information</Information>
+            <InformationItemWrapper>
+              <Label>Created</Label>
+              <Date>{content?.created ?? ''}</Date>
+            </InformationItemWrapper>
+            <InformationItemWrapper>
+              <Label>Modified</Label>
+              <Date>{content?.modified ?? ''}</Date>
+            </InformationItemWrapper>
+            <InformationItemWrapper spacingLarge>
+              <Label>Last Opened</Label>
+              <Date>{content?.lastOpened ?? ''}</Date>
+            </InformationItemWrapper>
+          </Details>
+        </DetailsWrapper>
+      )}
     </Wrapper>
   );
 };
@@ -47,7 +67,7 @@ const Wrapper = styled.div`
 `;
 const SideBar = styled.aside`
   height: 100%;
-  width: 150px;
+  width: 200px;
   border-right: 1px solid black;
   padding: 5px;
 `;

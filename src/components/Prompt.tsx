@@ -26,6 +26,7 @@ const Prompt: FC<{
   useEffect(() => {
     if (isTerminalFocused) {
       if (textAreaRef.current) {
+        console.log(textAreaRef.current);
         textAreaRef.current.focus();
       }
     }
@@ -118,7 +119,7 @@ const Prompt: FC<{
               clearRefs();
             } else {
               if (results[0]) {
-                const term = args[0].split('/');
+                const term = args?.[0]?.split('/') ?? '';
                 const parts = term.slice(0, term.length - 1);
                 const path = [...parts, results[0]].filter(Boolean);
                 const newCommand = `${cmd} ${
@@ -167,7 +168,7 @@ const Prompt: FC<{
 
           if (cmd === 'cat') {
             if (typeof stateRef.current.cwdContents !== 'string') {
-              const term = args[0].split('/');
+              const term = args?.[0]?.split('/') ?? '';
               const parts = term.slice(0, term.length - 1);
               const last = term.slice(-1)[0];
 
@@ -182,7 +183,7 @@ const Prompt: FC<{
                   ?.contents as string;
               }
 
-              if (!output) {
+              if (!output || typeof output !== 'string') {
                 displayFileNotFound(currentCommand, stateRef.current.cwd);
                 return;
               }
@@ -191,7 +192,7 @@ const Prompt: FC<{
             output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
             if (typeof stateRef.current.cwdContents !== 'string') {
-              const term = args[0].split('/');
+              const term = args?.[0]?.split('/') ?? '';
               const parts = term.slice(0, term.length - 1);
               const last = term.slice(-1)[0];
               let nvimInput = '';
@@ -203,8 +204,13 @@ const Prompt: FC<{
                   stateRef.current.cwdContents
                 ) as string;
               } else {
-                nvimInput = stateRef.current.cwdContents?.[args[0]]
-                  ?.contents as string;
+                if (
+                  typeof stateRef.current.cwdContents?.[args[0]]?.contents ===
+                  'string'
+                ) {
+                  nvimInput = stateRef.current.cwdContents?.[args[0]]
+                    ?.contents as string;
+                }
               }
 
               if (nvimInput) {
@@ -217,9 +223,6 @@ const Prompt: FC<{
             }
           } else if (cmd === 'cd') {
             const path = args[0];
-            // try catch change directories
-            // if caught means directory doesnt exist and add appropriate command
-            // and output and return
             dispatch({
               type: 'changeDirectory',
               payload: { path },
@@ -281,19 +284,6 @@ const Prompt: FC<{
 
   return (
     <Wrapper>
-      {/* <pre */}
-      {/*   style={{ */}
-      {/*     background: 'white', */}
-      {/*     position: 'absolute', */}
-      {/*     top: '-100px', */}
-      {/*     padding: '10px', */}
-      {/*     borderRadius: '10px', */}
-      {/*     fontWeight: 'bold', */}
-      {/*     fontSize: '20px', */}
-      {/*   }} */}
-      {/* > */}
-      {/*   {state.keysCurrentlyPressed.join(' ')} */}
-      {/* </pre> */}
       <HiddenTextArea
         ref={textAreaRef}
         onChange={(e) => {
@@ -305,6 +295,7 @@ const Prompt: FC<{
         }}
         onBlur={() => {
           if (isTerminalFocused && textAreaRef.current) {
+            console.log('TRIED TO BLUR BUT REFOCUSED');
             textAreaRef.current.focus();
           }
         }}

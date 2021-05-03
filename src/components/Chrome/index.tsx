@@ -45,7 +45,9 @@ const DEFAULT_URL = {
 };
 const Chrome: FC = (): JSX.Element => {
   const { current } = useAppContext();
-  const windowState = current.context.activeWindows.find((x) => x.name === 'chrome');
+  const windowState = current.context.activeWindows.find(
+    (x) => x.name === 'chrome'
+  );
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const hiddenInputRef = useRef<HTMLInputElement | null>(null);
@@ -145,8 +147,10 @@ const Chrome: FC = (): JSX.Element => {
 };
 
 const Wrapper = styled.div`
-  height: calc(100% - 70px);
+  height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 const TopBar = styled.div`
   height: 40px;
@@ -219,14 +223,13 @@ const BookmarkUrl = styled.div`
   display: inline-block;
 `;
 const Content = styled.div`
-  height: calc(100% - 31px);
-  width: 100%;
   background: white;
   flex: 1;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 `;
 const IFrame = styled.iframe`
+  border-radius: inherit;
   width: 100%;
   height: 100%;
 `;

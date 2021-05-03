@@ -14,6 +14,7 @@ import { RectResult } from '../../hooks/useRect';
 import useMaximizeWindow from '../../hooks/useMaximizeWindow';
 import extractPositionFromTransformStyle from '../../utils/extractTransformStyles';
 import useIsFocused from '../../hooks/useIsFocused';
+import styled from 'styled-components/macro';
 
 export type WindowSize = {
   width: string | number;
@@ -218,19 +219,46 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       }}
       onDragStart={focusWindow}
     >
-      <span ref={ref}>
-        <div onClick={focusWindow}>
-          <StopLights
-            variant={name}
-            handleMinimizeClick={handleMinimizeClick}
-            handleCloseClick={handleCloseClick}
-            handleMaximizeClick={handleMaximizeClick}
-          />
-        </div>
-        <Component key={name} />
-      </span>
+      <Wrapper>
+        <Border>
+          <Container ref={ref}>
+            <div onClick={focusWindow}>
+              <StopLights
+                variant={name}
+                handleMinimizeClick={handleMinimizeClick}
+                handleCloseClick={handleCloseClick}
+                handleMaximizeClick={handleMaximizeClick}
+              />
+            </div>
+            <Component key={name} />
+          </Container>
+        </Border>
+      </Wrapper>
     </Rnd>
   );
 });
+
+const Wrapper = styled.div`
+  height: 100%;
+  width: 100%;
+  box-shadow: rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+`;
+const Container = styled.div`
+  height: 100%;
+  margin: 1px 1px 1px 1px;
+  border-radius: inherit;
+`;
+const Border = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 0.9px hsla(240, 24%, 100%, 0.3),
+    0 0 0 1px hsla(240, 3%, 11%, 0.5);
+`;
 
 export default Window;

@@ -70,7 +70,7 @@ const useMaximizeWindow = (
 
       windowRef.current.updatePosition({
         x: 0,
-        y: 0,
+        y: 25,
       });
     }
   };

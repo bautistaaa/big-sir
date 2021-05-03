@@ -1,36 +1,17 @@
-import { useState, FC } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components/macro';
+import { useMachine } from '@xstate/react';
 import { Icons, Details, List } from './icons/';
+import finderMachine from './finder.machine';
 import IconView from './IconView';
 import ListView from './ListView';
 import DetailView from './DetailView';
+import getDirectoryContents from '../../utils/getDirectoryContents';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
 };
-export const files: File[] = [
-  {
-    name: 'Resume.js',
-    type: 'text',
-    lastOpened: 'Sep 27, 2020 at 8:41 PM',
-  },
-  {
-    name: 'Resume.js',
-    type: 'text',
-    lastOpened: 'Sep 27, 2020 at 8:41 PM',
-  },
-  {
-    name: 'Resume.js',
-    type: 'text',
-    lastOpened: 'Sep 27, 2020 at 8:41 PM',
-  },
-];
 export type FileType = 'text' | 'folder' | 'image';
-export interface File {
-  name: string;
-  type: FileType;
-  lastOpened: string;
-}
 const SidebarItemIconMap: { [k: string]: string } = {
   directory: 'sidebar-folder.png',
   desktop: 'path.png',
@@ -38,102 +19,129 @@ const SidebarItemIconMap: { [k: string]: string } = {
 };
 type ItemType = 'directory' | 'desktop' | 'applications';
 interface SidebarItem {
-  name: string;
   type: ItemType;
+  path: string[];
 }
-const SideBarItems: SidebarItem[] = [
-  {
-    name: 'workspace',
+const SideBarItems: Record<string, SidebarItem> = {
+  personal: {
     type: 'directory',
+    path: ['home', 'personal'],
   },
-];
-type View = 'Icon' | 'Detail' | 'List';
+  projects: {
+    type: 'directory',
+    path: ['home', 'projects'],
+  },
+};
 
 const Finder: FC = () => {
-  const [view, setView] = useState<View>('Icon');
-  const isIconView = view === 'Icon';
-  const isDetailView = view === 'Detail';
-  const isListView = view === 'List';
+  const [current, send] = useMachine(finderMachine);
+  const files = getDirectoryContents(
+    SideBarItems[current.context.activeDirectory].path
+  );
+  const isIconView = current.matches('icons');
+  const isDetailView = current.matches('details');
+  const isListView = current.matches('lists');
 
   return (
     <Wrapper>
-      <TopBar className="action-bar">
-        <LeftSide></LeftSide>
-        <RightSide>
-          <UtilityBar>
-            <ButtonsWrapper>
-              <LeftButton
-                onClick={() => {
-                  setView('Icon');
-                }}
-                isActive={isIconView}
-              >
-                <Icons />
-              </LeftButton>
-              <MiddleButton
-                onClick={() => {
-                  setView('List');
-                }}
-                isActive={isListView}
-              >
-                <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
-              </MiddleButton>
-              <RightButton
-                onClick={() => {
-                  setView('Detail');
-                }}
-                isActive={isDetailView}
-              >
-                <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
-              </RightButton>
-            </ButtonsWrapper>
-          </UtilityBar>
-        </RightSide>
-      </TopBar>
-      <Bottom>
+      <Explorer>
+        <InvisibleDraggableBar className="action-bar" />
         <Sidebar>
           <Title>Favorites</Title>
           <Items>
-            {SideBarItems.map((item, i) => {
+            {Object.keys(SideBarItems).map((k, i) => {
               return (
                 <Item key={i}>
-                  <img src={SidebarItemIconMap[item.type]} alt="" />
-                  <ItemName>{item.name}</ItemName>
+                  <img src={SidebarItemIconMap[SideBarItems[k].type]} alt="" />
+                  <ItemName
+                    onClick={() => {
+                      send({
+                        type: 'DIRECTORY_CHANGED',
+                        payload: {
+                          name: k,
+                        },
+                      });
+                    }}
+                  >
+                    {k}
+                  </ItemName>
                 </Item>
               );
             })}
           </Items>
         </Sidebar>
+      </Explorer>
+      <RightSide>
+        <UtilityBar className="action-bar">
+          <ButtonsWrapper>
+            <LeftButton
+              onClick={() => {
+                send('ICONS');
+              }}
+              isActive={isIconView}
+            >
+              <Icons />
+            </LeftButton>
+            <MiddleButton
+              onClick={() => {
+                send('LISTS');
+              }}
+              isActive={isListView}
+            >
+              <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
+            </MiddleButton>
+            <RightButton
+              onClick={() => {
+                send('DETAILS');
+              }}
+              isActive={isDetailView}
+            >
+              <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
+            </RightButton>
+          </ButtonsWrapper>
+        </UtilityBar>
         <Content>
-          {isIconView && <IconView files={files} />}
+          {isIconView && <IconView files={[]} />}
           {isListView && <ListView files={files} />}
           {isDetailView && <DetailView files={files} />}
         </Content>
-      </Bottom>
+      </RightSide>
     </Wrapper>
   );
 };
 
-const TopBar = styled.div`
-  display: flex;
-  height: 50px;
-`;
-const LeftSide = styled.div`
+const Explorer = styled.div`
+  position: relative;
   width: 150px;
   height: 100%;
   background: rgb(42 42 42 / 65%);
-  border-top-left-radius: 12px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   padding-left: 10px;
   padding-top: 10px;
   backdrop-filter: blur(12px);
 `;
 const RightSide = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   background: rgb(56, 56, 60);
-  width: calc(100% - 150px);
-  border-top-right-radius: 12px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  flex: 1;
+`;
+const InvisibleDraggableBar = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
 `;
 const UtilityBar = styled.div`
-  height: 100%;
+  height: 50px;
+  min-height: 50px;
+  width: 100%;
 `;
 const Items = styled.div`
   padding-left: 10px;
@@ -153,14 +161,12 @@ const ItemName = styled.div`
   font-size: 12px;
 `;
 const Wrapper = styled.div`
-  transform-origin: top left;
+  display: flex;
   height: 100%;
-  z-index: 100;
-  border-radius: 12px;
-  box-shadow: rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px;
+  border-radius: inherit;
 `;
 const Sidebar = styled.div`
-  padding: 15px;
+  padding: 62px 15px 15px;
   position: absolute;
   left: 0;
   top: 0;
@@ -180,21 +186,16 @@ const Sidebar = styled.div`
   }
 `;
 const Content = styled.div`
-  margin-left: 150px;
   background: rgb(41, 35, 38);
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 12px;
+  overflow: auto;
 `;
 const Title = styled.div`
   font-size: 10px;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
-`;
-const Bottom = styled.div`
-  position: relative;
-  display: flex;
-  height: calc(100% - 50px);
 `;
 const ButtonsWrapper = styled.div`
   display: flex;

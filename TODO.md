@@ -3,7 +3,8 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- clicking on iframe doesnt switch windows
+- cat on personal directory BREAKS
+- terminal doesnt work on FF and Safari
 - When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
 =============================
 TODO

@@ -15,7 +15,7 @@ const searchForOptions = (
 };
 
 const autocomplete = (
-  path: string,
+  path: string = '',
   currentDirectoryContents: Contents
 ): string[] => {
   const parts = path.split('/');

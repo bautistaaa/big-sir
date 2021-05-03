@@ -32,7 +32,6 @@ const GlobalStyling = createGlobalStyle`
     vertical-align: baseline;
   }
   pre {
-    overflow-x: auto;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;

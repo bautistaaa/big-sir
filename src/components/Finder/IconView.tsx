@@ -1,15 +1,17 @@
 import { FC } from 'react';
 import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
+import { Contents, File } from '../../shared/fileDirectory';
 
-const IconView: FC<{ files: File[] }> = ({ files }) => {
+const IconView: FC<{ files: Contents }> = ({ files }) => {
   return (
     <Wrapper>
-      {files.map((file: File, i) => {
+      {Object.keys(files).map((k) => {
+        const file = typeof files !== 'string' ? files[k] : ({} as File);
         return (
-          <Item key={`${file.name}-${i}`}>
-            <img src={FileIconMap[file.type]} alt="" />
-            <ItemName>{file.name}</ItemName>
+          <Item key={file.display}>
+            <img src={FileIconMap['text']} alt="" />
+            <ItemName>{file.display}</ItemName>
           </Item>
         );
       })}

@@ -72,14 +72,14 @@ const Table = styled.table`
     padding: 7px;
     color: rgb(177, 177, 177);
     border-collapse: collapse;
-    border-bottom: 1px solid rgb(177, 177, 177);
+    border-bottom: 1px solid rgb(100, 100, 100);
     width: 10%;
     &:nth-child(1) {
       padding-left: 35px;
       width: 30%;
     }
     &:not(:last-child) {
-      border-right: 1px solid rgb(177, 177, 177);
+      border-right: 1px solid rgb(100, 100, 100);
     }
   }
 

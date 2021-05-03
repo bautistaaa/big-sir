@@ -101,7 +101,7 @@ const Finder: FC = () => {
           </ButtonsWrapper>
         </UtilityBar>
         <Content>
-          {isIconView && <IconView files={[]} />}
+          {isIconView && <IconView files={files} />}
           {isListView && <ListView files={files} />}
           {isDetailView && <DetailView files={files} />}
         </Content>
@@ -215,14 +215,14 @@ const BaseUtilButton = styled.button<{ isActive: boolean }>`
   outline: none;
   width: 30px;
   height: 22px;
-  background: rgb(41, 35, 38);
+  background: rgb(56, 56, 60);
   margin-right: 1px;
   z-index: 120;
   border-radius: 5px;
   ${({ isActive }) =>
     isActive &&
     `
-    background: rgb(54, 54, 54);
+    background: rgb(81, 80, 80);
     `}
 `;
 const LeftButton = styled(BaseUtilButton)``;

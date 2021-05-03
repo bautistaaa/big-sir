@@ -2,8 +2,9 @@ import formatDateForFinder from '../utils/formatDateForFinder';
 import { resume } from './Files/';
 
 export type Contents = Record<string, File> | string;
-type FileType = 'file' | 'directory' | 'html';
+type FileType = 'file' | 'directory' | 'html' | 'JavaScript script';
 export interface File {
+  fileSize?: number;
   fileType: FileType;
   display: string;
   searchText: string[];
@@ -11,6 +12,7 @@ export interface File {
   created?: string;
   modified?: string;
   lastOpened?: string;
+  previewImageSrc?: string;
 }
 const fileDirectory: Record<string, File> = {
   '/': {
@@ -30,7 +32,7 @@ const fileDirectory: Record<string, File> = {
             contents: {
               'Resume.js': {
                 display: 'Resume.js',
-                fileType: 'file',
+                fileType: 'JavaScript script',
                 contents: resume,
                 searchText: ['Resume', 'js'],
                 created: formatDateForFinder(
@@ -42,6 +44,8 @@ const fileDirectory: Record<string, File> = {
                 lastOpened: formatDateForFinder(
                   new Date('April 1, 2000 04:20:00')
                 ),
+                previewImageSrc: 'resume-preview.png',
+                fileSize: 10,
               },
             },
           },
@@ -64,6 +68,8 @@ const fileDirectory: Record<string, File> = {
                 lastOpened: formatDateForFinder(
                   new Date('April 1, 2000 04:20:00')
                 ),
+                previewImageSrc: 'narutoql-preview.png',
+                fileSize: 20,
               },
               'spotify-city.html': {
                 display: 'spotify-city.html',
@@ -79,12 +85,25 @@ const fileDirectory: Record<string, File> = {
                 lastOpened: formatDateForFinder(
                   new Date('April 1, 2000 04:20:00')
                 ),
+                previewImageSrc: 'spotify-preview.png',
+                fileSize: 20,
               },
               'react-coverfl0w.html': {
                 display: 'react-coverfl0w.html',
                 fileType: 'html',
                 contents: `https://bautistaaa.github.io/react-coverfl0w/index.html`,
                 searchText: ['react', 'coverflow'],
+                created: formatDateForFinder(
+                  new Date('December 17, 1995 03:24:00')
+                ),
+                modified: formatDateForFinder(
+                  new Date('April 1, 2000 04:20:00')
+                ),
+                lastOpened: formatDateForFinder(
+                  new Date('April 1, 2000 04:20:00')
+                ),
+                previewImageSrc: 'react-coverflow-preview.png',
+                fileSize: 12,
               },
             },
           },

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
 import { useAppContext } from '../../AppContext';
@@ -7,6 +7,8 @@ import { formatDate } from '../../utils';
 
 const ListView: FC<{ files: Contents }> = ({ files }) => {
   const { send } = useAppContext();
+  const [active, setActive] = useState('');
+
   return (
     <Wrapper>
       <Table>
@@ -21,16 +23,20 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
           {Object.keys(files).map((k) => {
             const file = typeof files !== 'string' ? files[k] : ({} as File);
             return (
-              <tr
+              <TR
                 key={k}
-                onClick={() => {
-                  send({
-                    type: 'FOCUS_WINDOW',
-                    payload: {
-                      name: 'chrome',
-                      defaultUrl: file.contents as string,
-                    },
-                  });
+                active={active === file.display}
+                onClick={() => setActive(k)}
+                onDoubleClick={() => {
+                  if (file.fileType === 'html') {
+                    send({
+                      type: 'FOCUS_WINDOW',
+                      payload: {
+                        name: 'chrome',
+                        defaultUrl: file.contents as string,
+                      },
+                    });
+                  }
                 }}
               >
                 <td>
@@ -41,7 +47,7 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
                 </td>
                 <td>{file.fileType}</td>
                 <td>{formatDate(new Date())}</td>
-              </tr>
+              </TR>
             );
           })}
         </tbody>
@@ -50,6 +56,13 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
     </Wrapper>
   );
 };
+const TR = styled.tr<{ active: boolean }>`
+  ${({ active }) =>
+    active &&
+    `
+    background: rgb(26, 109, 196) !important;
+  `}
+`;
 const Table = styled.table`
   color: white;
   th {

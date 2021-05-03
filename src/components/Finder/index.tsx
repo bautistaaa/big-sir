@@ -172,6 +172,7 @@ const Sidebar = styled.div`
   top: 0;
   height: 100%;
   width: 150px;
+  border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   background: rgb(42 42 42 / 65%);
   backdrop-filter: blur(12px);

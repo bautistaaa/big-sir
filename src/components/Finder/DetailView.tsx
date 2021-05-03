@@ -18,13 +18,15 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
                 setContent(file);
               }}
               onDoubleClick={() => {
-                send({
-                  type: 'FOCUS_WINDOW',
-                  payload: {
-                    name: 'chrome',
-                    defaultUrl: file.contents as string,
-                  },
-                });
+                if (file.fileType === 'html') {
+                  send({
+                    type: 'FOCUS_WINDOW',
+                    payload: {
+                      name: 'chrome',
+                      defaultUrl: file.contents as string,
+                    },
+                  });
+                }
               }}
             >
               <img src={FileIconMap[file.fileType]} alt="" />
@@ -36,10 +38,12 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
       {content && (
         <DetailsWrapper>
           <Details>
-            <Preview></Preview>
+            <Preview>
+              <img src={content?.previewImageSrc} alt="" />
+            </Preview>
             <Metadata>
               <FileName>{content?.display}</FileName>
-              <FileSize>JavaScript script - 6 KB</FileSize>
+              <FileSize>{`${content?.fileType} - ${content?.fileSize} KB`}</FileSize>
             </Metadata>
             <Information>Information</Information>
             <InformationItemWrapper>
@@ -98,10 +102,16 @@ const Details = styled.div``;
 const Preview = styled.div`
   background: rgb(30, 30, 30);
   border: 1px solid rgb(75, 75, 75);
-  padding: 3px;
+  border-radius: 10px;
+  overflow: hidden;
   height: 250px;
   width: 300px;
   margin-bottom: 25px;
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
 `;
 const Metadata = styled.div`
   color: rgb(222, 222, 222);

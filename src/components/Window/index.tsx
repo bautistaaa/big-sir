@@ -53,9 +53,13 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const appState = currentParent.context.activeWindows.find(
     (aw) => aw.name === name
   );
-  const { width: windowWidth, height: windowHeight, resizeable } = configs[
-    name
-  ];
+  const {
+    width: windowWidth,
+    height: windowHeight,
+    resizeable,
+    minHeight,
+    minWidth,
+  } = configs[name];
   const mounted = useRef(false);
   const windowRef = useRef<Rnd>();
   const transitionClearanceRef = useRef<number>();
@@ -201,8 +205,8 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
         zIndex: appState?.zIndex ?? 0,
       }}
       dragHandleClassName="action-bar"
-      minHeight={300}
-      minWidth={300}
+      minHeight={minHeight ?? 300}
+      minWidth={minWidth ?? 300}
       default={{
         x: Math.round(window.innerWidth / 2 - windowWidth / 2),
         y: Math.round(window.innerHeight / 2 - windowHeight / 2),

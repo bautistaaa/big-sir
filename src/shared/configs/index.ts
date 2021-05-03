@@ -12,6 +12,8 @@ export type AppType =
   | 'terminal'
   | 'finder';
 export interface WindowConfig {
+  minWidth?: number;
+  minHeight?: number;
   height: number;
   width: number;
   resizeable: boolean;

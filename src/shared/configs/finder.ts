@@ -1,7 +1,8 @@
 import { WindowConfig } from './';
 
 const config: WindowConfig = {
-  width: 690,
+  minWidth: 730,
+  width: 800,
   height: 400,
   resizeable: true,
 };

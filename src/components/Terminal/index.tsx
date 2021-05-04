@@ -1,17 +1,16 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
-import Neovim from '../components/Neovim';
-import Prompt from '../components/Prompt';
-import usePromptState from '../hooks/usePromptState';
-import useIsFocused from '../hooks/useIsFocused';
-import useLocalStorage from '../hooks/useLocalStorage';
-import { formatDate } from '../utils';
+import Neovim from '../../components/Neovim';
+import Prompt from './Prompt';
+import usePromptState from '../../hooks/usePromptState';
+import useIsFocused from '../../hooks/useIsFocused';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import { formatDate } from '../../utils';
 
 export type View = 'terminal' | 'nvim';
 
 const Terminal: FC = () => {
-  const prompState = usePromptState();
   const [view, setView] = useState<View>('terminal');
   const [fileContent, setFileContent] = useState('');
   const [lastLogin, setLastLogin] = useLocalStorage(
@@ -56,7 +55,6 @@ const Terminal: FC = () => {
               isTerminalFocused={isFocused}
               setView={setView}
               setFileContent={setFileContent}
-              promptState={prompState}
             ></Prompt>
           </div>
         </Console>
@@ -98,3 +96,4 @@ const Wrapper = styled.div`
 `;
 
 export default Terminal;
+

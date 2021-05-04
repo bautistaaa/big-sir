@@ -4,6 +4,7 @@ www.big-sir.com
 BUGS
 =============================
 - When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
+- When you Shift-G in vim it doesnt show the command line
 =============================
 TODO
 =============================

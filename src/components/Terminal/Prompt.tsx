@@ -223,6 +223,13 @@ const Prompt: FC<{
               }
 
               if (nvimInput) {
+                const command: Command = {
+                  input: commandRef.current!,
+                  type: 'real',
+                  output,
+                  cwd: stateRef.current.cwd,
+                };
+                send({ type: 'ADD_COMMAND', payload: { command } });
                 setView('nvim');
                 setFileContent(nvimInput);
               } else {

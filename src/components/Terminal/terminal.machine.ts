@@ -49,7 +49,7 @@ type SetCurrentCommandEvent = {
   payload: { command: string };
 };
 
-type TerminalEvent =
+export type TerminalEvent =
   | AddCommandEvent
   | ClearEvent
   | ChangeDirectoryEvent

@@ -6,11 +6,14 @@ import Prompt from './Prompt';
 import useIsFocused from '../../hooks/useIsFocused';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { formatDate } from '../../utils';
+import { useMachine } from '@xstate/react';
+import terminalMachine from './terminal.machine';
 
 export type View = 'terminal' | 'nvim';
 
 const Terminal: FC = () => {
   const [view, setView] = useState<View>('terminal');
+  const [current, send] = useMachine(terminalMachine);
   const [fileContent, setFileContent] = useState('');
   const [lastLogin, setLastLogin] = useLocalStorage(
     'lastLogin',
@@ -54,6 +57,8 @@ const Terminal: FC = () => {
               isTerminalFocused={isFocused}
               setView={setView}
               setFileContent={setFileContent}
+              currentParent={current}
+              sendParent={send}
             ></Prompt>
           </div>
         </Console>
@@ -95,4 +100,3 @@ const Wrapper = styled.div`
 `;
 
 export default Terminal;
-

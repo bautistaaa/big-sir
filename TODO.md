@@ -3,6 +3,7 @@ www.big-sir.com
 =============================
 BUGS
 =============================
+- Limit where you can drag window, if out of bounds snap back in bounds
 - When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
 - When you Shift-G in vim it doesnt show the command line
 =============================

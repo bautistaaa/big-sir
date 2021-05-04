@@ -1,19 +1,29 @@
 import React, { FC, useCallback, useEffect, useRef } from 'react';
-import { useMachine } from '@xstate/react';
 import styled from 'styled-components/macro';
-import terminalMachine, { Command } from './terminal.machine';
+import { Command, Context, TerminalEvent } from './terminal.machine';
 import { useAppContext } from '../../AppContext';
 import { View } from '../Terminal';
 import autocomplete from '../../utils/autocomplete';
 import { getFileContents } from '../../utils';
+import { Event, EventData, SCXML, SingleOrArray, State } from 'xstate';
 
 const Prompt: FC<{
   isTerminalFocused: boolean;
   setView: React.Dispatch<React.SetStateAction<View>>;
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ isTerminalFocused, setView, setFileContent }) => {
+  currentParent: State<Context, TerminalEvent, any, any>;
+  sendParent: (
+    event: SingleOrArray<Event<TerminalEvent>> | SCXML.Event<TerminalEvent>,
+    payload?: EventData | undefined
+  ) => State<Context, TerminalEvent, any, any>;
+}> = ({
+  isTerminalFocused,
+  setView,
+  setFileContent,
+  currentParent: current,
+  sendParent: send,
+}) => {
   const { send: sendParent } = useAppContext();
-  const [current, send] = useMachine(terminalMachine);
   const { currentCommand, keysCurrentlyPressed } = current.context;
   const stateRef = useRef(current.context);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);

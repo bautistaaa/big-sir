@@ -50,7 +50,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const isMinimized = !!currentParent.context.minimizedWindows.find(
     (mw) => mw.name === name
   );
-  const appState = currentParent.context.activeWindows.find(
+  const windowState = currentParent.context.activeWindows.find(
     (aw) => aw.name === name
   );
   const {
@@ -202,7 +202,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       }}
       style={{
         cursor: 'auto !important',
-        zIndex: appState?.zIndex ?? 0,
+        zIndex: windowState?.zIndex ?? 0,
       }}
       dragHandleClassName="action-bar"
       minHeight={minHeight ?? 300}
@@ -223,7 +223,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       }}
       onDragStart={focusWindow}
     >
-      <Wrapper>
+      <Wrapper active={windowState?.focused ?? false}>
         <Border>
           <Container ref={ref}>
             <div onClick={focusWindow}>
@@ -242,10 +242,10 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   );
 });
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ active: boolean }>`
   height: 100%;
   width: 100%;
-  box-shadow: rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px;
+  box-shadow: ${({active}) => active ? 'rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px' : '0 3px 6px rgba(0,0,0,0.16), 0 11px 13px rgba(0,0,0,0.23)'};
   border-radius: 10px;
   display: flex;
   flex-direction: column;

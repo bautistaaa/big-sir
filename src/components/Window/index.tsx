@@ -226,6 +226,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
         }
       }}
       onDragStart={focusWindow}
+      onResizeStart={focusWindow}
     >
       <Wrapper active={windowState?.focused ?? false}>
         <Border>

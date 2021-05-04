@@ -10,7 +10,7 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
   const [active, setActive] = useState('');
 
   return (
-    <Wrapper>
+    <Wrapper count={Object.keys(files).length}>
       <Table>
         <thead>
           <tr>
@@ -98,15 +98,17 @@ const Table = styled.table`
     }
   }
 `;
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ count: number }>`
   height: 100%;
-  background: repeating-linear-gradient(
+  ${({ count }) => `
+    background: repeating-linear-gradient(
       rgb(41, 35, 38),
-      rgb(41, 35, 38) 19px,
+      rgb(41, 35, 38) 20px,
       rgb(51, 51, 51) 0,
-      rgb(51, 51, 51) 38px
+      rgb(51, 51, 51) 40px
     )
-    left 0 top 132px no-repeat fixed;
+    left 0 top ${76 + count * 20}px no-repeat fixed;
+    `}
 `;
 const List = styled.ul``;
 const ListItem = styled.li`

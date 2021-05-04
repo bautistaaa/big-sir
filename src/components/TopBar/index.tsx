@@ -101,9 +101,6 @@ const Wrapper = styled.div`
   justify-content: space-between;
   height: 25px;
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
   color: white;
   background: rgb(51 51 51 / 25%);
   padding: 0 15px;

@@ -100,6 +100,7 @@ const Wrapper = styled.div`
   position: absolute;
   bottom: 5px;
   left: 0;
+  z-index: 1000;
 `;
 const MinimizedWindow = styled.div`
   img {

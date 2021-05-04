@@ -14,7 +14,7 @@ const App: FC = () => {
   return (
     <Wrapper>
       <TopBar />
-      <>
+      <Main className="bounds">
         {current.context.activeWindows.map((aw) => (
           <Window
             key={aw.name}
@@ -22,8 +22,8 @@ const App: FC = () => {
             minimizedTargetRect={minimizedTargetRect}
           />
         ))}
-      </>
-      <Dock minimizedTargetRef={minimizedTargetRef} />
+        <Dock minimizedTargetRef={minimizedTargetRef} />
+      </Main>
     </Wrapper>
   );
 };
@@ -33,5 +33,13 @@ const Wrapper = styled.div`
   height: 100%;
   background: url('./bg-3.jpg') no-repeat center top fixed;
   background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+const Main = styled.div`
+  height: 100%;
+  width: 100%;
+  position: relative;
 `;
 export default App;

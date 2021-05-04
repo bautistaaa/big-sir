@@ -207,6 +207,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
         cursor: 'auto !important',
         zIndex: windowState?.zIndex ?? 0,
       }}
+      bounds=".bounds"
       dragHandleClassName="action-bar"
       minHeight={minHeight ?? 300}
       minWidth={minWidth ?? 300}

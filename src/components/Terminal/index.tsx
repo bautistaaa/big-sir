@@ -3,7 +3,6 @@ import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Neovim from '../../components/Neovim';
 import Prompt from './Prompt';
-import usePromptState from '../../hooks/usePromptState';
 import useIsFocused from '../../hooks/useIsFocused';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import { formatDate } from '../../utils';

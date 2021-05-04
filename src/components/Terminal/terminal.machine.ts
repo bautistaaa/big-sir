@@ -19,20 +19,6 @@ export interface Context {
   cwd: string;
   cwdContents: Contents;
 }
-
-// export type TerminalEvent =
-//   | { type: 'ADD_COMMAND'; payload: { command: Command } }
-//   | { type: 'CLEAR' }
-//   | {
-//       type: 'CHANGE_DIRECTORY';
-//       payload: { path: string };
-//     }
-//   | { type: 'DECREMENT_HISTORY' }
-//   | { type: 'INCREMENT_HISTORY' }
-//   | { type: 'KEY_DOWN'; payload: { key: string } }
-//   | { type: 'KEY_UP'; payload: { key: string } }
-//   | { type: 'SET_CURRENT_COMMAND'; payload: { command: string } };
-
 type AddCommandEvent = {
   type: 'ADD_COMMAND';
   payload: { command: Command };

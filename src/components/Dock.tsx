@@ -66,7 +66,7 @@ const Dock: FC<{
             const imgSrc = minimizedImages[name];
             const handleMinimizedWindowClick = () => {
               send({
-                type: 'UNMINIMIZE_WINDOW',
+                type: 'FOCUS_WINDOW',
                 payload: { name },
               });
             };

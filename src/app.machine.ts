@@ -25,10 +25,6 @@ type MinimizeWindowEvent = {
   type: 'MINIMIZE_WINDOW';
   payload: { name: AppType };
 };
-type UnminimizeWindowEvent = {
-  type: 'UNMINIMIZE_WINDOW';
-  payload: { name: AppType };
-};
 type RemoveWindowEvent = {
   type: 'REMOVE_WINDOW';
   payload: { name: AppType };
@@ -37,12 +33,14 @@ type RemoveWindowEvent = {
 export type AppEvent =
   | FocusWindowEvent
   | MinimizeWindowEvent
-  | UnminimizeWindowEvent
   | RemoveWindowEvent;
 
 const config = {
   actions: {
     focusWindow: assign<Context, AppEvent>((context, event) => {
+      const minimizedWindows = context.minimizedWindows.filter(
+        (w) => w.name !== event.payload.name
+      );
       const maxZIndex = Math.max(
         ...context.activeWindows.map((x) => x.zIndex),
         INITIAL_ZINDEX
@@ -78,6 +76,7 @@ const config = {
       return {
         ...context,
         activeWindows: refocusedWindows,
+        minimizedWindows,
       };
     }),
     minimizeWindow: assign<Context, AppEvent>((context, event) => {
@@ -89,21 +88,26 @@ const config = {
         ],
       };
     }),
-    unminimizeWindow: assign<Context, AppEvent>((context, event) => {
-      const minimizedWindows = context.minimizedWindows.filter(
-        (w) => w.name !== event.payload.name
-      );
-      return {
-        ...context,
-        minimizedWindows,
-      };
-    }),
     removeWindow: assign<Context, AppEvent>((context, event) => {
+      const activeWindows = context.activeWindows
+        .filter((aw) => aw.name !== event.payload.name)
+        .sort((a, b) => {
+          return b.zIndex - a.zIndex;
+        })
+        .map((aw, i) => {
+          if (i === 0) {
+            return {
+              ...aw,
+              focused: true,
+            };
+          }
+
+          return aw;
+        });
+
       return {
         ...context,
-        activeWindows: context.activeWindows.filter(
-          (aw) => aw.name !== event.payload.name
-        ),
+        activeWindows,
       };
     }),
   },
@@ -124,9 +128,6 @@ const appMachine = createMachine<Context, AppEvent, any>(
       },
       MINIMIZE_WINDOW: {
         actions: ['minimizeWindow'],
-      },
-      UNMINIMIZE_WINDOW: {
-        actions: ['unminimizeWindow'],
       },
       REMOVE_WINDOW: {
         actions: ['removeWindow'],

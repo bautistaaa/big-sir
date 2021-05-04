@@ -183,16 +183,19 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     e.stopPropagation();
     sendParent({ type: 'MINIMIZE_WINDOW', payload: { name } });
     send('MINIMIZE');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleCloseClick = useCallback((e: Event) => {
     e.stopPropagation();
     sendParent({ type: 'REMOVE_WINDOW', payload: { name } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleMaximizeClick = useCallback((e: Event) => {
     e.stopPropagation();
     if (!resizeable) return;
     send('MAXIMIZE');
     maximizeApp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -245,7 +248,10 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
 const Wrapper = styled.div<{ active: boolean }>`
   height: 100%;
   width: 100%;
-  box-shadow: ${({active}) => active ? 'rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px' : '0 3px 6px rgba(0,0,0,0.16), 0 11px 13px rgba(0,0,0,0.23)'};
+  box-shadow: ${({ active }) =>
+    active
+      ? 'rgb(0 0 0 / 30%) 0px 15px 20px, rgb(0 0 0 / 32%) 0px 18px 20px 5px'
+      : '0 3px 6px rgba(0,0,0,0.16), 0 11px 13px rgba(0,0,0,0.23)'};
   border-radius: 10px;
   display: flex;
   flex-direction: column;

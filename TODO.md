@@ -3,7 +3,6 @@ www.big-sir.com
 =============================
 BUGS
 =============================
-- terminal doesnt work on FF and Safari
 - When the active terminal line is at the bottom of the screen... typing a multiline will overflow under the window.
 =============================
 TODO
@@ -54,6 +53,9 @@ DONE
 - Typing in a domain name requires the protocol or we get big-sir inception. i.e. vin-e.com will get you big-sir where as https://vin-e.com/ opens the page ** DONE **
 - If you open html with chrome already opened, NOTHING happens ** DONE **
 - cat on personal directory BREAKS ** DONE **
+- when unminimizing from dock it does not get focused ** DONE **
+- when closing windows last window is not focused ** DONE **
+- terminal doesnt work on FF and Safari ** DONE ** 
 
 =============================
 FEEDBACK

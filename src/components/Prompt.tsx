@@ -26,7 +26,6 @@ const Prompt: FC<{
   useEffect(() => {
     if (isTerminalFocused) {
       if (textAreaRef.current) {
-        console.log(textAreaRef.current);
         textAreaRef.current.focus();
       }
     }
@@ -295,7 +294,6 @@ const Prompt: FC<{
         }}
         onBlur={() => {
           if (isTerminalFocused && textAreaRef.current) {
-            console.log('TRIED TO BLUR BUT REFOCUSED');
             textAreaRef.current.focus();
           }
         }}

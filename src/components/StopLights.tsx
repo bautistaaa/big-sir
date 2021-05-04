@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import styled from 'styled-components/macro';
 import { RED, YELLOW, GREEN } from '../shared/constants';
 
@@ -8,21 +8,23 @@ const StopLights: FC<{
   handleMinimizeClick(args: unknown): void;
   handleMaximizeClick(args: unknown): void;
   className?: string;
-}> = ({
-  variant,
-  handleCloseClick,
-  handleMinimizeClick,
-  handleMaximizeClick,
-  className,
-}) => {
-  return (
-    <Wrapper className={`${className ?? ''}`} variant={variant}>
-      <CloseButton onClick={handleCloseClick} />
-      <MinimizeButton onClick={handleMinimizeClick} />
-      <FullScreenButton onClick={handleMaximizeClick} />
-    </Wrapper>
-  );
-};
+}> = memo(
+  ({
+    variant,
+    handleCloseClick,
+    handleMinimizeClick,
+    handleMaximizeClick,
+    className,
+  }) => {
+    return (
+      <Wrapper className={`${className ?? ''}`} variant={variant}>
+        <CloseButton onClick={handleCloseClick} />
+        <MinimizeButton onClick={handleMinimizeClick} />
+        <FullScreenButton onClick={handleMaximizeClick} />
+      </Wrapper>
+    );
+  }
+);
 
 const Wrapper = styled.div<{ variant: string }>`
   position: absolute;

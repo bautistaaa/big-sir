@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, memo } from 'react';
+import { FC, useEffect, useRef, memo, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useMachine } from '@xstate/react';
 import windowMachine from './window.machine';
@@ -179,21 +179,21 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     }
   }, [isFocused, sendParent, name]);
 
-  const handleMinimizeClick = (e: Event) => {
+  const handleMinimizeClick = useCallback((e: Event) => {
     e.stopPropagation();
     sendParent({ type: 'MINIMIZE_WINDOW', payload: { name } });
     send('MINIMIZE');
-  };
-  const handleCloseClick = (e: Event) => {
+  }, []);
+  const handleCloseClick = useCallback((e: Event) => {
     e.stopPropagation();
     sendParent({ type: 'REMOVE_WINDOW', payload: { name } });
-  };
-  const handleMaximizeClick = (e: Event) => {
+  }, []);
+  const handleMaximizeClick = useCallback((e: Event) => {
     e.stopPropagation();
     if (!resizeable) return;
     send('MAXIMIZE');
     maximizeApp();
-  };
+  }, []);
 
   return (
     <Rnd

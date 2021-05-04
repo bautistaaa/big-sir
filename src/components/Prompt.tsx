@@ -364,12 +364,10 @@ const CursorWrapper = styled.div`
   display: inline-block;
   position: relative;
   margin-left: 2px;
-  width: 12px;
-  height: 22px;
 `;
 const Cursor = styled.div`
   position: absolute;
-  top: 5px;
+  top: -17px;
   left: 0;
   background: #b6b6b6;
   width: 12px;

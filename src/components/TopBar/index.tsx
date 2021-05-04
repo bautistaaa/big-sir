@@ -108,6 +108,8 @@ const Wrapper = styled.div`
   letter-spacing: 0.3px;
   font-weight: 500;
   backdrop-filter: blur(72px);
+  position: relative;
+  z-index: 2000;
 `;
 const LeftSide = styled.div`
   display: flex;

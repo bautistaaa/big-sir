@@ -1,9 +1,8 @@
 import React, { FC, useCallback, useEffect, useRef } from 'react';
 import { useMachine } from '@xstate/react';
 import styled from 'styled-components/macro';
-import terminalMachine from './terminal.machine';
+import terminalMachine, { Command } from './terminal.machine';
 import { useAppContext } from '../../AppContext';
-import { Command } from '../../hooks/usePromptState';
 import { View } from '../Terminal';
 import autocomplete from '../../utils/autocomplete';
 import { getFileContents } from '../../utils';

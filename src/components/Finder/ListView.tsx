@@ -107,7 +107,7 @@ const Wrapper = styled.div<{ count: number }>`
       rgb(51, 51, 51) 0,
       rgb(51, 51, 51) 40px
     )
-    left 0 top ${76 + count * 20}px no-repeat fixed;
+    left 0 top ${76 + count * 20 + 25}px no-repeat fixed;
     `}
 `;
 const List = styled.ul``;

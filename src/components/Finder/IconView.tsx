@@ -1,15 +1,30 @@
 import { FC } from 'react';
 import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
+import { useAppContext } from '../../AppContext';
 import { Contents, File } from '../../shared/fileDirectory';
 
 const IconView: FC<{ files: Contents }> = ({ files }) => {
+  const { send } = useAppContext();
   return (
     <Wrapper>
       {Object.keys(files).map((k) => {
         const file = typeof files !== 'string' ? files[k] : ({} as File);
         return (
-          <Item key={file.display}>
+          <Item
+            key={file.display}
+            onDoubleClick={() => {
+              if (file.fileType === 'html') {
+                send({
+                  type: 'FOCUS_WINDOW',
+                  payload: {
+                    name: 'chrome',
+                    defaultUrl: file.contents as string,
+                  },
+                });
+              }
+            }}
+          >
             <img src={FileIconMap['text']} alt="" />
             <ItemName>{file.display}</ItemName>
           </Item>

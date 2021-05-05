@@ -31,7 +31,7 @@ const Mode = styled.div<{ mode: string }>`
     width: 0px;
     height: 0px;
     border-style: solid;
-    border-width: 8px 0px 8px 8px;
+    border-width: 12px 0px 12px 8px;
     border-color: transparent transparent transparent rgb(242, 157, 180);
     right: -8px;
   }

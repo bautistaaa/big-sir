@@ -85,11 +85,15 @@ const Prompt: FC<{
   }, [keysCurrentlyPressed, clear, send]);
 
   useEffect(() => {
-    const displayFileNotFound = (currentCommand: string, cwd: string) => {
+    const displayMessage = (
+      currentCommand: string,
+      cwd: string,
+      message: string
+    ) => {
       const command: Command = {
         input: currentCommand,
         type: 'fake',
-        output: 'File not found.',
+        output: message,
         cwd,
       };
 
@@ -176,27 +180,8 @@ const Prompt: FC<{
           }
 
           if (cmd === 'cat') {
-            if (typeof stateRef.current.cwdContents !== 'string') {
-              const term = args?.[0]?.split('/') ?? '';
-              const parts = term.slice(0, term.length - 1);
-              const last = term.slice(-1)[0];
-
-              if (term.length > 1) {
-                output = getFileContents(
-                  parts,
-                  last,
-                  stateRef.current.cwdContents
-                ) as string;
-              } else {
-                output = stateRef.current.cwdContents?.[args[0]]
-                  ?.contents as string;
-              }
-
-              if (!output || typeof output !== 'string') {
-                displayFileNotFound(currentCommand, stateRef.current.cwd);
-                return;
-              }
-            }
+            displayMessage(currentCommand, stateRef.current.cwd, 'Only nvim is supported to view files!');
+            return;
           } else if (cmd === 'pwd') {
             output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
@@ -233,7 +218,7 @@ const Prompt: FC<{
                 setView('nvim');
                 setFileContent(nvimInput);
               } else {
-                displayFileNotFound(currentCommand, stateRef.current.cwd);
+                displayMessage(currentCommand, stateRef.current.cwd, 'File Not Found');
                 return;
               }
             }

@@ -35,7 +35,7 @@ const Neovim: FC<{
     );
   }
 
-  return <div></div>;
+  return <></>;
 };
 
 export default Neovim;

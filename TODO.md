@@ -24,7 +24,6 @@ Priority
 Secondary
 =============================
  - Spotify
- - Chrome
 =============================
 Dead last
 =============================
@@ -32,6 +31,7 @@ Dead last
 =============================
 DONE
 =============================
+- Chrome ** DONE **
 - Neovim ( navigation (ctrl e/y/u/d/f) ) ** DONE **
 - when you change directories we do not want to change dir display on previous ran commmands ** DONE **
 - fix typo in usePromptState(file name is wrong) ** DONE**

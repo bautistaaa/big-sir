@@ -22,7 +22,7 @@ const Editor: FC<{
 }> = ({ isTerminalFocused, fileContent, setView }) => {
   const [state, dispatch] = useEditorState();
   const [code, setCode] = useState(fileContent);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const commandTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
   const stateRef = useRef(state);
@@ -141,10 +141,6 @@ const Wrapper = styled.div`
 `;
 const FileContent = styled.div`
   flex: 1;
-  .react-codemirror2,
-  .CodeMirror {
-    height: 100%;
-  }
 `;
 const HiddenTextArea = styled.textarea`
   position: absolute;

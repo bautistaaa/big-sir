@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import { useMachine } from '@xstate/react';
 import { Icons, Details, List } from './icons/';
@@ -35,6 +35,7 @@ const SideBarItems: Record<string, SidebarItem> = {
 
 const Finder: FC = () => {
   const [current, send] = useMachine(finderMachine);
+  const [activeFolder, setActiveFolder] = useState('personal');
   const files = getDirectoryContents(
     SideBarItems[current.context.activeDirectory].path
   );
@@ -51,10 +52,11 @@ const Finder: FC = () => {
           <Items>
             {Object.keys(SideBarItems).map((k, i) => {
               return (
-                <Item key={i}>
+                <Item key={i} active={activeFolder === k}>
                   <img src={SidebarItemIconMap[SideBarItems[k].type]} alt="" />
                   <ItemName
                     onClick={() => {
+                      setActiveFolder(k);
                       send({
                         type: 'DIRECTORY_CHANGED',
                         payload: {
@@ -143,18 +145,24 @@ const UtilityBar = styled.div`
   min-height: 50px;
   width: 100%;
 `;
-const Items = styled.div`
-  padding-left: 10px;
-`;
-const Item = styled.div`
+const Items = styled.div``;
+const Item = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   color: #ffffff;
+  cursor: default;
+  border-radius: 5px;
+  padding: 6px 8px;
   img {
-    height: 20px;
+    height: 15px;
     margin-right: 5px;
   }
+  ${({ active }) =>
+    active &&
+    `
+    background: rgb(180 180 180 / 22%) !important;
+  `}
 `;
 const ItemName = styled.div`
   color: #ffffff;
@@ -166,7 +174,7 @@ const Wrapper = styled.div`
   border-radius: inherit;
 `;
 const Sidebar = styled.div`
-  padding: 62px 15px 15px;
+  padding: 62px 10px 0;
   position: absolute;
   left: 0;
   top: 0;
@@ -197,6 +205,7 @@ const Title = styled.div`
   font-size: 10px;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
+  padding-left: 3px;
 `;
 const ButtonsWrapper = styled.div`
   display: flex;

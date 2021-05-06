@@ -7,6 +7,8 @@ import { useAppContext } from '../../AppContext';
 const DetailView: FC<{ files: Contents }> = ({ files }) => {
   const { send } = useAppContext();
   const [content, setContent] = useState<File | undefined>();
+  const [active, setActive] = useState('');
+
   return (
     <Wrapper>
       <SideBar>
@@ -14,7 +16,9 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
           const file = typeof files !== 'string' ? files[k] : ({} as File);
           return (
             <Item
+              active={active === k}
               onClick={() => {
+                setActive(k);
                 setContent(file);
               }}
               onDoubleClick={() => {
@@ -75,7 +79,7 @@ const SideBar = styled.aside`
   border-right: 1px solid black;
   padding: 5px;
 `;
-const Item = styled.div`
+const Item = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -85,6 +89,11 @@ const Item = styled.div`
     height: 15px;
     margin-right: 5px;
   }
+  ${({ active }) =>
+    active &&
+    `
+    background: rgb(26, 109, 196) !important;
+  `}
 `;
 const ItemName = styled.div`
   color: #ffffff;

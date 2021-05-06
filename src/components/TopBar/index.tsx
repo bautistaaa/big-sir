@@ -82,6 +82,7 @@ const StyledMenuItems = styled.ul`
   padding: 2px 0;
 `;
 const StyledMenuItem = styled.li`
+  cursor: default;
   position: relative;
   padding: 3px 0;
   margin: 0 5px;

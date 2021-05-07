@@ -28,6 +28,13 @@ const IconView: FC<{ files: Contents }> = ({ files }) => {
                     defaultUrl: file.contents as string,
                   },
                 });
+              } else {
+                send({
+                  type: 'FOCUS_WINDOW',
+                  payload: {
+                    name: 'terminal',
+                  },
+                });
               }
             }}
           >

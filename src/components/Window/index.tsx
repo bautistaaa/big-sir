@@ -166,6 +166,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
                 handleMinimizeClick={handleMinimizeClick}
                 handleCloseClick={handleCloseClick}
                 handleMaximizeClick={handleMaximizeClick}
+                enableResizing={resizeable}
               />
             </div>
             <Component key={name} />

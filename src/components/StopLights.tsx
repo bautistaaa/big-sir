@@ -1,6 +1,6 @@
 import { FC, memo } from 'react';
 import styled from 'styled-components/macro';
-import { RED, YELLOW, GREEN } from '../shared/constants';
+import { RED, YELLOW, GREEN, GREY } from '../shared/constants';
 
 const StopLights: FC<{
   variant: string;
@@ -8,6 +8,7 @@ const StopLights: FC<{
   handleMinimizeClick(args: unknown): void;
   handleMaximizeClick(args: unknown): void;
   className?: string;
+  enableResizing: boolean;
 }> = memo(
   ({
     variant,
@@ -15,12 +16,16 @@ const StopLights: FC<{
     handleMinimizeClick,
     handleMaximizeClick,
     className,
+    enableResizing,
   }) => {
     return (
       <Wrapper className={`${className ?? ''}`} variant={variant}>
         <CloseButton onClick={handleCloseClick} />
         <MinimizeButton onClick={handleMinimizeClick} />
-        <FullScreenButton onClick={handleMaximizeClick} />
+        <FullScreenButton
+          onClick={handleMaximizeClick}
+          disabled={!enableResizing}
+        />
       </Wrapper>
     );
   }
@@ -73,8 +78,14 @@ const CloseButton = styled(BaseButton)`
 const MinimizeButton = styled(BaseButton)`
   background: ${YELLOW};
 `;
-const FullScreenButton = styled(BaseButton)`
+const FullScreenButton = styled(BaseButton)<{ disabled: boolean }>`
   background: ${GREEN};
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+  background: ${GREY};
+    `}
 `;
 
 export default StopLights;

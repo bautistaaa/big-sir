@@ -16,7 +16,7 @@ export interface Icon {
 export const ICONS: Icon[] = [
   {
     type: 'directory',
-    displayName: 'projects',
+    displayName: 'personal',
     imageSrc: 'folder.png',
     default: {
       x: Math.round(window.innerWidth - 80),
@@ -74,13 +74,11 @@ const DesktopIcon: FC<{
   }, [reset]);
 
   const handleDoubleClick = () => {
-    if (icon.displayName === 'projects') {
+    if (icon.displayName === 'personal') {
       send({ type: 'FOCUS_WINDOW', payload: { name: 'finder' } });
-    }
-    if (icon.displayName === 'terminal') {
+    } else if (icon.displayName === 'terminal') {
       send({ type: 'FOCUS_WINDOW', payload: { name: 'terminal' } });
-    }
-    if (icon.displayName === 'chrome') {
+    } else if (icon.displayName === 'chrome') {
       send({ type: 'FOCUS_WINDOW', payload: { name: 'chrome' } });
     }
   };

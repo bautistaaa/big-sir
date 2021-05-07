@@ -52,12 +52,5 @@ const StyledMenuItem = styled.li`
   margin: 0 5px;
   }
 `;
-const Separator = styled.div`
-  position: relative;
-  width: 94%;
-  left: 8px;
-  padding: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  height: 1px;
-`;
+
 export default ContextMenu;

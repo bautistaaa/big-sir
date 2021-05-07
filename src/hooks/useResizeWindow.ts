@@ -1,8 +1,6 @@
 import { MutableRefObject, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
-import { Event, SingleOrArray, SCXML, EventData, State } from 'xstate';
 import { WindowPosition, WindowSize } from '../components/Window';
-import { WindowEvent } from '../components/Window/window.machine';
 import extractPositionFromTransformStyle from '../utils/extractTransformStyles';
 import { RectResult } from './useRect';
 
@@ -11,10 +9,6 @@ const DOCK_HEIGHT = 55;
 
 const useResizeWindow = (
   current: any,
-  send: (
-    event: SingleOrArray<Event<WindowEvent>> | SCXML.Event<WindowEvent>,
-    payload?: EventData | undefined
-  ) => State<any, WindowEvent, any, any>,
   { height, width }: { height: number; width: number },
   windowRef: MutableRefObject<Rnd | undefined>,
   minimizedTargetRect: RectResult

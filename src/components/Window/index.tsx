@@ -61,7 +61,6 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const windowRef = useRef<Rnd>();
   useResizeWindow(
     current,
-    send,
     { height: windowHeight, width: windowWidth },
     windowRef,
     minimizedTargetRect

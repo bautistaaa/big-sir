@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Window from './components/Window';
@@ -19,10 +19,13 @@ const App: FC = () => {
 
   const handleCleanUpClick = () => {
     setReset(true);
-    setTimeout(() => {
-      setReset(false);
-    }, 0);
   };
+
+  useEffect(() => {
+    if (reset === true) {
+      setReset(false);
+    }
+  }, [reset]);
 
   return (
     <Wrapper>

@@ -11,8 +11,7 @@ import Terminal from '../Terminal';
 import AboutThisDeveloper from '../AboutThisDeveloper';
 import AboutThisMac from '../AboutThisMac';
 import { RectResult } from '../../hooks/useRect';
-import useMaximizeWindow from '../../hooks/useMaximizeWindow';
-import extractPositionFromTransformStyle from '../../utils/extractTransformStyles';
+import useResizeWindow from '../../hooks/useResizeWindow';
 import useIsFocused from '../../hooks/useIsFocused';
 import styled from 'styled-components/macro';
 
@@ -40,11 +39,9 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   };
   const Component = x[name];
 
-  const { current: currentParent, send: sendParent } = useAppContext();
-
-  const [current, send] = useMachine(windowMachine);
-
   const ref = useRef<HTMLDivElement | null>(null);
+  const { current: currentParent, send: sendParent } = useAppContext();
+  const [current, send] = useMachine(windowMachine);
   const { isFocused } = useIsFocused(ref);
 
   const isMinimized = !!currentParent.context.minimizedWindows.find(
@@ -62,26 +59,13 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   } = configs[name];
   const mounted = useRef(false);
   const windowRef = useRef<Rnd>();
-  const transitionClearanceRef = useRef<number>();
-  const originalSizeRef = useRef<WindowSize>({
-    height: windowHeight,
-    width: windowWidth,
-  });
-  const originalPositionRef = useRef<WindowPosition>({
-    x: window.innerWidth / 2 - windowWidth / 2,
-    y: window.innerHeight / 2 - windowHeight / 2,
-  });
-  const maximizeApp = useMaximizeWindow(
-    windowRef,
+  useResizeWindow(
+    current,
+    send,
     { height: windowHeight, width: windowWidth },
-    send
+    windowRef,
+    minimizedTargetRect
   );
-  const focusWindow = () => {
-    sendParent({
-      type: 'FOCUS_WINDOW',
-      payload: { name },
-    });
-  };
 
   useEffect(() => {
     if (mounted.current) {
@@ -90,78 +74,6 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       }
     }
   }, [isMinimized, send]);
-
-  useEffect(() => {
-    switch (current.value) {
-      case 'floating':
-        if (current.history?.matches('minimized')) {
-          if (windowRef.current?.resizableElement.current) {
-            windowRef.current.resizableElement.current.style.transition =
-              'height .6s, width .6s, transform .6s, opacity .6s';
-            windowRef.current.resizableElement.current.style.opacity = '1';
-            window.setTimeout(() => {
-              if (windowRef.current?.resizableElement.current) {
-                windowRef.current.resizableElement.current.style.transition =
-                  '';
-              }
-            }, 1000);
-          }
-          windowRef.current?.updatePosition({
-            x: originalPositionRef.current.x,
-            y: originalPositionRef.current.y,
-          });
-          windowRef.current?.updateSize(originalSizeRef.current);
-          windowRef.current?.updatePosition(originalPositionRef.current);
-        }
-        break;
-      case 'minimized':
-        if (!current.history?.matches('minimized')) {
-          if (!windowRef?.current?.resizableElement?.current) {
-            return;
-          }
-          const {
-            clientWidth: windowWidth,
-            clientHeight: windowHeight,
-          } = windowRef.current.resizableElement.current;
-          const {
-            x: windowLeft,
-            y: windowTop,
-          } = extractPositionFromTransformStyle(
-            windowRef.current.resizableElement.current.style.transform
-          );
-          originalPositionRef.current = { x: windowLeft, y: windowTop };
-          originalSizeRef.current = {
-            width: windowWidth,
-            height: windowHeight,
-          };
-
-          windowRef.current.resizableElement.current.style.transition =
-            'height .6s, width .6s, transform .6s, opacity .5s';
-
-          windowRef.current.resizableElement.current.style.opacity = '0';
-
-          clearTimeout(transitionClearanceRef.current);
-
-          transitionClearanceRef.current = window.setTimeout(() => {
-            if (windowRef.current?.resizableElement.current) {
-              windowRef.current.resizableElement.current.style.transition = '';
-            }
-            transitionClearanceRef.current = 0;
-          }, 500);
-
-          windowRef.current.updateSize({
-            height: '300px',
-            width: '300px',
-          });
-
-          windowRef.current.updatePosition({
-            x: minimizedTargetRect.left,
-            y: document.body.clientHeight,
-          });
-        }
-        break;
-    }
-  }, [current.value, minimizedTargetRect.left, current.history]);
 
   useEffect(() => {
     mounted.current = true;
@@ -179,24 +91,39 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     }
   }, [isFocused, sendParent, name]);
 
-  const handleMinimizeClick = useCallback((e: Event) => {
-    e.stopPropagation();
-    sendParent({ type: 'MINIMIZE_WINDOW', payload: { name } });
-    send('MINIMIZE');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const handleCloseClick = useCallback((e: Event) => {
-    e.stopPropagation();
-    sendParent({ type: 'REMOVE_WINDOW', payload: { name } });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const handleMaximizeClick = useCallback((e: Event) => {
-    e.stopPropagation();
-    if (!resizeable) return;
-    send('MAXIMIZE');
-    maximizeApp();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const focusWindow = () => {
+    sendParent({
+      type: 'FOCUS_WINDOW',
+      payload: { name },
+    });
+  };
+  const handleMinimizeClick = useCallback(
+    (e: Event) => {
+      e.stopPropagation();
+      sendParent({ type: 'MINIMIZE_WINDOW', payload: { name } });
+      send('MINIMIZE');
+    },
+    [send, sendParent, name]
+  );
+  const handleCloseClick = useCallback(
+    (e: Event) => {
+      e.stopPropagation();
+      sendParent({ type: 'REMOVE_WINDOW', payload: { name } });
+    },
+    [sendParent, name]
+  );
+  const handleMaximizeClick = useCallback(
+    (e: Event) => {
+      e.stopPropagation();
+      if (!resizeable) return;
+      if (current.value === 'maximized') {
+        send('FLOAT');
+      } else {
+        send('MAXIMIZE');
+      }
+    },
+    [current.value, send, resizeable]
+  );
 
   return (
     <Rnd

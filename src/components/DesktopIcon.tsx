@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import styled from 'styled-components/macro';
+import { useAppContext } from '../AppContext';
 import useIsFocused from '../hooks/useIsFocused';
 
 export interface Icon {
@@ -48,6 +49,7 @@ const DesktopIcon: FC<{
   activeIcon: string;
   setActiveIcon: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ icon, reset, activeIcon, setActiveIcon }) => {
+  const { send } = useAppContext();
   const windowRef = useRef<Rnd>();
   const iconRef = useRef<HTMLDivElement | null>(null);
   const { isFocused } = useIsFocused(iconRef);
@@ -71,6 +73,18 @@ const DesktopIcon: FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset]);
 
+  const handleDoubleClick = () => {
+    if (icon.displayName === 'projects') {
+      send({ type: 'FOCUS_WINDOW', payload: { name: 'finder' } });
+    }
+    if (icon.displayName === 'terminal') {
+      send({ type: 'FOCUS_WINDOW', payload: { name: 'terminal' } });
+    }
+    if (icon.displayName === 'chrome') {
+      send({ type: 'FOCUS_WINDOW', payload: { name: 'chrome' } });
+    }
+  };
+
   return (
     <Rnd
       ref={(c) => {
@@ -92,6 +106,7 @@ const DesktopIcon: FC<{
       }}
     >
       <DesktopIconWrapper
+        onDoubleClick={handleDoubleClick}
         active={activeIcon === icon.displayName}
         ref={iconRef}
       >
@@ -133,6 +148,5 @@ const ItemName = styled.span<{ active: boolean }>`
     box-shadow: rgb(26, 108, 196) 5px 0px 0px, rgb(26, 109, 196) -5px 0px 0px;
   `}
 `;
-
 
 export default DesktopIcon;

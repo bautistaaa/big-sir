@@ -13,10 +13,10 @@ const AboutThisMac: FC = () => {
           <Name>
             <Strong>macOS</Strong> Big Sir
           </Name>
-          <Version>Version 420.69</Version>
+          <Version>Version 1337</Version>
           <P>MacBooks Are Awful (32-inch, 2087)</P>
-          <P>Processor A very good one</P>
-          <P>Memory A good amount of it</P>
+          <P>Processor: A very good one</P>
+          <P>Memory: A good amount of it</P>
         </Text>
       </Content>
     </Wrapper>

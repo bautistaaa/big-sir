@@ -140,7 +140,11 @@ const Wrapper = styled.div`
   background: #282a36;
 `;
 const FileContent = styled.div`
-  flex: 1;
+  height: calc(100% - 50px);
+  .react-codemirror2,
+  .react-codemirror2 > div {
+    height: 100%;
+  }
 `;
 const HiddenTextArea = styled.textarea`
   position: absolute;

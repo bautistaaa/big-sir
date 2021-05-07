@@ -119,6 +119,7 @@ const Wrapper = styled.div<{ count: number }>`
 `;
 const List = styled.ul``;
 const ListItem = styled.li`
+  cursor: default;
   padding-left: 15px;
   display: flex;
   align-items: center;

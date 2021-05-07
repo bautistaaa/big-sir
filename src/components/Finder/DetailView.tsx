@@ -87,6 +87,7 @@ const SideBar = styled.aside`
   padding: 5px;
 `;
 const Item = styled.div<{ active: boolean }>`
+  cursor: default;
   display: flex;
   align-items: center;
   justify-content: flex-start;

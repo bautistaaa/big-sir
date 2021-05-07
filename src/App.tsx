@@ -1,15 +1,28 @@
-import { FC, useRef } from 'react';
+import { FC, useRef, useState } from 'react';
 import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Window from './components/Window';
+import ContextMenu from './components/ContextMenu';
 import styled from 'styled-components/macro';
 import { useAppContext } from './AppContext';
 import useRect from './hooks/useRect';
+import useContextMenu from './hooks/useContextMenu';
+import DesktopIcon, { ICONS } from './components/DesktopIcon';
 
 const App: FC = () => {
   const { current } = useAppContext();
   const minimizedTargetRef = useRef(null);
+  const [reset, setReset] = useState(false);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
+  const { xPos, yPos, showMenu } = useContextMenu();
+  const [activeIcon, setIsActiveIcon] = useState('');
+
+  const handleCleanUpClick = () => {
+    setReset(true);
+    setTimeout(() => {
+      setReset(false);
+    }, 0);
+  };
 
   return (
     <Wrapper>
@@ -22,8 +35,26 @@ const App: FC = () => {
             minimizedTargetRect={minimizedTargetRect}
           />
         ))}
+        {ICONS.map((icon) => {
+          return (
+            <DesktopIcon
+              key={icon.displayName}
+              icon={icon}
+              reset={reset}
+              activeIcon={activeIcon}
+              setActiveIcon={setIsActiveIcon}
+            />
+          );
+        })}
         <Dock minimizedTargetRef={minimizedTargetRef} />
       </Main>
+      {showMenu && (
+        <ContextMenu
+          xPos={xPos}
+          yPos={yPos}
+          handleCleanUpClick={handleCleanUpClick}
+        />
+      )}
     </Wrapper>
   );
 };

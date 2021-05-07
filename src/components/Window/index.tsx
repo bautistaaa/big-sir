@@ -29,15 +29,18 @@ interface WindowProps {
   name: AppType;
   minimizedTargetRect: RectResult;
 }
-const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
-  const x: { [K in AppType]: React.ComponentType<any> } = {
+const getComponentByName = (name: AppType) => {
+  const components: { [K in AppType]: React.ComponentType<any> } = {
     aboutThisDeveloper: AboutThisDeveloper,
     aboutThisMac: AboutThisMac,
     chrome: Chrome,
     finder: Finder,
     terminal: Terminal,
   };
-  const Component = x[name];
+  return components[name];
+};
+const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
+  const Component = getComponentByName(name);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const { current: currentParent, send: sendParent } = useAppContext();

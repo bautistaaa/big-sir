@@ -180,13 +180,20 @@ const Prompt: FC<{
           }
 
           if (cmd === 'cat') {
-            displayMessage(currentCommand, stateRef.current.cwd, 'Only nvim is supported to view files!');
+            displayMessage(
+              currentCommand,
+              stateRef.current.cwd,
+              'Only nvim is supported to view files!'
+            );
             return;
           } else if (cmd === 'pwd') {
             output = `${stateRef.current.cwd}`;
           } else if (cmd === 'nvim') {
-            if (typeof stateRef.current.cwdContents !== 'string') {
-              const term = args?.[0]?.split('/') ?? '';
+            if (
+              stateRef.current.cwdContents &&
+              typeof stateRef.current.cwdContents !== 'string'
+            ) {
+              const term = args?.[0]?.split('/') ?? [];
               const parts = term.slice(0, term.length - 1);
               const last = term.slice(-1)[0];
               let nvimInput = '';
@@ -207,7 +214,7 @@ const Prompt: FC<{
                 }
               }
 
-              if (nvimInput) {
+              if (typeof nvimInput === 'string') {
                 const command: Command = {
                   input: commandRef.current!,
                   type: 'real',
@@ -218,7 +225,11 @@ const Prompt: FC<{
                 setView('nvim');
                 setFileContent(nvimInput);
               } else {
-                displayMessage(currentCommand, stateRef.current.cwd, 'File Not Found');
+                displayMessage(
+                  currentCommand,
+                  stateRef.current.cwd,
+                  'File Not Found'
+                );
                 return;
               }
             }

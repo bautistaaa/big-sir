@@ -52,7 +52,8 @@ const Terminal: FC = () => {
               padding: '3px',
             }}
           >
-            <LastLogin>{`Last login: ${lastLogin} on ttys001`}</LastLogin>
+            <Message>{`Last login: ${lastLogin} on ttys001`}</Message>
+            <Message>{`View resume at /home/personal/Resume.js (ex: nvim home/personal/Resume.js)`}</Message>
             <Prompt
               isTerminalFocused={isFocused}
               setView={setView}
@@ -83,7 +84,7 @@ const TopBar = styled.div`
   height: 30px;
   padding: 7px;
 `;
-const LastLogin = styled.div`
+const Message = styled.div`
   color: white;
   margin-bottom: 7px;
 `;

@@ -14,14 +14,14 @@ const experience = [
     from: 'February 2019',
     to: 'June 2020',
     position: 'Lead Frontend Engineer',
-    tech: ['TypeScript', 'JavaScript', 'React', 'NextJS', 'GO', 'GraphQL']
+    tech: ['TypeScript', 'JavaScript', 'React', 'NextJS', 'GO', 'GraphQL', 'Node']
   },
   {
     name: 'Capital One',
     from: 'February 2018',
     to: 'February 2019',
     position: 'Senior Frontend Developer',
-    tech: ['TypeScript', 'JavaScript', 'Angular']
+    tech: ['TypeScript', 'JavaScript', 'Angular', 'Node']
   },
   {
     name: 'Thinkful',

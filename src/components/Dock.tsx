@@ -59,6 +59,14 @@ const Dock: FC<{
               </Button>
             );
           })}
+          <Button
+            key="github"
+            onClick={() => {
+              window.open('https://github.com/bautistaaa/big-sir', '_blank');
+            }}
+          >
+            <img src="github.png" alt="" />
+          </Button>
         </IconsContainer>
         <TrashContainer>
           <Separator ref={minimizedTargetRef} />

@@ -8,11 +8,14 @@ Built with [React](https://reactjs.org/) and [XState](https://github.com/davidkp
 - Context Menu to reset icon positions
 - Window management (focus priority, minimize, maximize)
 - Terminal
-  - Able to open/view files in NeoVim (ex: nvim/home/personal/Resume.js)
+  - Able to open/view files in NeoVim (ex: nvim home/personal/Resume.js)
     - I disabled the `cat` command, only `nvim` works
   - Basic commands such as `ls|cd|pwd|^C|CMD + K`
   - Command history
-- Chrome with browsing history/bookmarks
+  - Autocompletion with tab (suggests multiple options if there are more than on match)
+  - Launch html files in chrome app with `open` (ex: open home/projects/narutoql.html)
+- Chrome 
+  - History/bookmarks
   - Note: most sites don't allow iframes to load them
 - Finder
   - Able to open/view apps in three mode (detail/list/icon)

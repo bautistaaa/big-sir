@@ -143,6 +143,7 @@ const FileContent = styled.div`
   height: calc(100% - 50px);
   .react-codemirror2,
   .react-codemirror2 > div {
+    color: white !important;
     height: 100%;
   }
 `;

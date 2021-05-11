@@ -28,7 +28,6 @@ const App: FC = () => {
 
   useEffect(() => {
     const handler = (e: any) => {
-      console.log(e);
       if (e.matches) {
         send({ type: 'TOGGLE_MODE', payload: { mode: 'dark' } });
       } else {

@@ -59,6 +59,11 @@ export type TerminalEvent =
   | KeyUpEvent
   | SetCurrentCommandEvent;
 
+const getRealCommands = (commands: Command[]) => {
+  return commands.filter(
+    (command) => command?.type === 'real' && command?.input !== ''
+  );
+};
 const filterDuplicates = (arr: string[], key: string) => {
   return arr.filter((k) => k !== key);
 };
@@ -142,19 +147,25 @@ const config = {
       };
     }),
     decrementHistory: assign<Context, TerminalEvent>((context) => {
+      const realCommands = getRealCommands(context.commands);
+      const newHistoryIndex =
+        context.historyIndex - 1 < 0 ? 0 : context.historyIndex - 1;
       return {
         ...context,
-        historyIndex:
-          context.historyIndex - 1 < 0 ? 0 : context.historyIndex - 1,
+        historyIndex: newHistoryIndex,
+        currentCommand: realCommands[newHistoryIndex]?.input ?? '',
       };
     }),
     incrementHistory: assign<Context, TerminalEvent>((context) => {
+      const realCommands = getRealCommands(context.commands);
+      const newHistoryIndex =
+        context.historyIndex + 1 > context.commands.length
+          ? context.commands.length
+          : context.historyIndex + 1;
       return {
         ...context,
-        historyIndex:
-          context.historyIndex + 1 > context.commands.length
-            ? context.commands.length
-            : context.historyIndex + 1,
+        historyIndex: newHistoryIndex,
+        currentCommand: realCommands[newHistoryIndex]?.input ?? '',
       };
     }),
     keyDown: assign<Context, TerminalEvent>((context, event) => {
@@ -188,14 +199,12 @@ const config = {
         ),
       };
     }),
-    setCurrentCommand: assign<Context, TerminalEvent>(
-      (context, event) => {
-        return {
-          ...context,
-          currentCommand: (event as SetCurrentCommandEvent).payload.command,
-        };
-      }
-    ),
+    setCurrentCommand: assign<Context, TerminalEvent>((context, event) => {
+      return {
+        ...context,
+        currentCommand: (event as SetCurrentCommandEvent).payload.command,
+      };
+    }),
   },
 };
 

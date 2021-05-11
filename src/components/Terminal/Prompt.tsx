@@ -31,6 +31,8 @@ const Prompt: FC<{
 
   useEffect(() => {
     stateRef.current = current.context;
+    textAreaRef.current!.value = currentCommand;
+    commandRef.current = currentCommand;
   });
 
   useEffect(() => {
@@ -49,12 +51,6 @@ const Prompt: FC<{
     clearRefs();
     send({ type: 'CLEAR' });
   }, [send]);
-
-  const getRealCommands = () => {
-    return stateRef.current.commands.filter(
-      (command) => command.type === 'real' && command.input !== ''
-    );
-  };
 
   useEffect(() => {
     if (
@@ -150,29 +146,11 @@ const Prompt: FC<{
             }
           }
         } else if (key === 'ArrowDown') {
+          e.preventDefault();
           send({ type: 'INCREMENT_HISTORY' });
-          const cmd = getRealCommands()[stateRef.current.historyIndex + 1];
-          if (cmd) {
-            send({
-              type: 'SET_CURRENT_COMMAND',
-              payload: { command: cmd.input },
-            });
-            commandRef.current = cmd.input;
-            textAreaRef.current!.value = cmd.input;
-          }
         } else if (key === 'ArrowUp') {
           e.preventDefault();
           send({ type: 'DECREMENT_HISTORY' });
-          const cmd = getRealCommands()[stateRef.current.historyIndex - 1];
-          if (cmd) {
-            send({
-              type: 'SET_CURRENT_COMMAND',
-              payload: { command: cmd.input },
-            });
-            commandRef.current = cmd.input;
-            textAreaRef.current!.value = '';
-            textAreaRef.current!.value = cmd.input;
-          }
         } else if (key === 'Enter') {
           e.preventDefault();
           if (textAreaRef.current) {
@@ -259,6 +237,7 @@ const Prompt: FC<{
               defaultUrl = stateRef.current.cwdContents?.[args[0]]
                 ?.contents as string;
             }
+
             sendParent({
               type: 'FOCUS_WINDOW',
               payload: {
@@ -266,6 +245,19 @@ const Prompt: FC<{
                 defaultUrl,
               },
             });
+          } else if (cmd !== '') {
+            output = `bash: ${cmd}: command not found`;
+          } else {
+            const command: Command = {
+              input: currentCommand,
+              type: 'fake',
+              output: '',
+              cwd: stateRef.current.cwd,
+            };
+
+            clearRefs();
+            send({ type: 'ADD_COMMAND', payload: { command } });
+            return;
           }
 
           const command: Command = {

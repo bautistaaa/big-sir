@@ -7,10 +7,9 @@ const useLocalStorage = (
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
-      console.log(item);
       return item ? item : initialValue;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return initialValue;
     }
   });
@@ -20,7 +19,7 @@ const useLocalStorage = (
       setStoredValue(value);
       window.localStorage.setItem(key, value);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

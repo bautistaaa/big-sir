@@ -80,19 +80,25 @@ const Wrapper = styled.div`
   display: flex;
   height: 100%;
 `;
-const SideBar = styled.aside`
+const SideBar = styled.aside<{ theme: any }>`
   height: 100%;
-  width: 200px;
-  border-right: 1px solid black;
+  width: 150px;
+  border-right: 1px solid ${({ theme }) => theme.finderDetailsBorder};
   padding: 5px;
+  flex-shrink: 0;
+`;
+const ItemName = styled.div`
+  font-size: 12px;
+  padding: 3px;
+  transition: none;
 `;
 const Item = styled.div<{ active: boolean }>`
   cursor: default;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: #ffffff;
   margin-bottom: 3px;
+  transition: none;
   img {
     height: 15px;
     margin-right: 5px;
@@ -101,11 +107,10 @@ const Item = styled.div<{ active: boolean }>`
     active &&
     `
     background: rgb(26, 109, 196) !important;
+    ${ItemName} {
+      color: white;
+    }
   `}
-`;
-const ItemName = styled.div`
-  color: #ffffff;
-  font-size: 12px;
 `;
 const DetailsWrapper = styled.div`
   overflow: auto;
@@ -118,7 +123,7 @@ const DetailsWrapper = styled.div`
 const Details = styled.div``;
 const Preview = styled.div`
   background: rgb(30, 30, 30);
-  border: 1px solid rgb(75, 75, 75);
+  border: 1px solid ${({ theme }) => theme.finderDetailsBorder};
   border-radius: 10px;
   overflow: hidden;
   height: 250px;
@@ -164,6 +169,9 @@ const InformationItemWrapper = styled.div<{ spacingLarge?: boolean }>`
       : `
   padding-bottom: 2px;
   `}
+  &:last-child {
+    border-bottom: none;
+  }
 `;
 const Label = styled.label`
   color: rgb(137, 137, 137);

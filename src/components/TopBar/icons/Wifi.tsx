@@ -7,7 +7,7 @@ const Wifi: FC = () => (
     viewBox="0 0 20 20"
     width="18"
     height="18"
-    fill="currentColor"
+    fill="white"
   >
     <path
       fillRule="evenodd"

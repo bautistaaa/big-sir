@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-const Mirroring: FC = () => {
+const Mirroring: FC<{fill: string}> = ({fill}) => {
   return (
     <svg
       width="17"
@@ -15,7 +15,7 @@ const Mirroring: FC = () => {
         width="4.5"
         height="3.5"
         rx="0.75"
-        stroke="white"
+        stroke={fill}
         strokeWidth="0.5"
       />
       <rect
@@ -24,7 +24,7 @@ const Mirroring: FC = () => {
         width="4.5"
         height="3.5"
         rx="0.75"
-        stroke="white"
+        stroke={fill}
         strokeWidth="0.5"
       />
     </svg>

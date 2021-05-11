@@ -77,8 +77,8 @@ const Terminal: FC = () => {
   );
 };
 
-const TopBar = styled.div`
-  background: rgb(56, 56, 56);
+const TopBar = styled.div<{ theme: any }>`
+  background: ${({ theme }) => theme.topBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 30px;

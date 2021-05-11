@@ -1,12 +1,15 @@
-import { FC, useState } from 'react';
-import styled from 'styled-components/macro';
+import { FC, useContext } from 'react';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { BsBrightnessAltHigh } from 'react-icons/bs';
 import { Menu } from '@headlessui/react';
 import CircleButton from './CircleButton';
-import { Brightness, Mirroring, Settings } from '../icons';
+import ClearButton from '../../../components/ClearButton';
+import { Mirroring, Settings } from '../icons';
 import ButtonItem, {
   ButtonItemProps as BaseButtonItemProps,
   Settings as SettingsEnum,
 } from './ButtonItem';
+import { useAppContext } from '../../../AppContext';
 
 export interface ButtonItemProps extends BaseButtonItemProps {}
 const buttonListItems: ButtonItemProps[] = [
@@ -30,7 +33,8 @@ const buttonListItems: ButtonItemProps[] = [
   },
 ];
 const CommandPanel: FC = () => {
-  const [isDndActive, setIsDndActive] = useState(true);
+  const { current: currentParent, send: sendParent } = useAppContext();
+  const themeContext = useContext(ThemeContext);
   return (
     <Wrapper>
       <Menu as={StyledMenu}>
@@ -52,20 +56,29 @@ const CommandPanel: FC = () => {
                 </ButtonList>
               </LeftColumn>
               <RightColumnTop>
-                <span onClick={() => setIsDndActive(!isDndActive)}>
+                <ClearButton
+                  onClick={() => {
+                    const mode =
+                      currentParent.context.mode === 'dark' ? 'light' : 'dark';
+                    sendParent({
+                      type: 'TOGGLE_MODE',
+                      payload: { mode },
+                    });
+                  }}
+                >
                   <DnDCircleButton
-                    active={isDndActive}
+                    active={currentParent.context.mode === 'dark'}
                     icon={SettingsEnum.dnd}
                   />
-                </span>
-                <DndText>Do Not Disturb</DndText>
+                  <DndText>Dark Mode</DndText>
+                </ClearButton>
               </RightColumnTop>
               <LeftItem>
-                <Brightness />
+                <BsBrightnessAltHigh size={25} fill={themeContext.color} />
                 <BrightnessText>Keyboard Brightness</BrightnessText>
               </LeftItem>
               <RightItem>
-                <Mirroring />
+                <Mirroring fill={themeContext.color} />
                 <MirroringText>Screen Mirroring</MirroringText>
               </RightItem>
             </Grid>
@@ -92,7 +105,7 @@ const StyledMenuButton = styled.button`
 const StyledMenuItems = styled.ul`
   outline: none;
   position: absolute;
-  background: rgb(27 27 29 / 30%);
+  background: ${({ theme }) => theme.menuBackground};
   backdrop-filter: blur(25px);
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   right: -136px;
@@ -114,7 +127,7 @@ const Grid = styled.div`
 `;
 const BasePanel = styled.div`
   border-radius: 5px;
-  background: rgb(27 27 29 / 50%);
+  background: ${({ theme }) => theme.commandPanelPanelBackground};
   backdrop-filter: blur(75px);
 `;
 const LeftColumn = styled(BasePanel)`
@@ -122,6 +135,7 @@ const LeftColumn = styled(BasePanel)`
   grid-area: left-side;
 `;
 const DnDCircleButton = styled(CircleButton)`
+  cursor: default;
   flex-shrink: 0;
 `;
 const RightColumnTop = styled(BasePanel)`
@@ -132,16 +146,20 @@ const RightColumnTop = styled(BasePanel)`
   padding: 12px 10px;
 `;
 const DndText = styled.div`
+  cursor: default;
   line-height: 15px;
   margin-left: 7px;
+  color: ${({ theme }) => theme.color};
 `;
 const BrightnessText = styled.div`
+  color: ${({ theme }) => theme.color};
   text-align: center;
   margin-top: 5px;
   line-height: 12px;
   font-size: 10px;
 `;
 const MirroringText = styled.div`
+  color: ${({ theme }) => theme.color};
   text-align: center;
   margin-top: 5px;
   line-height: 12px;
@@ -154,6 +172,7 @@ const LeftItem = styled(BasePanel)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: default;
 `;
 const RightItem = styled(BasePanel)`
   padding: 12px 10px;
@@ -163,6 +182,7 @@ const RightItem = styled(BasePanel)`
   align-items: center;
   justify-content: center;
   grid-area: mirroring;
+  cursor: default;
 `;
 const ButtonList = styled.ul``;
 const ButtonListItem = styled.li`

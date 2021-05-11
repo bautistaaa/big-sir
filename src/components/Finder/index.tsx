@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
-import styled from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { useContext } from 'react';
 import { useMachine } from '@xstate/react';
 import { Icons, Details, List } from './icons/';
 import finderMachine from './finder.machine';
@@ -35,13 +36,16 @@ const SideBarItems: Record<string, SidebarItem> = {
 
 const Finder: FC = () => {
   const [current, send] = useMachine(finderMachine);
+  // const { current: currentParent } = useAppContext();
   const [activeFolder, setActiveFolder] = useState('personal');
+  const themeContext = useContext(ThemeContext);
   const files = getDirectoryContents(
     SideBarItems[current.context.activeDirectory].path
   );
   const isIconView = current.matches('icons');
   const isDetailView = current.matches('details');
   const isListView = current.matches('lists');
+  // const isDark = currentParent.context.mode === 'dark';
 
   return (
     <Wrapper>
@@ -82,7 +86,10 @@ const Finder: FC = () => {
               }}
               isActive={isIconView}
             >
-              <Icons />
+              <Icons
+                fill={themeContext.finderIconFill}
+                backgroundFill={themeContext.finderModeButtonBackground}
+              />
             </LeftButton>
             <MiddleButton
               onClick={() => {
@@ -90,7 +97,7 @@ const Finder: FC = () => {
               }}
               isActive={isListView}
             >
-              <List stroke={isListView ? 'rgb(64,64,64)' : 'white'} />
+              <List fill={themeContext.finderIconFill} />
             </MiddleButton>
             <RightButton
               onClick={() => {
@@ -98,7 +105,7 @@ const Finder: FC = () => {
               }}
               isActive={isDetailView}
             >
-              <Details stroke={isDetailView ? 'rgb(64,64,64)' : 'white'} />
+              <Details fill={themeContext.finderIconFill} />
             </RightButton>
           </ButtonsWrapper>
         </UtilityBar>
@@ -123,12 +130,12 @@ const Explorer = styled.div`
   padding-top: 10px;
   backdrop-filter: blur(12px);
 `;
-const RightSide = styled.div`
+const RightSide = styled.div<{ theme: any }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  background: rgb(56, 56, 60);
+  background: ${({ theme }) => theme.finderTopBarBackground};
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   flex: 1;
@@ -150,7 +157,6 @@ const Item = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: #ffffff;
   cursor: default;
   border-radius: 5px;
   padding: 6px 8px;
@@ -165,15 +171,17 @@ const Item = styled.div<{ active: boolean }>`
   `}
 `;
 const ItemName = styled.div`
-  color: #ffffff;
   font-size: 12px;
 `;
 const Wrapper = styled.div`
   display: flex;
   height: 100%;
   border-radius: inherit;
+  div {
+    color: ${({ theme }) => theme.color};
+  }
 `;
-const Sidebar = styled.div`
+const Sidebar = styled.div<{ theme: any }>`
   padding: 62px 10px 0;
   position: absolute;
   left: 0;
@@ -182,7 +190,7 @@ const Sidebar = styled.div`
   width: 150px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
-  background: rgb(42 42 42 / 65%);
+  background: ${({ theme }) => theme.finderSideBarBackground};
   backdrop-filter: blur(12px);
   &::after {
     content: '';
@@ -195,7 +203,7 @@ const Sidebar = styled.div`
   }
 `;
 const Content = styled.div`
-  background: rgb(41, 35, 38);
+  background: ${({ theme }) => theme.finderSideBarBackground};
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 12px;
@@ -215,7 +223,7 @@ const ButtonsWrapper = styled.div`
   width: 100%;
   border-top-right-radius: 12px;
 `;
-const BaseUtilButton = styled.button<{ isActive: boolean }>`
+const BaseUtilButton = styled.button<{ isActive: boolean; theme: any }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,14 +232,13 @@ const BaseUtilButton = styled.button<{ isActive: boolean }>`
   outline: none;
   width: 30px;
   height: 22px;
-  background: rgb(56, 56, 60);
   margin-right: 1px;
   z-index: 120;
   border-radius: 5px;
-  ${({ isActive }) =>
+  ${({ isActive, theme }) =>
     isActive &&
     `
-    background: rgb(81, 80, 80);
+    background: ${theme.finderModeButtonBackground};
     `}
 `;
 const LeftButton = styled(BaseUtilButton)``;

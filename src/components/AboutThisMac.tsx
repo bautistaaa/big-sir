@@ -24,7 +24,7 @@ const AboutThisMac: FC = () => {
 };
 
 const TopBar = styled.div`
-  background: rgb(56, 56, 56);
+  background: ${({theme}) => theme.topBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 40px;
@@ -49,8 +49,8 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  background: rgb(27 27 29 / 70%);
+  color: ${({theme}) => theme.color};
+  background: ${({theme}) => theme.aboutBackground};
   backdrop-filter: blur(72px);
   height: calc(100% - 40px);
   width: 100%;

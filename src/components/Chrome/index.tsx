@@ -1,8 +1,10 @@
-import { FC, FormEvent, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components/macro';
+import { FC, FormEvent, useEffect, useRef, useState, useContext } from 'react';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { VscBrowser } from 'react-icons/vsc';
+import { IoMdRefresh } from 'react-icons/io';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
-import { LeftArrow, RightArrow, Refresh as BaseRefresh } from './icons';
+import { LeftArrow, RightArrow } from './icons';
 
 interface Bookmark {
   favico: string;
@@ -45,6 +47,7 @@ const DEFAULT_URL = {
 };
 const Chrome: FC = (): JSX.Element => {
   const { current } = useAppContext();
+  const themeContext = useContext(ThemeContext);
   const windowState = current.context.activeWindows.find(
     (x) => x.name === 'chrome'
   );
@@ -112,7 +115,7 @@ const Chrome: FC = (): JSX.Element => {
             <RightArrow disabled={!hasNext} />
           </ClearButton>
           <ClearButton onClick={handleRefreshClick}>
-            <Refresh />
+            <IoMdRefresh fill={themeContext.color} size={18} />
           </ClearButton>
         </ActionButtonsWrapper>
         <Form onSubmit={handleSubmit}>
@@ -126,13 +129,17 @@ const Chrome: FC = (): JSX.Element => {
         </Form>
       </BrowserBar>
       <Bookmarks>
-        {bookmarks.map(({ url, favico, title }: Bookmark) => {
+        {bookmarks.map(({ url, title }: Bookmark) => {
           return (
             <BookmarkItem
               key={url}
               onClick={() => handleBookmarkItemClick(url, title)}
             >
-              <BookmarkFavIcon src={favico} />
+              <VscBrowser
+                fill={themeContext.color}
+                size={13}
+                style={{ marginRight: '5px' }}
+              />
               <BookmarkUrl>{url}</BookmarkUrl>
             </BookmarkItem>
           );
@@ -154,7 +161,7 @@ const Wrapper = styled.div`
 `;
 const TopBar = styled.div`
   height: 40px;
-  background: rgb(33, 33, 36);
+  background: ${({ theme }) => theme.topBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 `;
@@ -163,15 +170,15 @@ const BrowserBar = styled.div<{ title: string }>`
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  background: rgb(56, 56, 56);
+  background: ${({ theme }) => theme.chromeBrowserBarBackground};
   height: 30px;
   width: 100%;
   padding-right: 10px;
   &::before {
     content: '${({ title }) => `${title}`}';
-    color: white;
+    color: ${({ theme }) => theme.color};
     font-size: 12px;
-    background: rgb(56, 56, 56);
+    background: ${({ theme }) => theme.chromeBrowserBarBackground};
     position: absolute;
     top: -31px;
     left: 80px;
@@ -196,16 +203,16 @@ const ActionButtonsWrapper = styled.div`
 const Bookmarks = styled.div`
   display: flex;
   align-items: center;
-  background: rgb(56, 56, 56);
+  background: ${({ theme }) => theme.chromeBrowserBarBackground};
   width: 100%;
   height: 30px;
   padding-left: 10px;
 `;
 const BookmarkItem = styled(ClearButton)`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   font-size: 11px;
-  color: white;
+  color: ${({ theme }) => theme.color};
   margin-right: 10px;
   border-radius: 20px;
   transition: background 0.3s;
@@ -213,11 +220,6 @@ const BookmarkItem = styled(ClearButton)`
   &:hover {
     background: rgba(255, 255, 255, 0.1);
   }
-`;
-const BookmarkFavIcon = styled.img`
-  height: 15px;
-  width: 15px;
-  margin-right: 5px;
 `;
 const BookmarkUrl = styled.div`
   display: inline-block;
@@ -233,18 +235,15 @@ const IFrame = styled.iframe`
   width: 100%;
   height: 100%;
 `;
-const Refresh = styled(BaseRefresh)`
-  transform: scaleY(-1);
-`;
 const Form = styled.form`
   width: 100%;
 `;
 const UrlBar = styled.input`
-  color: white;
+  color: ${({ theme }) => theme.color};
   height: 20px;
   width: 100%;
   font-size: 12px;
-  background: rgb(33, 33, 36);
+  background: ${({ theme }) => theme.chromeUrlInputBackground};
   border: 10px;
   border-radius: 30px;
   margin-right: 10px;

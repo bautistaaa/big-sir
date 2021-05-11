@@ -26,18 +26,20 @@ const StyledMenu = styled.div`
   position: relative;
 `;
 const MenuButton = styled.div`
+  transition: none;
   padding: 5px 9px;
   position: relative;
   border-radius: 4px;
   &:hover {
     background: rgb(26, 109, 196);
+    color: white;
   }
 `;
 const StyledMenuItems = styled.ul`
-  color: white;
+  color: ${({ theme }) => theme.color};
   outline: none;
   position: absolute;
-  background: rgb(27 27 29 / 30%);
+  background: ${({theme}) => theme.menuBackground};
   backdrop-filter: blur(72px);
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   left: 0;

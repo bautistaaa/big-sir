@@ -1,7 +1,11 @@
-import { FC } from 'react';
-import styled from 'styled-components/macro';
+import { FC, useContext } from 'react';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { IoLogoTwitch } from 'react-icons/io';
+import { ImGithub } from 'react-icons/im';
+import { GrTwitter } from 'react-icons/gr';
 
 const AboutThisDeveloper: FC = () => {
+  const themeContext = useContext(ThemeContext);
   return (
     <Wrapper>
       <TopBar className="action-bar" />
@@ -17,13 +21,13 @@ const AboutThisDeveloper: FC = () => {
           <P>Los Angeles, CA</P>
           <Socials>
             <Link href="https://www.twitch.tv/trash_dev" target="_blank">
-              <img src="twitch.svg" alt="" />
+              <IoLogoTwitch fill={themeContext.color} size={20} />
             </Link>
             <Link href="https://www.github.com/bautistaaa" target="_blank">
-              <img src="gh.svg" alt="" />
+              <ImGithub fill={themeContext.color} size={20} />
             </Link>
             <Link href="https://twitter.com/the_trash_dev" target="_blank">
-              <img src="twitter.svg" alt="" />
+              <GrTwitter fill={themeContext.color} size={20} />
             </Link>
           </Socials>
         </Text>
@@ -37,17 +41,13 @@ const Socials = styled.div`
   align-items: center;
   justify-content: flex-start;
   margin-top: 20px;
-  img {
-    width: 25px;
-    height: 25px;
-    margin-right: 10px;
-  }
 `;
 const Link = styled.a`
   text-decoration: none;
+  margin-right: 10px;
 `;
 const TopBar = styled.div`
-  background: rgb(56, 56, 56);
+  background: ${({ theme }) => theme.topBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 40px;
@@ -72,8 +72,8 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  background: rgb(27 27 29 / 70%);
+  color: ${({ theme }) => theme.color};
+  background: ${({ theme }) => theme.aboutBackground};
   backdrop-filter: blur(72px);
   height: calc(100% - 40px);
   width: 100%;

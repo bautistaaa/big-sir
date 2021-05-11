@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-const Details: FC<{ stroke: string }> = () => {
+const Details: FC<{ fill: string }> = ({ fill }) => {
   return (
     <svg
       width="31"
@@ -16,11 +16,11 @@ const Details: FC<{ stroke: string }> = () => {
         height="24"
         rx="3"
         transform="rotate(-0.21561 1.97348 2.05299)"
-        stroke="white"
+        stroke={fill}
         strokeWidth="2"
       />
-      <path d="M11.0675 2.5L11.0675 25" stroke="white" strokeWidth="2" />
-      <path d="M20.0674 2.5L20.0674 25" stroke="white" strokeWidth="2" />
+      <path d="M11.0675 2.5L11.0675 25" stroke={fill} strokeWidth="2" />
+      <path d="M20.0674 2.5L20.0674 25" stroke={fill} strokeWidth="2" />
     </svg>
   );
 };

@@ -54,11 +54,13 @@ const TopBar: FC = () => {
 };
 
 const MenuButton = styled.div`
+  transition: none;
   padding: 5px 9px;
   position: relative;
   border-radius: 4px;
   &:hover {
     background: rgb(26, 109, 196);
+    color: white;
   }
 `;
 const StyledMenu = styled.div`
@@ -72,7 +74,7 @@ const StyledMenuButton = styled.button`
 const StyledMenuItems = styled.ul`
   outline: none;
   position: absolute;
-  background: rgb(27 27 29 / 30%);
+  background: ${({theme}) => theme.menuBackground};
   backdrop-filter: blur(72px);
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   left: 0;
@@ -102,7 +104,7 @@ const Wrapper = styled.div`
   justify-content: space-between;
   height: 25px;
   width: 100%;
-  color: white;
+  color: ${({ theme }) => theme.color};
   background: rgb(51 51 51 / 25%);
   padding: 0 15px;
   font-size: 12px;
@@ -118,6 +120,7 @@ const LeftSide = styled.div`
   justify-content: space-between;
 `;
 const RightSide = styled.div`
+  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -6,11 +6,14 @@ import { File, Contents } from '../../shared/fileDirectory';
 import { formatDate } from '../../utils';
 
 const ListView: FC<{ files: Contents }> = ({ files }) => {
-  const { send } = useAppContext();
+  const { current, send } = useAppContext();
   const [active, setActive] = useState('');
 
   return (
-    <Wrapper count={Object.keys(files).length}>
+    <Wrapper
+      count={Object.keys(files).length}
+      isDark={current.context.mode === 'dark'}
+    >
       <Table>
         <thead>
           <tr>
@@ -71,22 +74,21 @@ const TR = styled.tr<{ active: boolean }>`
   `}
 `;
 const Table = styled.table`
-  color: white;
   th {
     text-align: left;
     text-transform: capitalize;
     font-size: 10px;
     padding: 7px;
-    color: rgb(177, 177, 177);
+    color: ${({ theme }) => theme.color};
     border-collapse: collapse;
-    border-bottom: 1px solid rgb(100, 100, 100);
+    border-bottom: 1px solid ${({ theme }) => theme.finderBorder};
     width: 10%;
     &:nth-child(1) {
       padding-left: 35px;
       width: 30%;
     }
     &:not(:last-child) {
-      border-right: 1px solid rgb(100, 100, 100);
+      border-right: 1px solid ${({ theme }) => theme.finderBorder};
     }
   }
 
@@ -98,15 +100,17 @@ const Table = styled.table`
 
   tbody > tr {
     &:nth-child(odd) {
-      background: rgb(51, 51, 51);
+      background: ${({ theme }) => theme.finderOddItemListBackground};
     }
     &:nth-child(even) {
-      background: rgb(41, 35, 38);
+      background: ${({ theme }) => theme.finderEvenItemListBackground};
     }
   }
 `;
-const Wrapper = styled.div<{ count: number }>`
+const Wrapper = styled.div<{ count: number; isDark: boolean; theme: any }>`
   height: 100%;
+  z-index: 1;
+  position: relative;
   ${({ count }) => `
     background: repeating-linear-gradient(
       rgb(41, 35, 38),
@@ -115,7 +119,27 @@ const Wrapper = styled.div<{ count: number }>`
       rgb(51, 51, 51) 40px
     )
     left 0 top ${76 + count * 20 + 25}px no-repeat fixed;
-    `}
+  `}
+  &::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: -1;
+    transition: opacity 150ms ease-in;
+    opacity: ${({ isDark }) => (isDark ? 0 : 1)};
+    ${({ count }) => `
+    background: repeating-linear-gradient(
+      white,
+      white 20px,
+      #f1f1f1 0,
+      #f1f1f1 40px
+    )
+    left 0 top ${76 + count * 20 + 25}px no-repeat fixed;
+  `}
+  }
 `;
 const List = styled.ul``;
 const ListItem = styled.li`
@@ -131,7 +155,7 @@ const ListItem = styled.li`
 `;
 const ItemName = styled.div`
   display: inline-block;
-  color: white;
+  color: ${({ theme }) => theme.color};
   font-size: 12px;
 `;
 export default ListView;

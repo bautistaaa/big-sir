@@ -54,24 +54,16 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(auto-fill, 70px);
   padding: 15px;
 `;
-const Item = styled.div<{ active: boolean }>`
-  width: 60px;
-  text-align: center;
-  img {
-    width: 100%;
-  }
-  ${({ active }) =>
-    active &&
-    `
-  `}
-`;
 const ItemName = styled.span<{ active: boolean }>`
-  color: white;
+  transition: none;
+  color: ${({theme}) => theme.color};
   font-size: 12px;
   word-break: break-all;
+  cursor: default;
   ${({ active }) =>
     active &&
     `
+    color: white;
     background: rgb(26, 109, 196) !important;
     border-radius: 4px;
     padding: 1px;
@@ -80,7 +72,16 @@ const ItemName = styled.span<{ active: boolean }>`
   `}
 }
 `;
+const Item = styled.div`
+  transition: none;
+  width: 60px;
+  text-align: center;
+  img {
+    width: 100%;
+  }
+`;
 const ImageWrapper = styled.div<{ active: boolean }>`
+  transition: none;
   padding: 3px 7px;
   ${({ active }) =>
     active &&

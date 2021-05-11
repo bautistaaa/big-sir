@@ -12,9 +12,11 @@ interface ActiveWindow {
 interface MinimizedWindow {
   name: AppType;
 }
+type Mode = 'light' | 'dark';
 export interface Context {
   activeWindows: ActiveWindow[];
   minimizedWindows: MinimizedWindow[];
+  mode: Mode;
 }
 
 type FocusWindowEvent = {
@@ -29,17 +31,22 @@ type RemoveWindowEvent = {
   type: 'REMOVE_WINDOW';
   payload: { name: AppType };
 };
+type ToggleModeEvent = {
+  type: 'TOGGLE_MODE';
+  payload: { mode: Mode };
+};
 
 export type AppEvent =
   | FocusWindowEvent
   | MinimizeWindowEvent
-  | RemoveWindowEvent;
+  | RemoveWindowEvent
+  | ToggleModeEvent;
 
 const config = {
   actions: {
     focusWindow: assign<Context, AppEvent>((context, event) => {
       const minimizedWindows = context.minimizedWindows.filter(
-        (w) => w.name !== event.payload.name
+        (w) => w.name !== (event as FocusWindowEvent).payload.name
       );
       const maxZIndex = Math.max(
         ...context.activeWindows.map((x) => x.zIndex),
@@ -47,7 +54,7 @@ const config = {
       );
 
       const refocusedWindows = context.activeWindows.map((aw) => {
-        if (aw.name === event.payload.name) {
+        if (aw.name === (event as FocusWindowEvent).payload.name) {
           return {
             ...aw,
             zIndex: maxZIndex + 1,
@@ -62,11 +69,12 @@ const config = {
       // We need to open a new window:
       if (
         !refocusedWindows.find(
-          ({ name }: { name: string }) => name === event.payload.name
+          ({ name }: { name: string }) =>
+            name === (event as FocusWindowEvent).payload.name
         )
       ) {
         refocusedWindows.push({
-          name: event.payload.name,
+          name: (event as FocusWindowEvent).payload.name,
           defaultUrl: (event as FocusWindowEvent).payload.defaultUrl,
           zIndex: maxZIndex + 1,
           focused: true,
@@ -84,13 +92,13 @@ const config = {
         ...context,
         minimizedWindows: [
           ...context.minimizedWindows,
-          { name: event.payload.name },
+          { name: (event as MinimizeWindowEvent).payload.name },
         ],
       };
     }),
     removeWindow: assign<Context, AppEvent>((context, event) => {
       const activeWindows = context.activeWindows
-        .filter((aw) => aw.name !== event.payload.name)
+        .filter((aw) => aw.name !== (event as RemoveWindowEvent).payload.name)
         .sort((a, b) => {
           return b.zIndex - a.zIndex;
         })
@@ -110,16 +118,23 @@ const config = {
         activeWindows,
       };
     }),
+    toggleMode: assign<Context, AppEvent>((context, event) => {
+      return {
+        ...context,
+        mode: (event as ToggleModeEvent).payload.mode,
+      };
+    }),
   },
 };
 
-// Context, Event, State
+const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const appMachine = createMachine<Context, AppEvent, any>(
   {
     id: 'app',
     context: {
       activeWindows: [],
       minimizedWindows: [],
+      mode: isDarkMode ? 'dark' : 'light',
     },
     strict: true,
     on: {
@@ -131,6 +146,9 @@ const appMachine = createMachine<Context, AppEvent, any>(
       },
       REMOVE_WINDOW: {
         actions: ['removeWindow'],
+      },
+      TOGGLE_MODE: {
+        actions: ['toggleMode'],
       },
     },
   },

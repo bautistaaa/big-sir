@@ -24,7 +24,7 @@ const ButtonItem: FC<ButtonItemProps> = ({
   const [active, setActive] = useState(true);
   return (
     <Wrapper onClick={() => setActive(!active)}>
-      <CircleButton icon={type} active={active}/>
+      <CircleButton icon={type} active={active} />
       <TextWrapper>
         <MainText>{mainText}</MainText>
         <StatusText>{active ? activeText : inactiveText}</StatusText>
@@ -34,15 +34,17 @@ const ButtonItem: FC<ButtonItemProps> = ({
 };
 
 const Wrapper = styled.div`
+  cursor: default;
   display: flex;
   align-items: center;
 `;
 const MainText = styled.div`
+  color: ${({ theme }) => theme.color};
   margin-bottom: 3px;
 `;
 const StatusText = styled.div`
   font-size: 10px;
-  color: rgb(173, 172, 172);
+  color: ${({ theme }) => theme.commandPanelSubHeader};
 `;
 const TextWrapper = styled.div`
   margin-left: 7px;

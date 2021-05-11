@@ -14,7 +14,6 @@ const IconView: FC<{ files: Contents }> = ({ files }) => {
         const isActive = active === k;
         return (
           <Item
-            active={isActive}
             key={file.display}
             onClick={() => {
               setActive(k);

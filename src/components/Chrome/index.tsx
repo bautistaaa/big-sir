@@ -2,6 +2,7 @@ import { FC, FormEvent, useEffect, useRef, useState, useContext } from 'react';
 import styled, { ThemeContext } from 'styled-components/macro';
 import { VscBrowser } from 'react-icons/vsc';
 import { IoMdRefresh } from 'react-icons/io';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
 import { LeftArrow, RightArrow } from './icons';
@@ -140,7 +141,7 @@ const Chrome: FC = (): JSX.Element => {
                 size={13}
                 style={{ marginRight: '5px' }}
               />
-              <BookmarkUrl>{url}</BookmarkUrl>
+              <BookmarkUrl>{title}</BookmarkUrl>
             </BookmarkItem>
           );
         })}
@@ -148,6 +149,9 @@ const Chrome: FC = (): JSX.Element => {
 
       <Content>
         <IFrame key={k} ref={iframeRef} src={src?.url}></IFrame>
+        <ExternalLinkButton as="a" href={src?.url} target="_blank">
+          <FaExternalLinkAlt color="white" size={20} />
+        </ExternalLinkButton>
       </Content>
     </Wrapper>
   );
@@ -252,6 +256,16 @@ const UrlBar = styled.input`
   padding-left: 10px;
   outline: none;
   width: 100%;
+`;
+const ExternalLinkButton = styled(ClearButton)`
+  display: block;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: black;
+  padding: 8px 11px;
+  border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 `;
 
 export default Chrome;

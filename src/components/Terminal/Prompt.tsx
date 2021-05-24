@@ -31,8 +31,13 @@ const Prompt: FC<{
 
   useEffect(() => {
     stateRef.current = current.context;
-    textAreaRef.current!.value = currentCommand;
-    commandRef.current = currentCommand;
+    if (
+      current.history?.event?.type === 'INCREMENT_HISTORY' ||
+      current.history?.event?.type === 'DECREMENT_HISTORY'
+    ) {
+      textAreaRef.current!.value = currentCommand;
+      commandRef.current = currentCommand;
+    }
   });
 
   useEffect(() => {

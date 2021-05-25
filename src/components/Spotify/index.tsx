@@ -10,7 +10,7 @@ import Home from './icons/Home';
 import Search from './icons/Search';
 import Library from './icons/Library';
 
-type SpotifyView = 'home' | 'library';
+// type SpotifyView = 'home' | 'library';
 const MENU_OPTIONS = [
   { text: 'home', icon: <Home /> },
   { text: 'search', icon: <Search /> },

@@ -4,7 +4,8 @@ import { useMachine } from '@xstate/react';
 import windowMachine from './window.machine';
 import StopLights from '../StopLights';
 import { useAppContext } from '../../AppContext';
-import configs, { AppType } from '../../shared/configs';
+import configs, { AppType } from '../../shared/app-configs';
+import Spotify from '../Spotify';
 import Chrome from '../Chrome';
 import Finder from '../Finder';
 import Terminal from '../Terminal';
@@ -36,6 +37,7 @@ const getComponentByName = (name: AppType) => {
     chrome: Chrome,
     finder: Finder,
     terminal: Terminal,
+    spotify: Spotify,
   };
   return components[name];
 };

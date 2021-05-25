@@ -1,7 +1,7 @@
 import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
-import { AppType } from '../shared/configs';
+import { AppType } from '../shared/app-configs';
 
 interface DockItem {
   name: AppType;
@@ -28,10 +28,10 @@ const items: DockItem[] = [
     name: 'chrome',
     path: './chrome.png',
   },
-  // {
-  //   name: 'spotify',
-  //   path: './spotify.svg',
-  // },
+  {
+    name: 'spotify',
+    path: './spotify.svg',
+  },
 ];
 
 const Dock: FC<{

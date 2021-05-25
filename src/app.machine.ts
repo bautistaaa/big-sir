@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate';
-import { AppType } from './shared/configs';
+import { AppType } from './shared/app-configs';
 
 const INITIAL_ZINDEX = 100;
 

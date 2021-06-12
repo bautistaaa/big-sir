@@ -1,63 +1,52 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useRef, useState } from 'react';
+import { useMachine } from '@xstate/react';
 import styled from 'styled-components/macro';
 import { AiFillHeart } from 'react-icons/ai';
 import { GoPlus } from 'react-icons/go';
-import ClearButton from '../../components/ClearButton';
-import { login, request } from './utils';
-import config from '../../shared/config';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import Home from './icons/Home';
 import Search from './icons/Search';
 import Library from './icons/Library';
+import createSpotifyMachine from './spotify.machine';
+import LoginScreen from './LoginScreen';
+import HomeView from './Home';
 
-// type SpotifyView = 'home' | 'library';
-const MENU_OPTIONS = [
-  { text: 'home', icon: <Home /> },
-  { text: 'search', icon: <Search /> },
-  { text: 'library', icon: <Library /> },
+type SpotifyView = 'home' | 'library' | 'search';
+const MENU_OPTIONS: {
+  text: SpotifyView;
+  icon: JSX.Element;
+  type: 'HOME' | 'SEARCH' | 'LIBRARY';
+}[] = [
+  { text: 'home', icon: <Home />, type: 'HOME' },
+  { text: 'search', icon: <Search />, type: 'SEARCH' },
+  { text: 'library', icon: <Library />, type: 'LIBRARY' },
 ];
 const Spotify: FC = (): JSX.Element => {
-  const [
-    playlists,
-    setPlaylists,
-  ] = useState<SpotifyApi.ListOfUsersPlaylistsResponse>();
-  const [view, setView] = useState('home');
+  const mainRef = useRef<HTMLDivElement | null>(null);
   const [token] = useLocalStorage('token', '');
-
-  const handleLoginClick = () => {
-    login();
-  };
-  useEffect(() => {
-    const getUserProfile = async () => {
-      const { id } = await request(`${config.apiUrl}/me`);
-
-      const playlists: SpotifyApi.ListOfUsersPlaylistsResponse = await request(
-        `${config.apiUrl}/users/${id}/playlists?offset=0&limit=20`
-      );
-      setPlaylists(playlists);
-    };
-
-    getUserProfile();
-  }, []);
+  const [current, send] = useMachine(createSpotifyMachine(token), {
+    devTools: true,
+  });
+  const [view, setView] = useState<SpotifyView>('home');
 
   return (
     <Wrapper>
       <TopBar className="action-bar"></TopBar>
-      {!token && <ClearButton onClick={handleLoginClick}>Login</ClearButton>}
+      {!token && <LoginScreen />}
       {token && (
         <SpotifyLayout>
           <DraggableBar className="action-bar" />
           <NavBar>
             <Menu>
               <MenuList>
-                {MENU_OPTIONS.map((mo) => {
+                {MENU_OPTIONS.map(({ icon, text, type }) => {
                   return (
                     <MenuListItem
-                      key={mo.text}
-                      onClick={() => setView(mo.text)}
-                      active={view === mo.text}
+                      key={text}
+                      onClick={() => send({ type })}
+                      active={view === text}
                     >
-                      {mo.icon} <MenuListItemText>{mo.text}</MenuListItemText>
+                      {icon} <MenuListItemText>{text}</MenuListItemText>
                     </MenuListItem>
                   );
                 })}
@@ -81,14 +70,33 @@ const Spotify: FC = (): JSX.Element => {
             </SecondaryMenu>
             <Separator />
             <PlaylistMenu>
-              <MenuList>
-                {playlists?.items.map((item) => {
-                  return <MenuListItem>{item.name}</MenuListItem>;
-                })}
-              </MenuList>
+              <PlaylistScroller>
+                <MenuList>
+                  {current?.context?.playlists?.items.map((item) => {
+                    return (
+                      <PlaylistListItem key={item.name}>
+                        {item.name}
+                      </PlaylistListItem>
+                    );
+                  })}
+                </MenuList>
+              </PlaylistScroller>
             </PlaylistMenu>
           </NavBar>
-          <Main />
+          <Main ref={mainRef}>
+            {current.matches('loggedIn.success.success.home') && (
+              <HomeView
+                feedData={current?.context?.feedData}
+                parentRef={mainRef}
+              />
+            )}
+            {current.matches('loggedIn.success.success.search') && (
+              <div>search</div>
+            )}
+            {current.matches('loggedIn.success.success.library') && (
+              <div>library</div>
+            )}
+          </Main>
           <NowPlayingBar />
         </SpotifyLayout>
       )}
@@ -112,6 +120,9 @@ const Separator = styled.hr`
 `;
 const Content = styled.div``;
 const Wrapper = styled.div`
+  font-family: spotify-circular, spotify-circular-cyrillic,
+    spotify-circular-arabic, spotify-circular-hebrew, Helvetica Neue, helvetica,
+    arial, Hiragino Kaku Gothic Pro, Meiryo, MS Gothic, sans-serif;
   height: 100%;
   width: 100%;
   display: flex;
@@ -134,6 +145,7 @@ const SpotifyLayout = styled.div`
   min-height: 100%;
   position: relative;
   width: 100%;
+  flex: 1;
 `;
 const NavBar = styled.div`
   display: flex;
@@ -145,36 +157,60 @@ const NavBar = styled.div`
   padding: 5px;
 `;
 const Menu = styled.div`
-  display: flex;
-  margin-top: 55px;
+  margin-top: 50px;
 `;
 const SecondaryMenu = styled(Menu)`
   margin-top: 17px;
 `;
 const PlaylistMenu = styled(Menu)`
+  position: relative;
   margin-top: 0;
-  overflow-y: scroll;
+  flex: 1;
+`;
+const PlaylistScroller = styled.div`
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
 `;
 const MenuList = styled.ul``;
 const MenuListItem = styled.li<{ active?: boolean }>`
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 16px;
   cursor: pointer;
   padding: 8px 15px;
   border-radius: 4px;
   display: flex;
   align-items: center;
-  color: white;
+  color: rgb(179, 179, 179);
   opacity: 0.7;
+  transition: background-color 50ms ease-in, color 50ms ease-in;
   ${({ active }) => active && `background: rgb(40,40,40); opacity: 1;`}
   > svg {
     margin-right: 15px;
+    transition: background-color 50ms ease-in, color 50ms ease-in;
   }
+  &:hover {
+    color: white;
+  }
+`;
+const PlaylistListItem = styled(MenuListItem)`
+  transition: none;
+  font-weight: 400;
 `;
 const MenuListItemText = styled.span`
   text-transform: capitalize;
 `;
 const Main = styled.div`
+  overflow: auto;
+  color: white;
   border-top-right-radius: 10px;
-  background-color: rgb(32, 32, 32);
+  background-color: #131313;
   grid-area: main;
 `;
 const NowPlayingBar = styled.div`

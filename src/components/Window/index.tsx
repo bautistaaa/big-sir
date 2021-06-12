@@ -16,15 +16,15 @@ import useResizeWindow from '../../hooks/useResizeWindow';
 import useIsFocused from '../../hooks/useIsFocused';
 import styled from 'styled-components/macro';
 
-export type WindowSize = {
+export interface WindowSize {
   width: string | number;
   height: string | number;
-};
+}
 
-export type WindowPosition = {
+export interface WindowPosition {
   x: number;
   y: number;
-};
+}
 
 interface WindowProps {
   name: AppType;
@@ -62,6 +62,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     minHeight,
     minWidth,
   } = configs[name];
+
   const mounted = useRef(false);
   const windowRef = useRef<Rnd>();
   useResizeWindow(

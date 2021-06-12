@@ -25,3 +25,13 @@ Secondary
 Dead last
 =============================
 - persist file changes via local storage
+
+
+
+
+=============================
+Spotify Home Page APIs
+=============================
+- New Releases
+- Feature Playlists
+- Recommendations

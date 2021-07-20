@@ -1,4 +1,4 @@
-import { FC, memo, useRef } from 'react';
+import { FC, memo, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import StickyDetailsBar from './StickyDetailsBar';
@@ -8,6 +8,8 @@ import Player from './Player';
 import SideBar from './SideBar';
 import PlaylistDetails from './PlaylistDetails';
 import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
+import { useService } from '@xstate/react';
+import { Context } from './spotify.machine';
 
 const SpotifyWrapper = memo(() => {
   return (
@@ -18,11 +20,12 @@ const SpotifyWrapper = memo(() => {
 });
 
 const Spotify: FC = () => {
-  const { current } = useSpotifyContext();
+  const service = useSpotifyContext();
+  const [state] = useService<Context, any>(service);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [token] = useLocalStorage('token', '');
-  const playlistDetails = current.context.playlistDetails;
-  const feedData = current.context.feedData;
+  const playlistDetails = state.context.playlistDetails;
+  const feedData = state.context.feedData;
 
   return (
     <Wrapper>
@@ -31,29 +34,29 @@ const Spotify: FC = () => {
         <SpotifyLayout>
           <StickyDetailsBar
             backgroundColor={
-              current?.context?.headerState?.backgroundColor ?? '#000'
+              state?.context?.headerState?.backgroundColor ?? '#000'
             }
-            opacity={current?.context?.headerState?.opacity ?? 0}
+            opacity={state?.context?.headerState?.opacity ?? 0}
           >
             <StickyDetailsBarText>
-              {current?.context?.headerState?.playlistName ?? ''}
+              {state?.context?.headerState?.playlistName ?? ''}
             </StickyDetailsBarText>
           </StickyDetailsBar>
           <DraggableBar className="action-bar" />
           <SideBar />
           <Main ref={mainRef}>
-            {current.matches('loggedIn.success.success.home') && (
+            {state.matches('loggedIn.success.success.home') && (
               <HomeView feedData={feedData} parentRef={mainRef} />
             )}
-            {current.matches('loggedIn.success.success.search') && (
+            {state.matches('loggedIn.success.success.search') && (
               <div>search</div>
             )}
-            {current.matches('loggedIn.success.success.library') && (
+            {state.matches('loggedIn.success.success.library') && (
               <div>library</div>
             )}
-            {current.matches(
-              'loggedIn.success.success.details.detailsView'
-            ) && <PlaylistDetails playlist={playlistDetails} />}
+            {state.matches('loggedIn.success.success.details.detailsView') && (
+              <PlaylistDetails playlist={playlistDetails} />
+            )}
           </Main>
           <NowPlayingBar>
             <Player />

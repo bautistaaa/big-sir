@@ -14,11 +14,14 @@ import {
 
 import { oneLine } from '../../shared/mixins';
 import { getToken } from './utils';
+import { Context } from './spotify.machine';
+import { useService } from '@xstate/react';
 
 const PlaylistTable: FC<{ items: SpotifyApi.PlaylistTrackObject[] }> = memo(
   ({ items }) => {
     const token = getToken();
-    const { current } = useSpotifyContext();
+    const service = useSpotifyContext();
+    const [state] = useService<Context, any>(service);
     const [active, setActive] = useState<string>();
     // HELP: i couldnt figure out how to do this with sticky + intersection observer
     const tableWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -32,8 +35,8 @@ const PlaylistTable: FC<{ items: SpotifyApi.PlaylistTrackObject[] }> = memo(
       initialInView: true,
       threshold: [1],
     });
-    const currentPlaylist = current?.context.playlistDetails;
-    const currentTrackId = current?.context.currentTrackId;
+    const currentPlaylist = state?.context.playlistDetails;
+    const currentTrackId = state?.context.currentTrackId;
     console.log(currentTrackId);
 
     const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
@@ -44,7 +47,7 @@ const PlaylistTable: FC<{ items: SpotifyApi.PlaylistTrackObject[] }> = memo(
         };
         try {
           const resp = await fetch(
-            `https://api.spotify.com/v1/me/player/play?device_id=${current?.context?.deviceId}`,
+            `https://api.spotify.com/v1/me/player/play?device_id=${state?.context?.deviceId}`,
             {
               method: 'PUT',
               body: JSON.stringify(body),

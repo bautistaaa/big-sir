@@ -7,6 +7,8 @@ import Home from '../icons/Home';
 import Search from '../icons/Search';
 import Library from '../icons/Library';
 import { useSpotifyContext } from '../SpotifyContext';
+import { Context } from '../spotify.machine';
+import { useService } from '@xstate/react';
 
 type SpotifyView = 'home' | 'library' | 'search';
 const MENU_OPTIONS: {
@@ -20,7 +22,8 @@ const MENU_OPTIONS: {
 ];
 
 const SideBar: FC = memo(() => {
-  const { current, send } = useSpotifyContext();
+  const service = useSpotifyContext();
+  const [state, send] = useService<Context, any>(service);
   const [view, setView] = useState<SpotifyView>('home');
 
   return (
@@ -60,7 +63,7 @@ const SideBar: FC = memo(() => {
       <PlaylistMenu>
         <PlaylistScroller>
           <MenuList>
-            {current?.context?.playlists?.items?.map((item) => {
+            {state?.context?.playlists?.items?.map((item) => {
               return (
                 <PlaylistListItem
                   key={item.id}

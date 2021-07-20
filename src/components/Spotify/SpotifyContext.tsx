@@ -1,21 +1,39 @@
 import { useMachine } from '@xstate/react';
-import { createContext, FC, useContext, useMemo } from 'react';
-import { Event, EventData, SCXML, SingleOrArray, State } from 'xstate';
+import { createContext, FC, useContext } from 'react';
+import {
+  Event,
+  EventData,
+  Interpreter,
+  Observer,
+  SCXML,
+  SingleOrArray,
+  State,
+  Subscription,
+} from 'xstate';
 import createSpotifyMachine, { Context, SpotifyEvent } from './spotify.machine';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
-interface SpotifyContextValues {
-  current: State<Context, SpotifyEvent, any, any>;
-  send: (
-    event: SingleOrArray<Event<SpotifyEvent>> | SCXML.Event<SpotifyEvent>,
-    payload?: EventData | undefined
-  ) => State<Context, SpotifyEvent, any, any>;
-}
+type SpotiyContextValue = Interpreter<
+  Context,
+  any,
+  SpotifyEvent,
+  {
+    value: any;
+    context: Context;
+  }
+>;
 
-const SpotifyContext = createContext<SpotifyContextValues>({
-  current: {} as State<Context, SpotifyEvent, any, any>,
-  send: () => ({} as State<Context, SpotifyEvent, any, any>),
-});
+export const SpotifyContext = createContext<SpotiyContextValue>(
+  {} as Interpreter<
+    Context,
+    any,
+    SpotifyEvent,
+    {
+      value: any;
+      context: Context;
+    }
+  >
+);
 
 const useSpotifyContext = () => {
   const context = useContext(SpotifyContext);
@@ -27,18 +45,12 @@ const useSpotifyContext = () => {
 
 const SpotifyProvider: FC = ({ children }) => {
   const [token] = useLocalStorage('token', '');
-  const [current, send] = useMachine(createSpotifyMachine(token));
-  console.log('shit');
-  const value = useMemo(
-    () => ({
-      current,
-      send,
-    }),
-    [current, send]
-  );
+  const [, , service] = useMachine(createSpotifyMachine(token));
 
   return (
-    <SpotifyContext.Provider value={value}>{children}</SpotifyContext.Provider>
+    <SpotifyContext.Provider value={service}>
+      {children}
+    </SpotifyContext.Provider>
   );
 };
 

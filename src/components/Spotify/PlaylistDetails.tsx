@@ -7,6 +7,8 @@ import { IoMdHeart } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
 import { useSpotifyContext } from './SpotifyContext';
 import PlaylistTable from './PlaylistTable';
+import { useService } from '@xstate/react';
+import { Context } from './spotify.machine';
 
 const colorThief = new ColorThief();
 
@@ -17,7 +19,8 @@ const PlaylistDetails: FC<{
 }> = ({ playlist }) => {
   const [heroBackgroundColor, setHeroBackgrounColor] = useState<string>();
   const imageColor = useRef<number[]>([]);
-  const { send } = useSpotifyContext();
+  const service = useSpotifyContext();
+  const [,send] = useService<Context, any>(service);
   const { ref: titleRef, entry } = useInView({
     threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
   });

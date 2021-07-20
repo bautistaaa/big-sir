@@ -13,9 +13,12 @@ import VolumeSlider from './VolumeSlider';
 import { useSpotifyContext } from '../SpotifyContext';
 import { getToken, loadSpotifyWebPlayerScript } from '../utils';
 import ClearButton from '../../ClearButton';
+import { Context } from '../spotify.machine';
+import { useService } from '@xstate/react';
 
 const Player: FC = () => {
-  const { send } = useSpotifyContext();
+  const service = useSpotifyContext();
+  const [,send] = useService<Context, any>(service);
   const player = useRef<Spotify.Player | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [volume, setVolume] = useState(1);

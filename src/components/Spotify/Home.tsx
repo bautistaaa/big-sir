@@ -6,12 +6,13 @@ import TopSectionItem from './TopSectionItem';
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
-  feedData: FeedData;
+  feedData: FeedData | undefined;
 }> = ({ parentRef, feedData }) => {
   const { width } = useRect(parentRef, []);
 
   const newReleaseItems = feedData?.newReleases?.albums?.items;
   const featurePlaylists = feedData?.featurePlaylists?.playlists?.items;
+  const trackRecommendations = feedData?.trackRecommendations?.tracks;
 
   const items =
     width >= 1460
@@ -29,16 +30,16 @@ const Home: FC<{
           <SectionTitle>Good Afternoon</SectionTitle>
           <TopSectionContent>
             {items?.map((item) => {
-              return <TopSectionItem item={item} />;
+              return <TopSectionItem key={item.id} item={item} />;
             })}
           </TopSectionContent>
         </SectionWrapper>
-        <FeaturedPlaylistSectionWrapper>
-          <SectionTitle>Feature Playlists</SectionTitle>
+        <FeaturedSectionWrapper>
+          <FeaturedSectionTitle>Feature Playlists</FeaturedSectionTitle>
           <SectionContent>
             {featurePlaylists?.map((item) => {
               return (
-                <FeedCard>
+                <FeedCard key={item.id}>
                   <div style={{ flex: '1' }}>
                     <CardImage>
                       <img src={item?.images?.[0]?.url} alt="" />
@@ -51,27 +52,27 @@ const Home: FC<{
               );
             })}
           </SectionContent>
-        </FeaturedPlaylistSectionWrapper>
-        <FeaturedPlaylistSectionWrapper>
-          <SectionTitle>Recommendations</SectionTitle>
+        </FeaturedSectionWrapper>
+        <FeaturedSectionWrapper>
+          <FeaturedSectionTitle>Recommendations</FeaturedSectionTitle>
           <SectionContent>
-            {items?.map((item) => {
+            {trackRecommendations?.map((item) => {
               return (
-                <FeedCard>
+                <FeedCard key={item.id}>
                   <div style={{ flex: '1' }}>
                     <CardImage>
-                      <img src={item?.images?.[2]?.url} alt="" />
+                      {/* @ts-ignore */}
+                      <img src={item?.album.images?.[1]?.url} alt="" />
                     </CardImage>
                     <div>
                       <Name>{item?.name}</Name>
-                      <div>{item?.album_type}</div>
                     </div>
                   </div>
                 </FeedCard>
               );
             })}
           </SectionContent>
-        </FeaturedPlaylistSectionWrapper>
+        </FeaturedSectionWrapper>
       </div>
       <section></section>
       <section></section>
@@ -89,14 +90,13 @@ const Wrapper = styled.div`
 const SectionWrapper = styled.section`
   margin-bottom: 40px;
 `;
-const FeaturedPlaylistSectionWrapper = styled(SectionWrapper)`
+const FeaturedSectionWrapper = styled(SectionWrapper)`
   margin-bottom: 40px;
 `;
-
 const SectionContent = styled.div`
   grid-gap: 24px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
 `;
 const TopSectionContent = styled.div`
   grid-gap: 24px;
@@ -104,7 +104,6 @@ const TopSectionContent = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   row-gap: 16px;
 `;
-
 const SectionTitle = styled.h2`
   font-family: inherit;
   font-size: 32px;
@@ -112,13 +111,20 @@ const SectionTitle = styled.h2`
   font-weight: 500;
   margin-bottom: 20px;
 `;
-
+const FeaturedSectionTitle = styled(SectionTitle)`
+  font-size: 25px;
+`;
 const FeedCard = styled.div`
   display: flex;
   flex-direction: column;
   background: #181818;
   padding: 15px 15px 30px;
   border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background: #282828;
+  }
 `;
 const CardImage = styled.div`
   position: relative;

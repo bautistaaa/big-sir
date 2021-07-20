@@ -82,7 +82,6 @@ const config = {
       }
 
       return {
-        ...context,
         activeWindows: refocusedWindows,
         minimizedWindows,
       };
@@ -114,13 +113,11 @@ const config = {
         });
 
       return {
-        ...context,
         activeWindows,
       };
     }),
-    toggleMode: assign<Context, AppEvent>((context, event) => {
+    toggleMode: assign<Context, AppEvent>((_, event) => {
       return {
-        ...context,
         mode: (event as ToggleModeEvent).payload.mode,
       };
     }),

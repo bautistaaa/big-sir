@@ -33,19 +33,17 @@ export type EditorEvent = AddCommandEvent | ModeChangedEvent | QueueKeyEvent;
 
 const config = {
   actions: {
-    addCommand: assign<Context, AddCommandEvent>((context, event) => {
+    addCommand: assign<Context, AddCommandEvent>((_, event) => {
       const command = (event as AddCommandEvent).payload.command.replace(
         /(\r\n|\n|\r)/gm,
         ''
       );
       return {
-        ...context,
         command,
       };
     }),
     modeChanged: assign<Context, ModeChangedEvent>((context, event) => {
       return {
-        ...context,
         mode: event.payload.mode,
         command:
           event.payload.mode === 'normal'
@@ -57,11 +55,10 @@ const config = {
     }),
     queueKey: assign<Context, QueueKeyEvent>((context, event) => {
       if (BLOCKED_LIST.includes(event.payload.key)) {
-        return { ...context };
+        return context;
       }
 
       return {
-        ...context,
         keysCurrentlyQueued: [
           ...context.keysCurrentlyQueued,
           event.payload.key,

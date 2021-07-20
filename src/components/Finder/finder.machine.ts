@@ -35,9 +35,8 @@ const finderMachine = createMachine<Context, FinderEvent>(
   },
   {
     actions: {
-      directoryChanged: assign<Context, FinderEvent>((context, event) => {
+      directoryChanged: assign<Context, FinderEvent>((_, event) => {
         return {
-          ...context,
           activeDirectory: (event as DirectoryChangedEvent).payload.name,
         };
       }),

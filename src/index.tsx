@@ -16,7 +16,6 @@ ReactDOM.render(
           <Route exact path="/" component={App} />
           <Route path="/callback" component={Callback} />
         </Switch>
-        <App />
       </Router>
     </AppProvider>
   </React.StrictMode>,

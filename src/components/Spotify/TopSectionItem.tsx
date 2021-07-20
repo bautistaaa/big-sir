@@ -79,11 +79,13 @@ const Metadata = styled.div`
   flex: 1;
 `;
 const Title = styled.div`
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   font-weight: 500;
+  font-size: 14px;
   line-height: 24px;
   letter-spacing: 0.6px;
-  flex: 1;
   white-space: nowrap;
   white-space: normal;
   word-break: break-word;

@@ -46,7 +46,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
 
   const ref = useRef<HTMLDivElement | null>(null);
   const { current: currentParent, send: sendParent } = useAppContext();
-  const [current, send] = useMachine(windowMachine);
+  const [current, send] = useMachine(windowMachine, { devTools: true });
   const { isFocused } = useIsFocused(ref);
 
   const isMinimized = !!currentParent.context.minimizedWindows.find(

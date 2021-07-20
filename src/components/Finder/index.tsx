@@ -35,7 +35,7 @@ const SideBarItems: Record<string, SidebarItem> = {
 };
 
 const Finder: FC = () => {
-  const [current, send] = useMachine(finderMachine);
+  const [current, send] = useMachine(finderMachine, { devTools: true });
   // const { current: currentParent } = useAppContext();
   const [activeFolder, setActiveFolder] = useState('personal');
   const themeContext = useContext(ThemeContext);

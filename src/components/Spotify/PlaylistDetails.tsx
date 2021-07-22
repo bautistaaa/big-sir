@@ -7,20 +7,23 @@ import { IoMdHeart } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
 import { useSpotifyContext } from './SpotifyContext';
 import PlaylistTable from './PlaylistTable';
-import { useService } from '@xstate/react';
-import { Context } from './spotify.machine';
+import { useSelector, useService } from '@xstate/react';
+import { Context, SelectorState } from './spotify.machine';
+
+const selectPlaylistDetails = (state: SelectorState) =>
+  state.context.playlistDetails;
 
 const colorThief = new ColorThief();
 
 const convertToRgb = (rgb: number[]) =>
   `rgb(${rgb?.[0]},${rgb?.[1]}, ${rgb?.[2]} )`;
-const PlaylistDetails: FC<{
-  playlist: SpotifyApi.PlaylistObjectFull | undefined;
-}> = ({ playlist }) => {
+const PlaylistDetails: FC = () => {
+  const service = useSpotifyContext();
+  const [, send] = useService<Context, any>(service);
+  const playlist = useSelector(service, selectPlaylistDetails);
+
   const [heroBackgroundColor, setHeroBackgrounColor] = useState<string>();
   const imageColor = useRef<number[]>([]);
-  const service = useSpotifyContext();
-  const [,send] = useService<Context, any>(service);
   const { ref: titleRef, entry } = useInView({
     threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
   });
@@ -103,7 +106,7 @@ const PlaylistDetails: FC<{
         </UtilityButtonWrapper>
         <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
-      {items && <PlaylistTable items={items} />}
+      {items && <PlaylistTable />}
     </Wrapper>
   );
 };

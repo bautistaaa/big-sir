@@ -1,14 +1,14 @@
-import { FC, memo, useState } from 'react';
+import { FC, memo } from 'react';
 import styled from 'styled-components';
 import { AiFillHeart } from 'react-icons/ai';
 import { GoPlus } from 'react-icons/go';
+import { useSelector, useService } from '@xstate/react';
 
 import Home from '../icons/Home';
 import Search from '../icons/Search';
 import Library from '../icons/Library';
 import { useSpotifyContext } from '../SpotifyContext';
-import { Context } from '../spotify.machine';
-import { useService } from '@xstate/react';
+import { Context, SelectorState } from '../spotify.machine';
 
 type SpotifyView = 'home' | 'library' | 'search';
 const MENU_OPTIONS: {
@@ -21,10 +21,14 @@ const MENU_OPTIONS: {
   { text: 'library', icon: <Library />, type: 'LIBRARY' },
 ];
 
+const selectPlaylists = (state: SelectorState) => state.context.playlists;
+
 const SideBar: FC = memo(() => {
   const service = useSpotifyContext();
-  const [state, send] = useService<Context, any>(service);
-  const [view, setView] = useState<SpotifyView>('home');
+  const [, send] = useService<Context, any>(service);
+  const playlists = useSelector(service, selectPlaylists);
+
+  console.count('siderbar');
 
   return (
     <NavBar>
@@ -32,11 +36,7 @@ const SideBar: FC = memo(() => {
         <MenuList>
           {MENU_OPTIONS.map(({ icon, text, type }) => {
             return (
-              <MenuListItem
-                key={text}
-                onClick={() => send({ type })}
-                active={view === text}
-              >
+              <MenuListItem key={text} onClick={() => send({ type })} active>
                 {icon} <MenuListItemText>{text}</MenuListItemText>
               </MenuListItem>
             );
@@ -63,7 +63,7 @@ const SideBar: FC = memo(() => {
       <PlaylistMenu>
         <PlaylistScroller>
           <MenuList>
-            {state?.context?.playlists?.items?.map((item) => {
+            {playlists?.items?.map((item) => {
               return (
                 <PlaylistListItem
                   key={item.id}

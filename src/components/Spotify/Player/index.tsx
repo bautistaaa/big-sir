@@ -18,7 +18,7 @@ import { useService } from '@xstate/react';
 
 const Player: FC = () => {
   const service = useSpotifyContext();
-  const [,send] = useService<Context, any>(service);
+  const [, send] = useService<Context, any>(service);
   const player = useRef<Spotify.Player | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -162,6 +162,8 @@ const Player: FC = () => {
       console.error(e);
     }
   };
+
+  console.count('player');
 
   return (
     <Wrapper>

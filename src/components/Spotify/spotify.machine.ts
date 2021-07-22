@@ -1,8 +1,10 @@
 import { assign, createMachine } from 'xstate';
+import { State } from 'xstate';
 import qs from 'query-string';
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
+export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface FeedData {
   newReleases: SpotifyApi.ListOfNewReleasesResponse | undefined;
   featurePlaylists: SpotifyApi.ListOfFeaturedPlaylistsResponse | undefined;
@@ -67,6 +69,7 @@ const query = {
   time_range: 'medium_term',
   limit: 50,
 };
+const defaultHeaderState = { opacity: 0, backgroundColor: 'transparent' };
 
 const config = {
   actions: {
@@ -138,7 +141,7 @@ const createSpotifyMachine = (token: string) =>
       id: 'spotify',
       initial: 'boot',
       context: {
-        headerState: { opacity: 0, backgroundColor: 'transparent' },
+        headerState: defaultHeaderState,
         token,
         playlists: undefined,
         feedData: undefined,
@@ -163,7 +166,7 @@ const createSpotifyMachine = (token: string) =>
         loggedIn: {
           initial: 'loading',
           context: {
-            headerState: { opacity: 0, backgroundColor: 'transparent' },
+            headerState: defaultHeaderState,
             token,
             playlists: undefined,
             feedData: undefined,

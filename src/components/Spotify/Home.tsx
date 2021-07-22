@@ -1,13 +1,18 @@
-import { FC, MutableRefObject } from 'react';
+import { FC, memo, MutableRefObject } from 'react';
+import { useSelector } from '@xstate/react';
 import styled from 'styled-components';
 import useRect from '../../hooks/useRect';
-import { FeedData } from './spotify.machine';
+import { SelectorState } from './spotify.machine';
+import { useSpotifyContext } from './SpotifyContext';
 import TopSectionItem from './TopSectionItem';
+
+const selectFeedData = (state: SelectorState) => state.context.feedData;
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
-  feedData: FeedData | undefined;
-}> = ({ parentRef, feedData }) => {
+}> = memo(({ parentRef }) => {
+  const service = useSpotifyContext();
+  const feedData = useSelector(service, selectFeedData);
   const { width } = useRect(parentRef, []);
 
   const newReleaseItems = feedData?.newReleases?.albums?.items;
@@ -78,7 +83,7 @@ const Home: FC<{
       <section></section>
     </Wrapper>
   );
-};
+});
 
 export default Home;
 

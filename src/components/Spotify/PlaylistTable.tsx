@@ -75,7 +75,7 @@ const PlaylistTable: FC = memo(() => {
   };
 
   return (
-    <TableWrapper ref={mergeRefs([tableWrapperRef])}>
+    <TableWrapper ref={mergeRefs([tableWrapperRef, resizeRef])}>
       <HeaderWrapper>
         <div
           ref={ref}

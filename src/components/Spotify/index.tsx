@@ -1,45 +1,31 @@
 import { FC, memo } from 'react';
 import styled from 'styled-components/macro';
-import { useSelector } from '@xstate/react';
 
 import SideBar from './SideBar';
 import Main from './Main';
 import LoginScreen from './LoginScreen';
 import Player from './Player';
-import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
-import { SelectorState } from './spotify.machine';
+import { SpotifyProvider } from './SpotifyContext';
 import StickyDetailsBar from './StickyDetailsBar';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
 const SpotifyWrapper = memo(() => {
-  console.count('wrapper');
   return (
     <SpotifyProvider>
       <Spotify />
     </SpotifyProvider>
   );
 });
-const selectHeaderState = (state: SelectorState) => state.context.headerState;
 const Spotify: FC = () => {
   const [token] = useLocalStorage('token', '');
-  const service = useSpotifyContext();
-  const headerState = useSelector(service, selectHeaderState);
-  console.count('layout');
 
   return (
     <Wrapper>
       {!token && <LoginScreen />}
       {token && (
         <SpotifyLayout>
-          <StickyDetailsBar
-            backgroundColor={headerState?.backgroundColor ?? '#000'}
-            opacity={headerState?.opacity ?? 0}
-          >
-            <StickyDetailsBarText>
-              {headerState?.playlistName ?? ''}
-            </StickyDetailsBarText>
-          </StickyDetailsBar>
           <DraggableBar className="action-bar" />
+          <StickyDetailsBar />
           <SideBar />
           <Main />
           <NowPlayingBar>
@@ -85,16 +71,6 @@ const NowPlayingBar = styled.div`
   height: 90px;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
-`;
-const StickyDetailsBarText = styled.div`
-  color: #fff;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 28px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: default;
-  letter-spacing: 0.5px;
 `;
 
 export default SpotifyWrapper;

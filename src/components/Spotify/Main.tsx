@@ -34,6 +34,7 @@ const Wrapper = styled.div`
   border-top-right-radius: 10px;
   background-color: #131313;
   grid-area: main;
+  z-index: 10;
 `;
 
 export default Main;

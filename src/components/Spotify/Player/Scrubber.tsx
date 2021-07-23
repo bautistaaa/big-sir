@@ -1,18 +1,33 @@
-import { ChangeEvent, FC, MutableRefObject, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import { convertMsToMinutesAndSeconds } from '../../../utils';
 
 import Slider from './Slider';
 
 interface Props {
-  playerRef: MutableRefObject<Spotify.Player | null>;
   playerState: Spotify.PlaybackState;
+  onChange(v: number): void;
+  updatePosition(v: number): void;
 }
-const Scrubber: FC<Props> = ({ playerRef, playerState }) => {
+const Scrubber: FC<Props> = ({ onChange, playerState, updatePosition }) => {
   const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let id: number;
+    if (!playerState.paused) {
+      console.log(playerState);
+      id = window.setInterval(() => {
+        updatePosition((playerState.position += 1000));
+      }, 1000);
+    }
+    return () => {
+      clearInterval(id);
+    };
+  }, [updatePosition, playerState]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = +e.target.value;
+    onChange(v);
   };
   return (
     <Wrapper
@@ -62,6 +77,8 @@ const TrackScrubber = styled.div`
   height: 12px;
   position: relative;
   width: 100%;
+  display: flex;
+  align-items: center;
 `;
 const TrackDuration = styled(TimeDisplay)``;
 

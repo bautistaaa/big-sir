@@ -42,7 +42,6 @@ const PlaylistTable: FC = memo(() => {
     initialInView: true,
     threshold: [1],
   });
-  console.count('table');
 
   const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
     const play = async () => {

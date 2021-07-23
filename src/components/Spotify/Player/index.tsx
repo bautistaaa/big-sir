@@ -163,6 +163,25 @@ const Player: FC = () => {
     }
   };
 
+  const updatePosition = useCallback((v: number) => {
+    setPlayerState((state) => {
+      if (state) {
+        return {
+          ...state,
+          position: v,
+        };
+      }
+    });
+  }, []);
+
+  const seek = async (v: number) => {
+    try {
+      await player.current?.seek(v);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   console.count('player');
 
   return (
@@ -220,7 +239,11 @@ const Player: FC = () => {
               </TopRowRight>
             </TopRow>
             <BottomRow>
-              <Scrubber playerRef={player} playerState={playerState} />
+              <Scrubber
+                playerState={playerState}
+                updatePosition={updatePosition}
+                onChange={seek}
+              />
             </BottomRow>
           </Controls>
           <RightColumn>

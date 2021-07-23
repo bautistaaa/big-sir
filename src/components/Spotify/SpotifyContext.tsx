@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react';
-import { createContext, FC, memo, useContext, useEffect } from 'react';
+import { createContext, FC, memo, useContext } from 'react';
 import { Interpreter } from 'xstate';
 import createSpotifyMachine, { Context, SpotifyEvent } from './spotify.machine';
 import useLocalStorage from '../../hooks/useLocalStorage';
@@ -37,7 +37,6 @@ const useSpotifyContext = () => {
 const SpotifyProvider: FC = memo(({ children }) => {
   const [token] = useLocalStorage('token', '');
   const [, , service] = useMachine(createSpotifyMachine(token));
-  console.count('provider');
 
   return (
     <SpotifyContext.Provider value={service}>

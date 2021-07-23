@@ -28,7 +28,6 @@ const SideBar: FC = memo(() => {
   const [, send] = useService<Context, any>(service);
   const playlists = useSelector(service, selectPlaylists);
 
-  console.count('siderbar');
 
   return (
     <NavBar>

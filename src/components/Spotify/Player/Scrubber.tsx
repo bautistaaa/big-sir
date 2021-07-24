@@ -15,7 +15,6 @@ const Scrubber: FC<Props> = ({ onChange, playerState, updatePosition }) => {
   useEffect(() => {
     let id: number;
     if (!playerState.paused) {
-      console.log(playerState);
       id = window.setInterval(() => {
         updatePosition((playerState.position += 1000));
       }, 1000);

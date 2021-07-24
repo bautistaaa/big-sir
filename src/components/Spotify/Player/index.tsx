@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useService } from '@xstate/react';
 import styled from 'styled-components/macro';
 import {
   MdPause,
@@ -6,16 +7,17 @@ import {
   MdSkipPrevious,
   MdSkipNext,
 } from 'react-icons/md';
-import { IoRepeatOutline, IoShuffleOutline } from 'react-icons/io5';
 
+import ShuffleIcon from '../icons/Shuffle';
+import RepeatIcon from '../icons/Repeat';
 import Scrubber from './Scrubber';
 import VolumeSlider from './VolumeSlider';
 import { useSpotifyContext } from '../SpotifyContext';
 import { getToken, loadSpotifyWebPlayerScript } from '../utils';
 import ClearButton from '../../ClearButton';
 import { Context } from '../spotify.machine';
-import { useService } from '@xstate/react';
 
+const REPEAT_MODES = ['off', 'track', 'context'];
 const Player: FC = () => {
   const service = useSpotifyContext();
   const [, send] = useService<Context, any>(service);
@@ -26,8 +28,16 @@ const Player: FC = () => {
   const [playerState, setPlayerState] = useState<
     Spotify.PlaybackState | undefined
   >();
+  const shuffleRef = useRef(playerState?.shuffle);
+  const [repeatMode, setRepeatMode] = useState(0);
   const token = getToken();
   const isPlaying = playerState?.paused !== undefined && !playerState?.paused;
+  const isShuffleEnabled = playerState?.shuffle;
+  /**
+   * 0: NO_REPEAT
+   * 1: ONCE_REPEAT
+   * 2: FULL_REPEAT
+   */
   const handleStateChange = useCallback(
     (state: Spotify.PlaybackState) => {
       setPlayerState(state);
@@ -147,6 +157,52 @@ const Player: FC = () => {
     });
   };
 
+  const handleShuffleClick = () => {
+    const shuffle = async () => {
+      try {
+        shuffleRef.current = !shuffleRef.current;
+        await fetch(
+          `https://api.spotify.com/v1/me/player/shuffle?state=${shuffleRef.current}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } catch (e) {
+        shuffleRef.current = !shuffleRef.current;
+        console.error(e);
+      }
+    };
+
+    shuffle();
+  };
+
+  const handleRepeatClick = async () => {
+    const shuffle = async () => {
+      try {
+        let tempIndex = (repeatMode + 1) % REPEAT_MODES.length;
+        console.log({ tempIndex });
+        await fetch(
+          `https://api.spotify.com/v1/me/player/repeat?state=${REPEAT_MODES[tempIndex]}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setRepeatMode(tempIndex);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    shuffle();
+  };
+
   const handlePreviousClick = async () => {
     try {
       await player.current?.previousTrack();
@@ -182,8 +238,6 @@ const Player: FC = () => {
     }
   };
 
-  console.count('player');
-
   return (
     <Wrapper>
       {playerState && (
@@ -207,8 +261,10 @@ const Player: FC = () => {
           <Controls>
             <TopRow>
               <TopRowLeft>
-                <ControlButton>
-                  <IoShuffleOutline color="#b3b3b3" size={17} />
+                <ControlButton onClick={handleShuffleClick}>
+                  <ShuffleIcon
+                    stroke={isShuffleEnabled ? '#1db954' : '#b3b3b3'}
+                  />
                 </ControlButton>
                 <ControlButton>
                   <MdSkipPrevious
@@ -233,8 +289,11 @@ const Player: FC = () => {
                     size={20}
                   />
                 </ControlButton>
-                <ControlButton>
-                  <IoRepeatOutline color="#b3b3b3" size={20} />
+                <ControlButton onClick={handleRepeatClick}>
+                  <RepeatIcon
+                    stroke={repeatMode !== 0 ? '#1db954' : '#b3b3b3'}
+                    mode={repeatMode ?? 0}
+                  />
                 </ControlButton>
               </TopRowRight>
             </TopRow>

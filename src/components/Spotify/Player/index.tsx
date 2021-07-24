@@ -262,17 +262,15 @@ const Player: FC = () => {
             <TopRow>
               <TopRowLeft>
                 <ControlButton onClick={handleShuffleClick}>
-                  <ShuffleIcon
-                    stroke={isShuffleEnabled ? '#1db954' : '#b3b3b3'}
-                  />
+                  <ShuffleIcon enabled={!!isShuffleEnabled} />
                 </ControlButton>
-                <ControlButton>
+                <PrevNextButton>
                   <MdSkipPrevious
                     onClick={handlePreviousClick}
                     color="#b3b3b3"
                     size={20}
                   />
-                </ControlButton>
+                </PrevNextButton>
               </TopRowLeft>
               <PlayButton onClick={handlePlayButtonClicked}>
                 {isPlaying ? (
@@ -282,18 +280,15 @@ const Player: FC = () => {
                 )}
               </PlayButton>
               <TopRowRight>
-                <ControlButton>
+                <PrevNextButton>
                   <MdSkipNext
                     onClick={handleNextClick}
                     color="#b3b3b3"
                     size={20}
                   />
-                </ControlButton>
+                </PrevNextButton>
                 <ControlButton onClick={handleRepeatClick}>
-                  <RepeatIcon
-                    stroke={repeatMode !== 0 ? '#1db954' : '#b3b3b3'}
-                    mode={repeatMode ?? 0}
-                  />
+                  <RepeatIcon mode={repeatMode ?? 0} />
                 </ControlButton>
               </TopRowRight>
             </TopRow>
@@ -411,6 +406,14 @@ const ControlButton = styled(ClearButton)`
   justify-content: center;
   width: 32px;
   height: 32px;
+`;
+const PrevNextButton = styled(ControlButton)`
+  svg {
+    fill: #b3b3b3;
+    &:hover {
+      fill: #ffffff;
+    }
+  }
 `;
 const Wrapper = styled.div`
   display: flex;

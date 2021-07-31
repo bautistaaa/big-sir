@@ -13,7 +13,7 @@ const config: Config = {
   clientId: process.env.REACT_APP_SPOTIFY_CLIENT_ID,
   clientSecret: process.env.REACT_APP_SPOTIFY_CLIENT_SECRET,
   scopes:
-    'user-read-recently-played user-top-read streaming user-library-modify playlist-read-private user-read-email user-read-private user-modify-playback-state',
+    'user-read-recently-played user-top-read streaming user-library-read user-library-modify playlist-read-private user-read-email user-read-private user-modify-playback-state',
   tokenUrl: 'https://accounts.spotify.com/api/token',
 };
 

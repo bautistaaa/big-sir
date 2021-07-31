@@ -13,12 +13,10 @@ const StickyDetailsBar: FC = () => {
   return (
     <Wrapper
       className="action-bar"
-      background={headerState?.backgroundColor ?? '#000'}
-      opacity={headerState?.opacity ?? 0}
+      background={headerState.backgroundColor}
+      opacity={headerState.opacity}
     >
-      <StickyDetailsBarText>
-        {headerState?.playlistName ?? ''}
-      </StickyDetailsBarText>
+      <Text>{headerState.text}</Text>
     </Wrapper>
   );
 };
@@ -40,7 +38,7 @@ const Wrapper = styled.header<{ background: string; opacity: number }>`
       opacity: ${opacity};
     `}
 `;
-const StickyDetailsBarText = styled.div`
+const Text = styled.div`
   color: #fff;
   font-size: 24px;
   font-weight: 400;

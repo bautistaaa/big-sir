@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { FC } from 'react';
 import styled from 'styled-components/macro';
 import { RED, YELLOW, GREEN, GREY } from '../shared/constants';
 
@@ -9,27 +9,25 @@ const StopLights: FC<{
   handleMaximizeClick(args: unknown): void;
   className?: string;
   enableResizing: boolean;
-}> = memo(
-  ({
-    variant,
-    handleCloseClick,
-    handleMinimizeClick,
-    handleMaximizeClick,
-    className,
-    enableResizing,
-  }) => {
-    return (
-      <Wrapper className={`${className ?? ''}`} variant={variant}>
-        <CloseButton onClick={handleCloseClick} />
-        <MinimizeButton onClick={handleMinimizeClick} />
-        <FullScreenButton
-          onClick={handleMaximizeClick}
-          disabled={!enableResizing}
-        />
-      </Wrapper>
-    );
-  }
-);
+}> = ({
+  variant,
+  handleCloseClick,
+  handleMinimizeClick,
+  handleMaximizeClick,
+  className,
+  enableResizing,
+}) => {
+  return (
+    <Wrapper className={`${className ?? ''}`} variant={variant}>
+      <CloseButton onClick={handleCloseClick} />
+      <MinimizeButton onClick={handleMinimizeClick} />
+      <FullScreenButton
+        onClick={handleMaximizeClick}
+        disabled={!enableResizing}
+      />
+    </Wrapper>
+  );
+};
 
 const Wrapper = styled.div<{ variant: string }>`
   position: absolute;
@@ -58,6 +56,12 @@ const Wrapper = styled.div<{ variant: string }>`
     `
     top: 5px;
     left: 10px;
+    `}
+  ${({ variant }) =>
+    variant === 'spotify' &&
+    `
+    top: 5px;
+    left: 15px;
     `}
 `;
 const BaseButton = styled.button`

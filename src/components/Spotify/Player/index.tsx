@@ -1,26 +1,22 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useService } from '@xstate/react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
 import styled from 'styled-components/macro';
-import {
-  MdPause,
-  MdPlayArrow,
-  MdSkipPrevious,
-  MdSkipNext,
-} from 'react-icons/md';
 
-import ShuffleIcon from '../icons/Shuffle';
+import ClearButton from '../../ClearButton';
 import RepeatIcon from '../icons/Repeat';
-import Scrubber from './Scrubber';
-import VolumeSlider from './VolumeSlider';
+import ShuffleIcon from '../icons/Shuffle';
+import PlayButton from '../PlayButton';
+import { Context, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import { getToken, loadSpotifyWebPlayerScript } from '../utils';
-import ClearButton from '../../ClearButton';
-import { Context } from '../spotify.machine';
+import Scrubber from './Scrubber';
+import VolumeSlider from './VolumeSlider';
 
 const REPEAT_MODES = ['off', 'track', 'context'];
 const Player: FC = () => {
   const service = useSpotifyContext();
-  const [, send] = useService<Context, any>(service);
+  const [, send] = useService<Context, SpotifyEvent>(service);
   const player = useRef<Spotify.Player | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -29,15 +25,15 @@ const Player: FC = () => {
     Spotify.PlaybackState | undefined
   >();
   const shuffleRef = useRef(playerState?.shuffle);
-  const [repeatMode, setRepeatMode] = useState(0);
-  const token = getToken();
-  const isPlaying = playerState?.paused !== undefined && !playerState?.paused;
-  const isShuffleEnabled = playerState?.shuffle;
   /**
    * 0: NO_REPEAT
    * 1: ONCE_REPEAT
    * 2: FULL_REPEAT
    */
+  const [repeatMode, setRepeatMode] = useState(0);
+  const token = getToken();
+  const isPlaying = playerState?.paused !== undefined && !playerState?.paused;
+  const isShuffleEnabled = playerState?.shuffle;
   const handleStateChange = useCallback(
     (state: Spotify.PlaybackState) => {
       setPlayerState(state);
@@ -64,6 +60,12 @@ const Player: FC = () => {
   }, [playerState?.paused]);
 
   useEffect(() => {
+    if (playerState?.repeat_mode !== undefined) {
+      setRepeatMode(playerState.repeat_mode);
+    }
+  }, [playerState?.repeat_mode]);
+
+  useEffect(() => {
     window.onSpotifyWebPlaybackSDKReady = () => {
       setScriptReady(true);
       // @ts-ignore
@@ -88,8 +90,6 @@ const Player: FC = () => {
       }
 
       player.current?.addListener('ready', ({ device_id }) => {
-        console.log('READY');
-        console.log({ device_id });
         send({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
       });
 
@@ -119,8 +119,6 @@ const Player: FC = () => {
       }
 
       player.current?.addListener('ready', ({ device_id }) => {
-        console.log('READY AGAIN');
-        console.log({ device_id });
         send({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
       });
 
@@ -183,7 +181,6 @@ const Player: FC = () => {
     const shuffle = async () => {
       try {
         let tempIndex = (repeatMode + 1) % REPEAT_MODES.length;
-        console.log({ tempIndex });
         await fetch(
           `https://api.spotify.com/v1/me/player/repeat?state=${REPEAT_MODES[tempIndex]}`,
           {
@@ -272,13 +269,12 @@ const Player: FC = () => {
                   />
                 </PrevNextButton>
               </TopRowLeft>
-              <PlayButton onClick={handlePlayButtonClicked}>
-                {isPlaying ? (
-                  <MdPause color="black" size={40} />
-                ) : (
-                  <MdPlayArrow color="black" size={40} />
-                )}
-              </PlayButton>
+              <PlayButton
+                onClick={handlePlayButtonClicked}
+                isPlaying={isPlaying}
+                size="medium"
+                type="inverse"
+              />
               <TopRowRight>
                 <PrevNextButton>
                   <MdSkipNext
@@ -422,17 +418,6 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   padding: 0 16px;
-`;
-const PlayButton = styled(ClearButton)`
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 500px;
-  background-color: #fff;
-  color: #fff;
-  width: 32px;
-  height: 32px;
 `;
 
 export default Player;

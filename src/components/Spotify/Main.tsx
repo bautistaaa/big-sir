@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useService } from '@xstate/react';
 
 import { useSpotifyContext } from './SpotifyContext';
-import { Context } from './spotify.machine';
+import { Context, SpotifyEvent } from './spotify.machine';
 import HomeView from './Home';
+import LikedSongs from './LikedSongs';
 import PlaylistDetails from './PlaylistDetails';
 
 const Main: FC = () => {
   const service = useSpotifyContext();
-  const [state] = useService<Context, any>(service);
+  const [state] = useService<Context, SpotifyEvent>(service);
 
   const mainRef = useRef<HTMLDivElement | null>(null);
 
@@ -20,8 +21,9 @@ const Main: FC = () => {
       )}
       {state.matches('loggedIn.success.success.search') && <div>search</div>}
       {state.matches('loggedIn.success.success.library') && <div>library</div>}
+      {state.matches('loggedIn.success.success.liked') && <LikedSongs />}
       {state.matches('loggedIn.success.success.details.detailsView') && (
-        <PlaylistDetails  />
+        <PlaylistDetails />
       )}
     </Wrapper>
   );

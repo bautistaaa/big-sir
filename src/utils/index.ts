@@ -2,6 +2,7 @@ export { default as autocomplete } from './autocomplete';
 export { default as convertMsToMinutesAndSeconds } from './convertMsToMinutesAndSeconds';
 export { default as getDirectoryContents } from './getDirectoryContents';
 export { default as getFileContents } from './getFileContents';
+export { default as getGreetingByTime } from './getGreetingByTime';
 export { default as formatDate } from './formatDate';
 export { default as formatDateForFinder } from './formatDateForFinder';
 export { default as formatDateForSpotify } from './formatDateForSpotify';

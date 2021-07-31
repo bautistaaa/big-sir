@@ -1,6 +1,7 @@
-import { FC, memo, MutableRefObject } from 'react';
+import { FC, MutableRefObject } from 'react';
 import { useSelector } from '@xstate/react';
 import styled from 'styled-components';
+import { getGreetingByTime } from '../../utils';
 import useRect from '../../hooks/useRect';
 import { SelectorState } from './spotify.machine';
 import { useSpotifyContext } from './SpotifyContext';
@@ -10,7 +11,7 @@ const selectFeedData = (state: SelectorState) => state.context.feedData;
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
-}> = memo(({ parentRef }) => {
+}> = ({ parentRef }) => {
   const service = useSpotifyContext();
   const feedData = useSelector(service, selectFeedData);
   const { width } = useRect(parentRef, []);
@@ -32,7 +33,9 @@ const Home: FC<{
     <Wrapper>
       <div>
         <SectionWrapper>
-          <SectionTitle>Good Afternoon</SectionTitle>
+          <SectionTitle>
+            {getGreetingByTime(new Date().getHours())}
+          </SectionTitle>
           <TopSectionContent>
             {items?.map((item) => {
               return <TopSectionItem key={item.id} item={item} />;
@@ -40,7 +43,7 @@ const Home: FC<{
           </TopSectionContent>
         </SectionWrapper>
         <FeaturedSectionWrapper>
-          <FeaturedSectionTitle>Feature Playlists</FeaturedSectionTitle>
+          <FeaturedSectionTitle>Featured Playlists</FeaturedSectionTitle>
           <SectionContent>
             {featurePlaylists?.map((item) => {
               return (
@@ -83,7 +86,7 @@ const Home: FC<{
       <section></section>
     </Wrapper>
   );
-});
+};
 
 export default Home;
 

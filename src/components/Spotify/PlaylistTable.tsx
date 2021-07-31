@@ -1,4 +1,5 @@
 import { FC, memo, useRef, useState } from 'react';
+import { useSelector } from '@xstate/react';
 import mergeRefs from 'react-merge-refs';
 import { useResizeDetector } from 'react-resize-detector';
 import { useInView } from 'react-intersection-observer';
@@ -6,15 +7,12 @@ import styled from 'styled-components/macro';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 
 import { useSpotifyContext } from './SpotifyContext';
-
 import {
   convertMsToMinutesAndSeconds,
   formatDateForSpotify,
 } from '../../utils';
-
 import { oneLine } from '../../shared/mixins';
 import { getToken } from './utils';
-import { useSelector } from '@xstate/react';
 import { SelectorState } from './spotify.machine';
 
 const selectPlaylistDetails = (state: SelectorState) =>
@@ -23,7 +21,10 @@ const selectCurrentTrackId = (state: SelectorState) =>
   state.context.currentTrackId;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 
-const PlaylistTable: FC = memo(() => {
+interface Props<T> {
+  items: SpotifyApi.PagingObject<T>;
+}
+const PlaylistTable = ({ items }: { items: any }) => {
   const token = getToken();
   const service = useSpotifyContext();
   const currentPlaylist = useSelector(service, selectPlaylistDetails);
@@ -45,10 +46,18 @@ const PlaylistTable: FC = memo(() => {
 
   const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
     const play = async () => {
-      const body = {
-        context_uri: currentPlaylist?.uri,
-        offset: { uri: track?.uri },
-      };
+      let body;
+      if (currentPlaylist) {
+        body = {
+          context_uri: currentPlaylist?.uri,
+          offset: { uri: track?.uri },
+        };
+      } else {
+        body = {
+          uris: items?.map((x: any) => x?.track?.uri),
+          offset: { uri: track?.uri },
+        };
+      }
       try {
         const resp = await fetch(
           `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
@@ -99,7 +108,7 @@ const PlaylistTable: FC = memo(() => {
         </HeaderPositioner>
       </HeaderWrapper>
       <List>
-        {currentPlaylist?.tracks?.items?.map((item, i) => {
+        {items.map((item: any, i: any) => {
           const { track, added_at } = item;
           if (!track) return null;
           const isActive = track.id === active;
@@ -148,7 +157,7 @@ const PlaylistTable: FC = memo(() => {
       </List>
     </TableWrapper>
   );
-});
+};
 
 const TableWrapper = styled.div`
   padding: 0 32px;

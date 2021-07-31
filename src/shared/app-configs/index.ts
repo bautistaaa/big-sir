@@ -12,6 +12,7 @@ export type AppType =
   | 'spotify'
   | 'terminal'
   | 'finder';
+
 export interface WindowConfig {
   minWidth?: number;
   minHeight?: number;

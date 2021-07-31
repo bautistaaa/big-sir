@@ -1,7 +1,5 @@
 import { useSelector } from '@xstate/react';
 import { FC } from 'react';
-import { BsThreeDots } from 'react-icons/bs';
-import { IoMdHeart } from 'react-icons/io';
 import styled from 'styled-components/macro';
 
 import useTransitionHeader from './hooks/useTransitionHeader';
@@ -10,48 +8,32 @@ import PlaylistTable from './PlaylistTable';
 import { SelectorState } from './spotify.machine';
 import { useSpotifyContext } from './SpotifyContext';
 import UtilityBar from './UtilityBar';
-import useImageColors from '../../hooks/useImageColors';
 
-const selectPlaylistDetails = (state: SelectorState) =>
-  state.context.playlistDetails;
+const selectLikedSongs = (state: SelectorState) => state.context.likedSongs;
 
-const PlaylistDetails: FC = () => {
+const LikedSongs: FC = () => {
   const service = useSpotifyContext();
-  const playlist = useSelector(service, selectPlaylistDetails);
-
-  const imageSrc = playlist?.images?.[0]?.url ?? '';
-  const [stickyBarBackgroundColor, heroBackgroundColor] = useImageColors(
-    imageSrc
-  );
-
-  const items = playlist?.tracks?.items;
+  const likedSongs = useSelector(service, selectLikedSongs);
 
   const intersectRef = useTransitionHeader({
-    backgroundColor: stickyBarBackgroundColor,
-    text: playlist?.name ?? '',
+    backgroundColor: 'rgb(30 21 62)',
+    text: 'Liked Songs',
   });
-
   return (
     <Wrapper>
-      <Hero background={heroBackgroundColor}>
+      <Hero>
         <Skrim />
         <ArtWrapper>
-          <Art src={imageSrc}></Art>
+          <Art src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png" />
         </ArtWrapper>
         <PlaylistInfo>
-          <Category>{playlist?.type}</Category>
-          <Title ref={intersectRef}>{playlist?.name}</Title>
-          <Description>{playlist?.description}</Description>
+          <Category>Playlist</Category>
+          <Title ref={intersectRef}>Liked Songs</Title>
           <Metadata>
-            <Author>{playlist?.owner?.display_name}</Author>
-            {playlist && playlist.followers.total > 0 && (
-              <Likes>
-                {new Intl.NumberFormat().format(playlist.followers.total)} Likes
-              </Likes>
-            )}
+            <Author>Chris Bautista</Author>
             <Songs>
-              {new Intl.NumberFormat().format(playlist?.tracks?.total ?? 0)}{' '}
-              {(playlist?.tracks?.total ?? 0) > 1 ? 'Songs' : 'Song'}
+              {new Intl.NumberFormat().format(likedSongs?.total ?? 0)}{' '}
+              {(likedSongs?.total ?? 0) !== 1 ? 'Songs' : 'Song'}
             </Songs>
           </Metadata>
         </PlaylistInfo>
@@ -65,12 +47,8 @@ const PlaylistDetails: FC = () => {
             type="default"
           />
         </UtilityButtonWrapper>
-        <UtilityButtonWrapper>
-          <IoMdHeart fill="#1db954" size={32} />
-        </UtilityButtonWrapper>
-        <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
-      {items && <PlaylistTable items={items} />}
+      {likedSongs?.items && <PlaylistTable items={likedSongs?.items} />}
     </Wrapper>
   );
 };
@@ -80,7 +58,7 @@ const Hero = styled.div<{ background?: string }>`
   position: relative;
   display: flex;
   padding: 0 32px 24px;
-  background: ${({ background }) => background ?? 'transparent'};
+  background: rgb(80, 56, 160);
   height: 30vh;
   max-height: 500px;
   min-height: 340px;
@@ -131,22 +109,6 @@ const Title = styled.div`
   word-break: break-word;
 `;
 
-const Description = styled.div`
-  margin-top: 8px;
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: normal;
-  line-height: 20px;
-  text-transform: none;
-  opacity: 0.7;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  display: inline-block;
-  max-height: 74px;
-  overflow: hidden;
-  word-break: break-word;
-`;
 const Metadata = styled.div`
   font-size: 14px;
   margin-top: 8px;
@@ -156,10 +118,6 @@ const Metadata = styled.div`
   }
 `;
 const Author = styled.div``;
-const Likes = styled.div`
-  opacity: 0.7;
-  letter-spacing: -0.6px;
-`;
 const Songs = styled.div`
   opacity: 0.7;
   letter-spacing: -0.6px;
@@ -168,4 +126,4 @@ const UtilityButtonWrapper = styled.div`
   margin-right: 24px;
 `;
 
-export default PlaylistDetails;
+export default LikedSongs;

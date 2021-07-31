@@ -11,21 +11,29 @@ interface Props {
 }
 const Scrubber: FC<Props> = ({ onChange, playerState, updatePosition }) => {
   const [isActive, setIsActive] = useState(false);
+  const [position, setPosition] = useState(playerState.position);
+  const isPaused = playerState.paused;
+  const playerStatePosition = playerState.position;
+
+  useEffect(() => {
+    setPosition(playerStatePosition);
+  }, [playerStatePosition]);
 
   useEffect(() => {
     let id: number;
-    if (!playerState.paused) {
+    if (!isPaused) {
       id = window.setInterval(() => {
-        updatePosition((playerState.position += 1000));
+        setPosition((position) => (position += 1000));
       }, 1000);
     }
     return () => {
       clearInterval(id);
     };
-  }, [updatePosition, playerState]);
+  }, [isPaused]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = +e.target.value;
+    setPosition(v);
     onChange(v);
   };
   return (
@@ -33,17 +41,15 @@ const Scrubber: FC<Props> = ({ onChange, playerState, updatePosition }) => {
       onMouseEnter={() => setIsActive(true)}
       onMouseLeave={() => setIsActive(false)}
     >
-      <TrackProgress>
-        {convertMsToMinutesAndSeconds(playerState.position)}
-      </TrackProgress>
+      <TrackProgress>{convertMsToMinutesAndSeconds(position)}</TrackProgress>
       <TrackScrubber>
         <Slider
           onChange={handleChange}
           type="range"
           min={0}
           max={playerState.duration}
-          value={playerState.position}
-          percentage={(playerState.position / playerState.duration) * 100}
+          value={position}
+          percentage={(position / playerState.duration) * 100}
           step={0.01}
           isActive={isActive}
         />

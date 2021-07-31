@@ -1,33 +1,35 @@
+import { useSelector, useService } from '@xstate/react';
 import { FC, memo } from 'react';
-import styled from 'styled-components';
 import { AiFillHeart } from 'react-icons/ai';
 import { GoPlus } from 'react-icons/go';
-import { useSelector, useService } from '@xstate/react';
+import styled from 'styled-components';
 
 import Home from '../icons/Home';
-import Search from '../icons/Search';
 import Library from '../icons/Library';
+import Search from '../icons/Search';
+import { Context, SelectorState, SpotifyEvent, View } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
-import { Context, SelectorState } from '../spotify.machine';
 
-type SpotifyView = 'home' | 'library' | 'search';
-const MENU_OPTIONS: {
-  text: SpotifyView;
+interface Option {
+  text: View;
   icon: JSX.Element;
   type: 'HOME' | 'SEARCH' | 'LIBRARY';
-}[] = [
+}
+const MENU_OPTIONS: Option[] = [
   { text: 'home', icon: <Home />, type: 'HOME' },
   { text: 'search', icon: <Search />, type: 'SEARCH' },
   { text: 'library', icon: <Library />, type: 'LIBRARY' },
 ];
 
 const selectPlaylists = (state: SelectorState) => state.context.playlists;
+const selectView = (state: SelectorState) => state.context.view;
 
 const SideBar: FC = memo(() => {
   const service = useSpotifyContext();
-  const [, send] = useService<Context, any>(service);
+  const [, send] = useService<Context, SpotifyEvent>(service);
   const playlists = useSelector(service, selectPlaylists);
-
+  const view = useSelector(service, selectView);
+  const isLikedView = view === 'liked';
 
   return (
     <NavBar>
@@ -35,7 +37,13 @@ const SideBar: FC = memo(() => {
         <MenuList>
           {MENU_OPTIONS.map(({ icon, text, type }) => {
             return (
-              <MenuListItem key={text} onClick={() => send({ type })} active>
+              <MenuListItem
+                key={text}
+                onClick={() => {
+                  send({ type, payload: { view: text } });
+                }}
+                active={view === text}
+              >
                 {icon} <MenuListItemText>{text}</MenuListItemText>
               </MenuListItem>
             );
@@ -44,18 +52,23 @@ const SideBar: FC = memo(() => {
       </Menu>
       <SecondaryMenu>
         <MenuList>
-          <MenuListItem>
+          <SecondaryMenuListItem>
             <PlusContainer>
               <GoPlus fill="black" />
             </PlusContainer>
             Create Playlist
-          </MenuListItem>
-          <MenuListItem>
+          </SecondaryMenuListItem>
+          <SecondaryMenuListItem
+            onClick={() => {
+              send({ type: 'LIKED', payload: { view: 'liked' } });
+            }}
+            active={isLikedView}
+          >
             <HeartContainer>
               <AiFillHeart fill="white" size={12} />
             </HeartContainer>
             Liked Songs
-          </MenuListItem>
+          </SecondaryMenuListItem>
         </MenuList>
       </SecondaryMenu>
       <Separator />
@@ -133,7 +146,8 @@ const MenuListItem = styled.li<{ active?: boolean }>`
   color: rgb(179, 179, 179);
   opacity: 0.7;
   transition: background-color 50ms ease-in, color 50ms ease-in;
-  ${({ active }) => active && `background: rgb(40,40,40); opacity: 1;`}
+  ${({ active }) =>
+    active && `background: rgb(40,40,40); opacity: 1; color: white;`}
   > svg {
     margin-right: 15px;
     transition: background-color 50ms ease-in, color 50ms ease-in;
@@ -141,6 +155,9 @@ const MenuListItem = styled.li<{ active?: boolean }>`
   &:hover {
     color: white;
   }
+`;
+const SecondaryMenuListItem = styled(MenuListItem)`
+  ${({ active }) => active && `color: white; opacity: 1; background: none;`}
 `;
 const PlaylistListItem = styled(MenuListItem)`
   transition: none;

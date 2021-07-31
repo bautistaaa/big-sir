@@ -1,9 +1,10 @@
-import { assign, createMachine } from 'xstate';
-import { State } from 'xstate';
 import qs from 'query-string';
+import { assign, createMachine, State } from 'xstate';
+
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
+export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface FeedData {
   newReleases: SpotifyApi.ListOfNewReleasesResponse | undefined;
@@ -13,27 +14,36 @@ export interface FeedData {
 }
 export interface Context {
   token: string;
-  playlists: SpotifyApi.ListOfUsersPlaylistsResponse | undefined;
+  playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
-  feedData: FeedData | undefined;
-  playlistDetails: SpotifyApi.PlaylistObjectFull | undefined;
+  feedData?: FeedData;
+  playlistDetails?: SpotifyApi.PlaylistObjectFull;
+  likedSongs?: SpotifyApi.UsersSavedTracksResponse;
   currentTrackId?: string;
   deviceId?: string;
   headerState: {
-    playlistName?: string;
-    opacity?: number;
+    text: string;
+    opacity: number;
     backgroundColor: string;
   };
+  view?: View;
 }
 
 type HomeEvent = {
   type: 'HOME';
+  payload: { view: View };
 };
 type SearchEvent = {
   type: 'SEARCH';
+  payload: { view: View };
 };
 type LibraryEvent = {
   type: 'LIBRARY';
+  payload: { view: View };
+};
+type LikedEvent = {
+  type: 'LIKED';
+  payload: { view: View };
 };
 type DetailsEvent = {
   type: 'DETAILS';
@@ -41,7 +51,7 @@ type DetailsEvent = {
 };
 type HeaderTransitionEvent = {
   type: 'TRANSITION_HEADER';
-  payload: { playlistName?: string; opacity?: number; backgroundColor: string };
+  payload: { text: string; opacity: number; backgroundColor: string };
 };
 type PlayTrackEvent = {
   type: 'PLAY_TRACK';
@@ -57,6 +67,7 @@ export type SpotifyEvent =
   | HeaderTransitionEvent
   | HomeEvent
   | LibraryEvent
+  | LikedEvent
   | PlayTrackEvent
   | PlayerInitEvent
   | SearchEvent;
@@ -69,17 +80,24 @@ const query = {
   time_range: 'medium_term',
   limit: 50,
 };
-const defaultHeaderState = { opacity: 0, backgroundColor: 'transparent' };
+const defaultHeaderState = {
+  opacity: 0,
+  backgroundColor: 'transparent',
+  text: '',
+};
 
 const config = {
   actions: {
+    changeView: assign<Context, any>({
+      view: (_, event) => event?.payload?.view ?? 'home',
+    }),
     transitionHeader: assign<Context, any>({
       headerState: (_, event) => {
         return {
           opacity: (event as HeaderTransitionEvent).payload.opacity,
           backgroundColor: (event as HeaderTransitionEvent).payload
             .backgroundColor,
-          playlistName: (event as HeaderTransitionEvent).payload.playlistName,
+          text: (event as HeaderTransitionEvent).payload.text,
         };
       },
     }),
@@ -133,6 +151,12 @@ const config = {
       );
       return playlistDetails;
     },
+    fetchLikedTracks: async () => {
+      const likedSongs: SpotifyApi.UsersSavedTracksResponse = await request(
+        `${spotifyConfig.apiUrl}/me/tracks?offset=0&limit=50`
+      );
+      return likedSongs;
+    },
   },
 };
 const createSpotifyMachine = (token: string) =>
@@ -141,11 +165,9 @@ const createSpotifyMachine = (token: string) =>
       id: 'spotify',
       initial: 'boot',
       context: {
+        view: 'home',
         headerState: defaultHeaderState,
         token,
-        playlists: undefined,
-        feedData: undefined,
-        playlistDetails: undefined,
         error: '',
       },
       strict: true,
@@ -166,11 +188,9 @@ const createSpotifyMachine = (token: string) =>
         loggedIn: {
           initial: 'loading',
           context: {
+            view: 'home',
             headerState: defaultHeaderState,
             token,
-            playlists: undefined,
-            feedData: undefined,
-            playlistDetails: undefined,
             error: '',
           },
           states: {
@@ -179,13 +199,13 @@ const createSpotifyMachine = (token: string) =>
                 src: 'fetchUserPlaylists',
                 onDone: {
                   target: 'success',
-                  actions: assign({
+                  actions: assign<Context, any>({
                     playlists: (_, event) => event.data,
                   }),
                 },
                 onError: {
                   target: 'failure',
-                  actions: assign({
+                  actions: assign<Context, any>({
                     error: (_, event) => event.data,
                   }),
                 },
@@ -205,13 +225,13 @@ const createSpotifyMachine = (token: string) =>
                     src: 'fetchFeedData',
                     onDone: {
                       target: 'success',
-                      actions: assign({
+                      actions: assign<Context, any>({
                         feedData: (_, event) => event.data,
                       }),
                     },
                     onError: {
                       target: 'failure',
-                      actions: assign({
+                      actions: assign<Context, any>({
                         error: (_, event) => event.data,
                       }),
                     },
@@ -227,44 +247,53 @@ const createSpotifyMachine = (token: string) =>
                   states: {
                     home: {
                       id: 'home',
+                      entry: 'changeView',
                       on: {
-                        LIBRARY: 'library',
-                        SEARCH: 'search',
                         DETAILS: 'details',
+                        SEARCH: 'search',
+                        LIBRARY: 'library',
+                        LIKED: 'liked',
                       },
                     },
                     search: {
                       id: 'search',
+                      entry: 'changeView',
                       on: {
-                        LIBRARY: 'library',
-                        HOME: 'home',
                         DETAILS: 'details',
+                        HOME: 'home',
+                        LIBRARY: 'library',
+                        LIKED: 'liked',
                       },
                     },
                     library: {
                       id: 'library',
+                      entry: 'changeView',
                       on: {
-                        SEARCH: 'search',
-                        HOME: 'home',
                         DETAILS: 'details',
+                        HOME: 'home',
+                        LIKED: 'liked',
+                        SEARCH: 'search',
                       },
                     },
-                    details: {
-                      id: 'details',
+                    liked: {
+                      id: 'liked',
                       initial: 'loading',
                       states: {
                         loading: {
+                          // @ts-ignore
                           invoke: {
-                            src: 'fetchPlaylistDetails',
+                            src: 'fetchLikedTracks',
                             onDone: {
                               target: 'detailsView',
-                              actions: assign({
-                                playlistDetails: (_, event) => event.data,
+                              actions: assign<Context, any>({
+                                likedSongs: (_, event) => event.data,
+                                playlistDetails: undefined,
+                                view: 'liked',
                               }),
                             },
                             onError: {
                               target: 'detailsFailure',
-                              actions: assign({
+                              actions: assign<Context, any>({
                                 error: (_, event) => event.data,
                               }),
                             },
@@ -275,11 +304,47 @@ const createSpotifyMachine = (token: string) =>
                             LIBRARY: { target: '#library' },
                             HOME: { target: '#home' },
                             DETAILS: { target: '#details' },
+                            SEARCH: { target: '#search' },
                             PLAY_TRACK: {
-                              actions: [
-                                'playTrack',
-                                (c, e) => console.log('doodoo'),
-                              ],
+                              actions: ['playTrack'],
+                            },
+                          },
+                        },
+                        detailsFailure: {},
+                      },
+                    },
+                    details: {
+                      id: 'details',
+                      initial: 'loading',
+                      states: {
+                        loading: {
+                          // @ts-ignore
+                          invoke: {
+                            src: 'fetchPlaylistDetails',
+                            onDone: {
+                              target: 'detailsView',
+                              actions: assign<Context, any>({
+                                playlistDetails: (_, event) => event.data,
+                                view: 'details',
+                              }),
+                            },
+                            onError: {
+                              target: 'detailsFailure',
+                              actions: assign<Context, any>({
+                                error: (_, event) => event.data,
+                              }),
+                            },
+                          },
+                        },
+                        detailsView: {
+                          on: {
+                            LIBRARY: { target: '#library' },
+                            LIKED: { target: '#liked' },
+                            HOME: { target: '#home' },
+                            DETAILS: { target: '#details' },
+                            SEARCH: { target: '#search' },
+                            PLAY_TRACK: {
+                              actions: ['playTrack'],
                             },
                           },
                         },

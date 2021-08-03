@@ -6,6 +6,7 @@ import { useSpotifyContext } from './SpotifyContext';
 import { Context, SpotifyEvent } from './spotify.machine';
 import HomeView from './Home';
 import LikedSongs from './LikedSongs';
+import Search from './Search';
 import PlaylistDetails from './PlaylistDetails';
 
 const Main: FC = () => {
@@ -19,7 +20,7 @@ const Main: FC = () => {
       {state.matches('loggedIn.success.success.home') && (
         <HomeView parentRef={mainRef} />
       )}
-      {state.matches('loggedIn.success.success.search') && <div>search</div>}
+      {state.matches('loggedIn.success.success.search') && <Search />}
       {state.matches('loggedIn.success.success.library') && <div>library</div>}
       {state.matches('loggedIn.success.success.liked') && <LikedSongs />}
       {state.matches('loggedIn.success.success.details.detailsView') && (

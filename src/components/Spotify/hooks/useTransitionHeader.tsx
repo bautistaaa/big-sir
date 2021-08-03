@@ -18,7 +18,7 @@ const useTransitionHeader = ({ backgroundColor, text }: Props) => {
   });
 
   useEffect(() => {
-    const diff = 1 - (entry?.intersectionRatio ?? 0);
+    const diff = 1 - (entry?.intersectionRatio ?? 1);
 
     send({
       type: 'TRANSITION_HEADER',

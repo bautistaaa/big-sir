@@ -18,6 +18,7 @@ export interface Context {
   error?: string;
   feedData?: FeedData;
   playlistDetails?: SpotifyApi.PlaylistObjectFull;
+  userProfile?: SpotifyApi.UserProfileResponse;
   likedSongs?: SpotifyApi.UsersSavedTracksResponse;
   currentTrackId?: string;
   deviceId?: string;
@@ -135,12 +136,14 @@ const config = {
 
       return { newReleases, featurePlaylists, trackRecommendations, topTracks };
     },
-    fetchUserPlaylists: async () => {
-      const { id } = await request(`${spotifyConfig.apiUrl}/me`);
-      const playlists: SpotifyApi.ListOfUsersPlaylistsResponse = await request(
-        `${spotifyConfig.apiUrl}/users/${id}/playlists?offset=0&limit=50`
+    fetchUserData: async () => {
+      const userProfile = await request<SpotifyApi.UserProfileResponse>(
+        `${spotifyConfig.apiUrl}/me`
       );
-      return playlists;
+      const playlists: SpotifyApi.ListOfUsersPlaylistsResponse = await request(
+        `${spotifyConfig.apiUrl}/users/${userProfile.id}/playlists?offset=0&limit=50`
+      );
+      return [userProfile, playlists];
     },
     fetchPlaylistDetails: async (_: Context, e: any) => {
       const {
@@ -196,11 +199,12 @@ const createSpotifyMachine = (token: string) =>
           states: {
             loading: {
               invoke: {
-                src: 'fetchUserPlaylists',
+                src: 'fetchUserData',
                 onDone: {
                   target: 'success',
                   actions: assign<Context, any>({
-                    playlists: (_, event) => event.data,
+                    userProfile: (_, event) => event.data[0],
+                    playlists: (_, event) => event.data[1],
                   }),
                 },
                 onError: {

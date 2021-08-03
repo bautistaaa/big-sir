@@ -1,13 +1,14 @@
 import { FC, memo } from 'react';
 import styled from 'styled-components/macro';
+import { useService } from '@xstate/react';
 
 import SideBar from './SideBar';
 import Main from './Main';
 import LoginScreen from './LoginScreen';
 import Player from './Player';
-import { SpotifyProvider } from './SpotifyContext';
-import StickyDetailsBar from './StickyDetailsBar';
-import useLocalStorage from '../../hooks/useLocalStorage';
+import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
+import StickyBar from './StickyBar';
+import { Context, SpotifyEvent } from './spotify.machine';
 
 const SpotifyWrapper = memo(() => {
   return (
@@ -17,15 +18,16 @@ const SpotifyWrapper = memo(() => {
   );
 });
 const Spotify: FC = () => {
-  const [token] = useLocalStorage('token', '');
+  const service = useSpotifyContext();
+  const [state] = useService<Context, SpotifyEvent>(service);
 
   return (
     <Wrapper>
-      {!token && <LoginScreen />}
-      {token && (
+      {state.matches('loggedOut') && <LoginScreen />}
+      {state.matches('loggedIn') && (
         <SpotifyLayout>
           <DraggableBar className="action-bar" />
-          <StickyDetailsBar />
+          <StickyBar />
           <SideBar />
           <Main />
           <NowPlayingBar>

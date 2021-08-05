@@ -1,11 +1,12 @@
-import { useSelector } from '@xstate/react';
-import { FC } from 'react';
+import { useSelector, useService } from '@xstate/react';
+import { FC, useEffect } from 'react';
 import styled from 'styled-components/macro';
+import { useInView } from 'react-intersection-observer';
 
 import useTransitionHeader from './hooks/useTransitionHeader';
 import PlayButton from './PlayButton';
 import PlaylistTable from './PlaylistTable';
-import { SelectorState } from './spotify.machine';
+import { Context, SelectorState, SpotifyEvent } from './spotify.machine';
 import { useSpotifyContext } from './SpotifyContext';
 import UtilityBar from './UtilityBar';
 
@@ -13,12 +14,26 @@ const selectLikedSongs = (state: SelectorState) => state.context.likedSongs;
 
 const LikedSongs: FC = () => {
   const service = useSpotifyContext();
+  const [, send] = useService<Context, SpotifyEvent>(service);
   const likedSongs = useSelector(service, selectLikedSongs);
+  console.log({ likedSongs });
 
+  const { ref, inView } = useInView({});
   const intersectRef = useTransitionHeader({
     backgroundColor: 'rgb(30 21 62)',
     text: 'Liked Songs',
   });
+
+  useEffect(() => {
+    console.log({ t: likedSongs?.total, l: likedSongs?.items.length });
+    if (likedSongs?.total !== likedSongs?.items.length) {
+      if (inView) {
+        send({
+          type: 'SCROLL_TO_BOTTOM',
+        });
+      }
+    }
+  }, [inView, send, likedSongs]);
   return (
     <Wrapper>
       <Hero>
@@ -48,7 +63,9 @@ const LikedSongs: FC = () => {
           />
         </UtilityButtonWrapper>
       </UtilityBar>
-      {likedSongs?.items && <PlaylistTable items={likedSongs?.items} />}
+      {likedSongs?.items && (
+        <PlaylistTable intersectionRef={ref} items={likedSongs?.items} />
+      )}
     </Wrapper>
   );
 };

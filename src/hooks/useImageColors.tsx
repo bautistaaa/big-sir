@@ -23,7 +23,6 @@ const useImageColors = (imageSource: string) => {
     let primary = [0, 0, 0];
 
     const imageReceived = () => {
-      console.log('fuck');
       const validColors = colorThief
         .getPalette(downloadedImg)
         .filter(

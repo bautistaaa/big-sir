@@ -1,6 +1,8 @@
 import qs from 'query-string';
-import { assign, createMachine, State } from 'xstate';
+import { assign, createMachine, send, State } from 'xstate';
 
+import likedSongsInfiniteScrollMachine from './liked-songs-infinite-scroll.machine';
+// import infiniteScrollMachine from './infinite-scroll.machine';
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
@@ -62,6 +64,13 @@ type PlayerInitEvent = {
   type: 'PLAYER_INIT';
   payload: { deviceId: string };
 };
+type ReceivedDataEvent = {
+  type: 'RECEIVED_DATA';
+  data: SpotifyApi.UsersSavedTracksResponse;
+};
+type ScrollToBottomEvent = {
+  type: 'SCROLL_TO_BOTTOM';
+};
 
 export type SpotifyEvent =
   | DetailsEvent
@@ -71,6 +80,8 @@ export type SpotifyEvent =
   | LikedEvent
   | PlayTrackEvent
   | PlayerInitEvent
+  | ReceivedDataEvent
+  | ScrollToBottomEvent
   | SearchEvent;
 
 const getTopTrackIds = (topTracks: SpotifyApi.TrackObjectFull[]): string => {
@@ -153,12 +164,6 @@ const config = {
         `${spotifyConfig.apiUrl}/playlists/${playlistId}`
       );
       return playlistDetails;
-    },
-    fetchLikedTracks: async () => {
-      const likedSongs: SpotifyApi.UsersSavedTracksResponse = await request(
-        `${spotifyConfig.apiUrl}/me/tracks?offset=0&limit=50`
-      );
-      return likedSongs;
     },
   },
 };
@@ -281,40 +286,45 @@ const createSpotifyMachine = (token: string) =>
                     },
                     liked: {
                       id: 'liked',
-                      initial: 'loading',
-                      states: {
-                        loading: {
-                          // @ts-ignore
-                          invoke: {
-                            src: 'fetchLikedTracks',
-                            onDone: {
-                              target: 'detailsView',
-                              actions: assign<Context, any>({
-                                likedSongs: (_, event) => event.data,
-                                playlistDetails: undefined,
-                                view: 'liked',
-                              }),
-                            },
-                            onError: {
-                              target: 'detailsFailure',
-                              actions: assign<Context, any>({
-                                error: (_, event) => event.data,
-                              }),
-                            },
-                          },
+                      context: {
+                        view: 'liked',
+                        headerState: defaultHeaderState,
+                        token,
+                        error: '',
+                        playlistDetails: undefined,
+                      },
+                      invoke: {
+                        id: 'likedSongsInfiniteScrollMachine',
+                        src: likedSongsInfiniteScrollMachine,
+                      },
+                      on: {
+                        LIBRARY: { target: '#library' },
+                        HOME: { target: '#home' },
+                        DETAILS: { target: '#details' },
+                        SEARCH: { target: '#search' },
+                        PLAY_TRACK: {
+                          actions: ['playTrack'],
                         },
-                        detailsView: {
-                          on: {
-                            LIBRARY: { target: '#library' },
-                            HOME: { target: '#home' },
-                            DETAILS: { target: '#details' },
-                            SEARCH: { target: '#search' },
-                            PLAY_TRACK: {
-                              actions: ['playTrack'],
-                            },
-                          },
+                        SCROLL_TO_BOTTOM: {
+                          actions: send(
+                            { type: 'SCROLL_TO_BOTTOM' },
+                            {
+                              to: 'likedSongsInfiniteScrollMachine',
+                            }
+                          ),
                         },
-                        detailsFailure: {},
+                        // @ts-ignore
+                        RECEIVED_DATA: {
+                          actions: assign<Context, any>({
+                            view: 'liked',
+                            likedSongs: (_, event) => {
+                              console.log(event.data.likedSongs);
+                              // @ts-ignore
+                              return event.data.likedSongs;
+                            },
+                            playlistDetails: undefined,
+                          }),
+                        },
                       },
                     },
                     details: {

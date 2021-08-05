@@ -1,14 +1,9 @@
-import { assign, createMachine, Sender } from 'xstate';
+import { assign, createMachine, sendParent } from 'xstate';
 
 export interface InfiniteScrollMachineContext {
-  data: Data[];
-  totalEntries: number;
-  next: string;
+  likedSongs?: SpotifyApi.UsersSavedTracksResponse;
+  next?: string;
   errorMessage?: string;
-}
-
-interface Data {
-  id: number;
 }
 
 export type InfiniteScrollMachineEvent =
@@ -17,8 +12,7 @@ export type InfiniteScrollMachineEvent =
     }
   | {
       type: 'RECEIVED_DATA';
-      data: Data[];
-      totalEntries: number;
+      data: SpotifyApi.UsersSavedTracksResponse;
     };
 
 const infiniteScrollMachine = createMachine<
@@ -29,20 +23,32 @@ const infiniteScrollMachine = createMachine<
     id: 'infiniteScroll',
     initial: 'fetchingRowOfData',
     context: {
-      next: '',
-      totalEntries: Infinity,
-      data: [],
+      likedSongs: undefined,
+      next: undefined,
+      errorMessage: undefined,
     },
     states: {
       fetchingRowOfData: {
         on: {
           RECEIVED_DATA: {
             target: 'checkingIfThereIsMoreData',
-            actions: ['assignDataToContext'],
+            actions: [
+              'assignDataToContext',
+              sendParent((context, event) => {
+                console.log('sendParent');
+                console.log({ event, context });
+                return {
+                  type: 'RECEIVED_DATA',
+                  data: {
+                    likedSongs: context.likedSongs,
+                  },
+                };
+              }),
+            ],
           },
         },
         invoke: {
-          src: 'fetchRowOfData',
+          src: 'fetchLikedTracks',
           onError: {
             target: 'idle',
             actions: 'assignErrorMessageToContext',
@@ -74,24 +80,25 @@ const infiniteScrollMachine = createMachine<
   {
     guards: {
       thereIsMoreData: (context) => {
-        return context.totalEntries > context.data.length;
+        console.log({ context });
+        return !!context?.next;
       },
     },
-    services: {
-      fetchRowOfData: () => (send: Sender<InfiniteScrollMachineEvent>) => {},
-    },
     actions: {
-      assignDataToContext: assign((context, event) => {
+      assignDataToContext: assign((context, event: any) => {
         if (event.type !== 'RECEIVED_DATA') return {};
         return {
-          data: [...context.data, ...event.data],
-          totalEntries: event.totalEntries,
+          likedSongs: {
+            ...event.data,
+            items: [...(context.likedSongs?.items ?? []), ...event.data.items],
+          },
+          next: event.data.next,
         };
       }),
-      clearErrorMessage: assign((context) => ({
+      clearErrorMessage: assign((_) => ({
         errorMessage: undefined,
       })),
-      assignErrorMessageToContext: assign((context, event: any) => {
+      assignErrorMessageToContext: assign((_, event: any) => {
         return {
           errorMessage: event.data?.message || 'An unknown error occurred',
         };

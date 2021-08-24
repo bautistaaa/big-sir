@@ -1,4 +1,4 @@
-import { useRef, useState, memo } from 'react';
+import { useRef, useState } from 'react';
 import { useSelector } from '@xstate/react';
 import mergeRefs from 'react-merge-refs';
 import { useResizeDetector } from 'react-resize-detector';
@@ -15,158 +15,162 @@ import { oneLine } from '../../shared/mixins';
 import { getToken } from './utils';
 import { SelectorState } from './spotify.machine';
 
-const selectPlaylistDetails = (state: SelectorState) =>
-  state.context.playlistDetails;
 const selectCurrentTrackId = (state: SelectorState) =>
   state.context.currentTrackId;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 
-const PlaylistTable = memo(
-  ({ intersectionRef, items }: { intersectionRef: any; items: any }) => {
-    const token = getToken();
-    const service = useSpotifyContext();
-    const currentPlaylist = useSelector(service, selectPlaylistDetails);
-    const currentTrackId = useSelector(service, selectCurrentTrackId);
-    const deviceId = useSelector(service, selectDeviceId);
-    const [active, setActive] = useState<string>();
-    // HELP: i couldnt figure out how to do this with sticky + intersection observer
-    const tableWrapperRef = useRef<HTMLDivElement | null>(null);
-    const wrapperWidth = useRef<number | undefined>();
-    const { ref: resizeRef } = useResizeDetector({
-      onResize: () => {
-        wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;
-      },
-    });
-    const { ref, inView } = useInView({
-      initialInView: true,
-      threshold: [1],
-    });
+const PlaylistTable = ({
+  items,
+  playlist: currentPlaylist,
+}: {
+  items: any;
+  playlist?: any;
+}) => {
+  const token = getToken();
+  const service = useSpotifyContext();
+  const currentTrackId = useSelector(service, selectCurrentTrackId);
+  const deviceId = useSelector(service, selectDeviceId);
+  const [active, setActive] = useState<string>();
+  // HELP: i couldnt figure out how to do this with sticky + intersection observer
+  const tableWrapperRef = useRef<HTMLDivElement | null>(null);
+  const wrapperWidth = useRef<number | undefined>();
+  const { ref: resizeRef } = useResizeDetector({
+    onResize: () => {
+      wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;
+    },
+  });
+  const { ref, inView } = useInView({
+    initialInView: true,
+    threshold: [1],
+  });
 
-    const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
-      const play = async () => {
-        let body;
-        if (currentPlaylist) {
-          body = {
-            context_uri: currentPlaylist?.uri,
-            offset: { uri: track?.uri },
-          };
-        } else {
-          body = {
-            uris: items?.map((x: any) => x?.track?.uri),
-            offset: { uri: track?.uri },
-          };
-        }
-        try {
-          const resp = await fetch(
-            `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
-            {
-              method: 'PUT',
-              body: JSON.stringify(body),
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          if (!resp.ok) {
-            throw new Error('shit!');
+  const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
+    const play = async () => {
+      let body;
+      if (currentPlaylist) {
+        body = {
+          context_uri: currentPlaylist?.uri,
+          offset: { uri: track?.uri },
+        };
+      } else {
+        body = {
+          uris: items?.map((x: any) => x?.track?.uri),
+          offset: { uri: track?.uri },
+        };
+      }
+      try {
+        const resp = await fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          {
+            method: 'PUT',
+            body: JSON.stringify(body),
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           }
-          setActive(track.id);
-        } catch (e) {
-          console.log(e);
+        );
+        if (!resp.ok) {
+          throw new Error('shit!');
         }
-      };
-
-      play();
+        setActive(track.id);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
-    return (
-      <TableWrapper ref={mergeRefs([tableWrapperRef, resizeRef])}>
-        <HeaderWrapper>
-          <div
-            ref={ref}
-            style={{
-              boxSizing: 'border-box',
-              height: '30px',
-              border: '1px solid transparent',
-              position: 'absolute',
-              top: '-60px',
-            }}
-          />
-          <HeaderPositioner isSticky={!inView} width={wrapperWidth.current}>
-            <Header isSticky={!inView}>
-              <ColumnName>#</ColumnName>
-              <ColumnName>Title</ColumnName>
-              <ColumnName>Album</ColumnName>
-              <ColumnName>Date Added</ColumnName>
-              <ColumnName>
-                <AiOutlineClockCircle stroke="#ffffff" size={16} />
-              </ColumnName>
-            </Header>
-          </HeaderPositioner>
-        </HeaderWrapper>
-        <List>
-          {items.map((item: any, i: any) => {
-            const { track, added_at } = item;
-            if (!track) return null;
-            const isActive = track.id === active;
-            const isPlaying = track.id === currentTrackId;
-            return (
-              <ListItem
-                key={track.id}
-                onDoubleClick={() => handleDoubleClick(track)}
-                isActive={isActive}
-                onClick={() => setActive(track.id)}
-              >
-                <BaseColumn>
-                  {isPlaying ? (
-                    <img
-                      width="14"
-                      height="14"
-                      alt=""
-                      src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
-                    />
-                  ) : (
-                    <>{i + 1}</>
-                  )}
-                </BaseColumn>
-                <TitleColumn>
-                  <img src={track?.album.images?.[2]?.url} alt="" />
-                  <div>
-                    <Title isPlaying={isPlaying}>{track?.name}</Title>
-                    <ArtistName>
-                      <a href="#">{track.album?.artists?.[0]?.name}</a>
-                    </ArtistName>
-                  </div>
-                </TitleColumn>
-                <AlbumName>
-                  <a href="#">{track.album?.name}</a>
-                </AlbumName>
-                {/* @ts-ignore */}
-                <BaseColumn>
-                  {formatDateForSpotify(new Date(added_at))}
-                </BaseColumn>
-                <BaseColumn>
-                  {convertMsToMinutesAndSeconds(track.duration_ms)}
-                </BaseColumn>
-              </ListItem>
-            );
-          })}
-          <IntersectionDetection ref={intersectionRef} />
-        </List>
-      </TableWrapper>
-    );
-  }
-);
+    play();
+  };
+
+  return (
+    <TableWrapper ref={mergeRefs([tableWrapperRef, resizeRef])}>
+      <HeaderWrapper>
+        <div
+          ref={ref}
+          style={{
+            boxSizing: 'border-box',
+            height: '30px',
+            border: '1px solid transparent',
+            position: 'absolute',
+            top: '-60px',
+          }}
+        />
+        <HeaderPositioner isSticky={!inView} width={wrapperWidth.current}>
+          <Header isSticky={!inView}>
+            <ColumnName>#</ColumnName>
+            <ColumnName>Title</ColumnName>
+            <ColumnName>Album</ColumnName>
+            <ColumnName>Date Added</ColumnName>
+            <ColumnName>
+              <AiOutlineClockCircle stroke="#ffffff" size={16} />
+            </ColumnName>
+          </Header>
+        </HeaderPositioner>
+      </HeaderWrapper>
+      <List isSticky={!inView}>
+        {items.map((item: any, i: any) => {
+          const { track, added_at } = item;
+          if (!track) return null;
+          const isActive = track.id === active;
+          const isPlaying = track.id === currentTrackId;
+          // apparently you can add the same track twice
+          // track number isnt unique either.. so index will work for now?
+          return (
+            <ListItem
+              key={`${track.id}-${i}`}
+              onDoubleClick={() => handleDoubleClick(track)}
+              isActive={isActive}
+              onClick={() => setActive(track.id)}
+            >
+              <BaseColumn>
+                {isPlaying ? (
+                  <img
+                    width="14"
+                    height="14"
+                    alt=""
+                    src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
+                  />
+                ) : (
+                  <>{i + 1}</>
+                )}
+              </BaseColumn>
+              <TitleColumn>
+                <img
+                  loading="lazy"
+                  src={track?.album.images?.[2]?.url}
+                  alt=""
+                />
+                <div>
+                  <Title isPlaying={isPlaying}>{track?.name}</Title>
+                  <ArtistName>
+                    <a href="#">{track.album?.artists?.[0]?.name}</a>
+                  </ArtistName>
+                </div>
+              </TitleColumn>
+              <AlbumName>
+                <a href="#">{track.album?.name}</a>
+              </AlbumName>
+              {/* @ts-ignore */}
+              <BaseColumn>
+                {formatDateForSpotify(new Date(added_at))}
+              </BaseColumn>
+              <BaseColumn>
+                {convertMsToMinutesAndSeconds(track.duration_ms)}
+              </BaseColumn>
+            </ListItem>
+          );
+        })}
+        <IntersectionDetection id="load-more" />
+      </List>
+    </TableWrapper>
+  );
+};
 
 const IntersectionDetection = styled.div`
   pointer-events: none;
   position: absolute;
   left: 0;
   bottom: 30px;
-  height: 30px;
-  width: 30px;
-  border: 1px solid red;
 `;
 
 const TableWrapper = styled.div`
@@ -188,7 +192,13 @@ const TableWrapper = styled.div`
     }
   }
 `;
-const List = styled.ol``;
+const List = styled.ol<{ isSticky: boolean }>`
+  ${({ isSticky }) =>
+    isSticky &&
+    `
+      padding-top: 54px;
+    `}
+`;
 const ListItem = styled.li<{ isActive: boolean }>`
   grid-gap: 16px;
   display: grid;

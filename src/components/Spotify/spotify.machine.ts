@@ -1,8 +1,6 @@
 import qs from 'query-string';
 import { assign, createMachine, send, State } from 'xstate';
 
-import likedSongsInfiniteScrollMachine from './liked-songs-infinite-scroll.machine';
-// import infiniteScrollMachine from './infinite-scroll.machine';
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
@@ -16,17 +14,15 @@ export interface FeedData {
 }
 export interface Context {
   token: string;
+  currentPlaylistId?: string;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   feedData?: FeedData;
-  playlistDetails?: SpotifyApi.PlaylistObjectFull;
   userProfile?: SpotifyApi.UserProfileResponse;
-  likedSongs?: SpotifyApi.UsersSavedTracksResponse;
   currentTrackId?: string;
   deviceId?: string;
   headerState: {
     text: string;
-    opacity: number;
     backgroundColor: string;
   };
   view?: View;
@@ -54,7 +50,7 @@ type DetailsEvent = {
 };
 type HeaderTransitionEvent = {
   type: 'TRANSITION_HEADER';
-  payload: { text: string; opacity: number; backgroundColor: string };
+  payload: { text: string; backgroundColor: string };
 };
 type PlayTrackEvent = {
   type: 'PLAY_TRACK';
@@ -93,7 +89,6 @@ const query = {
   limit: 50,
 };
 const defaultHeaderState = {
-  opacity: 0,
   backgroundColor: 'transparent',
   text: '',
 };
@@ -106,7 +101,6 @@ const config = {
     transitionHeader: assign<Context, any>({
       headerState: (_, event) => {
         return {
-          opacity: (event as HeaderTransitionEvent).payload.opacity,
           backgroundColor: (event as HeaderTransitionEvent).payload
             .backgroundColor,
           text: (event as HeaderTransitionEvent).payload.text,
@@ -155,15 +149,6 @@ const config = {
         `${spotifyConfig.apiUrl}/users/${userProfile.id}/playlists?offset=0&limit=50`
       );
       return [userProfile, playlists];
-    },
-    fetchPlaylistDetails: async (_: Context, e: any) => {
-      const {
-        payload: { playlistId },
-      } = e as DetailsEvent;
-      const playlistDetails: SpotifyApi.PlaylistObjectFull = await request(
-        `${spotifyConfig.apiUrl}/playlists/${playlistId}`
-      );
-      return playlistDetails;
     },
   },
 };
@@ -286,83 +271,40 @@ const createSpotifyMachine = (token: string) =>
                     },
                     liked: {
                       id: 'liked',
-                      context: {
-                        view: 'liked',
-                        headerState: defaultHeaderState,
-                        token,
-                        error: '',
-                        playlistDetails: undefined,
+                      entry: [
+                        'changeView',
+                        assign<Context, any>({
+                          headerState: {
+                            backgroundColor: 'rgb(30 21 62)',
+                            text: 'Liked Songs',
+                          },
+                        }),
+                      ],
+                      on: {
+                        DETAILS: 'details',
+                        HOME: 'home',
+                        LIBRARY: 'library',
+                        SEARCH: 'search',
                       },
-                      invoke: {
-                        id: 'likedSongsInfiniteScrollMachine',
-                        src: likedSongsInfiniteScrollMachine,
-                      },
+                    },
+                    details: {
+                      id: 'details',
+                      entry: [
+                        'changeView',
+                        assign<Context, any>({
+                          currentPlaylistId: (_, event) =>
+                            event?.payload?.playlistId,
+                        }),
+                      ],
                       on: {
                         LIBRARY: { target: '#library' },
+                        LIKED: { target: '#liked' },
                         HOME: { target: '#home' },
                         DETAILS: { target: '#details' },
                         SEARCH: { target: '#search' },
                         PLAY_TRACK: {
                           actions: ['playTrack'],
                         },
-                        SCROLL_TO_BOTTOM: {
-                          actions: send(
-                            { type: 'SCROLL_TO_BOTTOM' },
-                            {
-                              to: 'likedSongsInfiniteScrollMachine',
-                            }
-                          ),
-                        },
-                        // @ts-ignore
-                        RECEIVED_DATA: {
-                          actions: assign<Context, any>({
-                            view: 'liked',
-                            likedSongs: (_, event) => {
-                              console.log(event.data.likedSongs);
-                              // @ts-ignore
-                              return event.data.likedSongs;
-                            },
-                            playlistDetails: undefined,
-                          }),
-                        },
-                      },
-                    },
-                    details: {
-                      id: 'details',
-                      initial: 'loading',
-                      states: {
-                        loading: {
-                          // @ts-ignore
-                          invoke: {
-                            src: 'fetchPlaylistDetails',
-                            onDone: {
-                              target: 'detailsView',
-                              actions: assign<Context, any>({
-                                playlistDetails: (_, event) => event.data,
-                                view: 'details',
-                              }),
-                            },
-                            onError: {
-                              target: 'detailsFailure',
-                              actions: assign<Context, any>({
-                                error: (_, event) => event.data,
-                              }),
-                            },
-                          },
-                        },
-                        detailsView: {
-                          on: {
-                            LIBRARY: { target: '#library' },
-                            LIKED: { target: '#liked' },
-                            HOME: { target: '#home' },
-                            DETAILS: { target: '#details' },
-                            SEARCH: { target: '#search' },
-                            PLAY_TRACK: {
-                              actions: ['playTrack'],
-                            },
-                          },
-                        },
-                        detailsFailure: {},
                       },
                     },
                   },

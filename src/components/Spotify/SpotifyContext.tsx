@@ -4,7 +4,7 @@ import { Interpreter } from 'xstate';
 import createSpotifyMachine, { Context, SpotifyEvent } from './spotify.machine';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
-type SpotiyContextValue = Interpreter<
+type SpotifyContextValue = Interpreter<
   Context,
   any,
   SpotifyEvent,
@@ -14,7 +14,7 @@ type SpotiyContextValue = Interpreter<
   }
 >;
 
-export const SpotifyContext = createContext<SpotiyContextValue>(
+export const SpotifyContext = createContext<SpotifyContextValue>(
   {} as Interpreter<
     Context,
     any,

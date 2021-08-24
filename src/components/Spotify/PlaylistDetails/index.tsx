@@ -1,23 +1,31 @@
-import { useSelector } from '@xstate/react';
-import { FC } from 'react';
+import { useMachine, useSelector, useService } from '@xstate/react';
+import { FC, useEffect, useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { IoMdHeart } from 'react-icons/io';
 import styled from 'styled-components/macro';
 
-import useTransitionHeader from './hooks/useTransitionHeader';
-import PlayButton from './PlayButton';
-import PlaylistTable from './PlaylistTable';
-import { SelectorState } from './spotify.machine';
-import { useSpotifyContext } from './SpotifyContext';
-import UtilityBar from './UtilityBar';
-import useImageColors from '../../hooks/useImageColors';
+import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
+import { useSpotifyContext } from '../SpotifyContext';
+import playlistDetailsMachine from './playlistDetails.machine';
+import PlayButton from '../PlayButton';
+import PlaylistTable from '../PlaylistTable';
+import UtilityBar from '../UtilityBar';
+import useImageColors from '../../../hooks/useImageColors';
+import { observe } from 'react-intersection-observer';
 
-const selectPlaylistDetails = (state: SelectorState) =>
-  state.context.playlistDetails;
-
+const selectPlaylistId = (state: SelectorState) =>
+  state.context.currentPlaylistId;
+const options = {
+  root: document.getElementById('main'),
+  rootMargin: '300px 0px 0px 0px',
+};
 const PlaylistDetails: FC = () => {
   const service = useSpotifyContext();
-  const playlist = useSelector(service, selectPlaylistDetails);
+  const [, parentSend] = useService<Context, SpotifyEvent>(service);
+  const playlistId = useSelector(service, selectPlaylistId);
+  const [state, send] = useMachine(playlistDetailsMachine(playlistId ?? ''));
+  const [inView, setInView] = useState(false);
+  const playlist = state.context.playlistDetails;
 
   const imageSrc = playlist?.images?.[0]?.url ?? '';
   const [stickyBarBackgroundColor, heroBackgroundColor] = useImageColors(
@@ -26,10 +34,61 @@ const PlaylistDetails: FC = () => {
 
   const items = playlist?.tracks?.items;
 
-  const intersectRef = useTransitionHeader({
-    backgroundColor: stickyBarBackgroundColor,
-    text: playlist?.name ?? '',
-  });
+  const callback = (inView: boolean) => {
+    console.log({ inView });
+    setInView(inView);
+  };
+
+  useEffect(() => {
+    const el = document.getElementById('main');
+
+    if (el) {
+      console.log({ el });
+      const destroy = observe(
+        document.getElementById('load-more')!,
+        callback,
+        options
+      );
+
+      if (playlist?.tracks?.total === playlist?.tracks?.items?.length) {
+        console.log('destory');
+        destroy();
+      }
+
+      return () => {
+        console.log('return destory');
+        destroy();
+      };
+    }
+  }, [playlist]);
+
+  useEffect(() => {
+    if (inView) {
+      send({
+        type: 'SCROLL_TO_BOTTOM',
+      });
+    }
+  }, [inView, send]);
+
+  useEffect(() => {
+    if (playlistId) {
+      send({ type: 'REFRESH', payload: { playlistId } });
+    }
+  }, [playlistId, send]);
+
+  useEffect(() => {
+    parentSend({
+      type: 'TRANSITION_HEADER',
+      payload: {
+        backgroundColor: stickyBarBackgroundColor,
+        text: playlist?.name ?? '',
+      },
+    });
+  }, [parentSend, stickyBarBackgroundColor, playlist?.name]);
+
+  if (!playlist) {
+    return null;
+  }
 
   return (
     <Wrapper>
@@ -40,7 +99,7 @@ const PlaylistDetails: FC = () => {
         </ArtWrapper>
         <PlaylistInfo>
           <Category>{playlist?.type}</Category>
-          <Title ref={intersectRef}>{playlist?.name}</Title>
+          <Title id="title">{playlist?.name}</Title>
           <Description>{playlist?.description}</Description>
           <Metadata>
             <Author>{playlist?.owner?.display_name}</Author>
@@ -70,7 +129,7 @@ const PlaylistDetails: FC = () => {
         </UtilityButtonWrapper>
         <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
-      {items && <PlaylistTable items={items} />}
+      {items && <PlaylistTable items={items} playlist={playlist} />}
     </Wrapper>
   );
 };

@@ -1,39 +1,55 @@
-import { useSelector, useService } from '@xstate/react';
-import { FC, useEffect } from 'react';
+import { useMachine } from '@xstate/react';
+import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
-import { useInView } from 'react-intersection-observer';
+import { observe } from 'react-intersection-observer';
 
-import useTransitionHeader from './hooks/useTransitionHeader';
-import PlayButton from './PlayButton';
-import PlaylistTable from './PlaylistTable';
-import { Context, SelectorState, SpotifyEvent } from './spotify.machine';
-import { useSpotifyContext } from './SpotifyContext';
-import UtilityBar from './UtilityBar';
+import PlayButton from '../PlayButton';
+import PlaylistTable from '../PlaylistTable';
+import UtilityBar from '../UtilityBar';
+import likedSongsMachine from './likedSongs.machine';
 
-const selectLikedSongs = (state: SelectorState) => state.context.likedSongs;
-
+const options = {
+  root: document.getElementById('main'),
+  rootMargin: '300px 0px 0px 0px',
+};
 const LikedSongs: FC = () => {
-  const service = useSpotifyContext();
-  const [, send] = useService<Context, SpotifyEvent>(service);
-  const likedSongs = useSelector(service, selectLikedSongs);
-  console.log({ likedSongs });
+  const [state, send] = useMachine(likedSongsMachine, { devTools: true });
+  const likedSongs = state.context?.likedSongs;
+  const [inView, setInView] = useState(false);
 
-  const { ref, inView } = useInView({});
-  const intersectRef = useTransitionHeader({
-    backgroundColor: 'rgb(30 21 62)',
-    text: 'Liked Songs',
-  });
+  const callback = (inView: boolean) => {
+    setInView(inView);
+  };
 
   useEffect(() => {
-    console.log({ t: likedSongs?.total, l: likedSongs?.items.length });
-    if (likedSongs?.total !== likedSongs?.items.length) {
-      if (inView) {
-        send({
-          type: 'SCROLL_TO_BOTTOM',
-        });
+    const el = document.getElementById('main');
+
+    if (el) {
+      const destroy = observe(
+        document.getElementById('load-more')!,
+        callback,
+        options
+      );
+
+      if (likedSongs?.total === likedSongs?.items.length) {
+        console.log('des');
+        destroy();
       }
+
+      return () => {
+        console.log('return destory');
+        destroy();
+      };
     }
-  }, [inView, send, likedSongs]);
+  }, [likedSongs]);
+
+  useEffect(() => {
+    if (inView) {
+      send({
+        type: 'SCROLL_TO_BOTTOM',
+      });
+    }
+  }, [inView, send]);
   return (
     <Wrapper>
       <Hero>
@@ -43,7 +59,7 @@ const LikedSongs: FC = () => {
         </ArtWrapper>
         <PlaylistInfo>
           <Category>Playlist</Category>
-          <Title ref={intersectRef}>Liked Songs</Title>
+          <Title id="title">Liked Songs</Title>
           <Metadata>
             <Author>Chris Bautista</Author>
             <Songs>
@@ -63,9 +79,7 @@ const LikedSongs: FC = () => {
           />
         </UtilityButtonWrapper>
       </UtilityBar>
-      {likedSongs?.items && (
-        <PlaylistTable intersectionRef={ref} items={likedSongs?.items} />
-      )}
+      {likedSongs?.items && <PlaylistTable items={likedSongs?.items} />}
     </Wrapper>
   );
 };

@@ -4,9 +4,10 @@ import { useService } from '@xstate/react';
 
 import { useSpotifyContext } from './SpotifyContext';
 import { Context, SpotifyEvent } from './spotify.machine';
-import HomeView from './Home';
 import LikedSongs from './LikedSongs';
+import HomeView from './Home';
 import Search from './Search';
+import StickyBar from './StickyBar';
 import PlaylistDetails from './PlaylistDetails';
 
 const Main: FC = () => {
@@ -16,17 +17,22 @@ const Main: FC = () => {
   const mainRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <Wrapper ref={mainRef}>
-      {state.matches('loggedIn.success.success.home') && (
-        <HomeView parentRef={mainRef} />
-      )}
-      {state.matches('loggedIn.success.success.search') && <Search />}
-      {state.matches('loggedIn.success.success.library') && <div>library</div>}
-      {state.matches('loggedIn.success.success.liked') && <LikedSongs />}
-      {state.matches('loggedIn.success.success.details.detailsView') && (
-        <PlaylistDetails />
-      )}
-    </Wrapper>
+    <>
+      <StickyBar />
+      <Wrapper id="main" ref={mainRef}>
+        {state.matches('loggedIn.success.success.home') && (
+          <HomeView parentRef={mainRef} />
+        )}
+        {state.matches('loggedIn.success.success.search') && <Search />}
+        {state.matches('loggedIn.success.success.library') && (
+          <div>library</div>
+        )}
+        {state.matches('loggedIn.success.success.liked') && <LikedSongs />}
+        {state.matches('loggedIn.success.success.details') && (
+          <PlaylistDetails />
+        )}
+      </Wrapper>
+    </>
   );
 };
 

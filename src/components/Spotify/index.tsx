@@ -7,7 +7,6 @@ import Main from './Main';
 import LoginScreen from './LoginScreen';
 import Player from './Player';
 import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
-import StickyBar from './StickyBar';
 import { Context, SpotifyEvent } from './spotify.machine';
 
 const SpotifyWrapper = memo(() => {
@@ -27,7 +26,6 @@ const Spotify: FC = () => {
       {state.matches('loggedIn') && (
         <SpotifyLayout>
           <DraggableBar className="action-bar" />
-          <StickyBar />
           <SideBar />
           <Main />
           <NowPlayingBar>

@@ -1,37 +1,67 @@
 import { useSelector } from '@xstate/react';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import { useService } from '@xstate/react';
 import { AiFillCaretDown } from 'react-icons/ai';
 
 import { Context, SelectorState, SpotifyEvent } from './spotify.machine';
+import SearchForm from './SearchForm';
 import { useSpotifyContext } from './SpotifyContext';
-import SearchInput from './SearchInput';
+import { useInView } from 'react-intersection-observer';
 
 const selectHeaderState = (state: SelectorState) => state.context.headerState;
 const selectUserProfile = (state: SelectorState) => state.context.userProfile;
+const selectView = (state: SelectorState) => state.context.view;
+const selectPlaylistId = (state: SelectorState) =>
+  state.context.currentPlaylistId;
 
 const StickyBar: FC = () => {
   const service = useSpotifyContext();
   const [state] = useService<Context, SpotifyEvent>(service);
   const headerState = useSelector(service, selectHeaderState);
   const userProfile = useSelector(service, selectUserProfile);
+  const playlistId = useSelector(service, selectPlaylistId);
+  const view = useSelector(service, selectView);
+  const [opacity, setOpacity] = useState(0);
+
+  const { ref, entry } = useInView({
+    initialInView: false,
+    threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+  });
+
+  useEffect(
+    () => () => {
+      setOpacity(0);
+    },
+    [playlistId, view]
+  );
+
+  useEffect(() => {
+    const el = document.getElementById('title');
+
+    if (el) {
+      ref(el);
+    }
+  }, [ref, headerState.text]);
+
+  useEffect(() => {
+    const el = document.getElementById('title');
+
+    if (el) {
+      const diff = 1 - (entry?.intersectionRatio ?? 1);
+      setOpacity(diff > 0.9 ? 1 : diff);
+    }
+  }, [entry?.isIntersecting, entry?.intersectionRatio, ref]);
+
   return (
     <Wrapper className="action-bar">
-      <Background
-        background={headerState.backgroundColor}
-        opacity={headerState.opacity}
-      />
+      <Background background={headerState.backgroundColor} opacity={opacity} />
       <ContentWrapper>
         <DynamicContent>
-          {state.matches('loggedIn.success.success.search') && (
-            <SearchFormWrapper>
-              <SearchInput />
-            </SearchFormWrapper>
-          )}
-          {(state.matches('loggedIn.success.success.details.detailsView') ||
+          {state.matches('loggedIn.success.success.search') && <SearchForm />}
+          {(state.matches('loggedIn.success.success.details') ||
             state.matches('loggedIn.success.success.liked')) && (
-            <Text opacity={headerState.opacity}>{headerState.text}</Text>
+            <Text opacity={opacity}>{headerState.text}</Text>
           )}
         </DynamicContent>
         <AccountButton>
@@ -86,15 +116,14 @@ const Text = styled.div<{ opacity: number }>`
       opacity: ${opacity};
     `}
 `;
-const DynamicContent = styled.div``;
+const DynamicContent = styled.div`
+  display: flex;
+  flex: 1;
+`;
 const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-const SearchFormWrapper = styled.div`
-  flex: 0 1 364px;
-  position: relative;
 `;
 const AccountButton = styled.button`
   background-color: rgba(0, 0, 0, 0.7);

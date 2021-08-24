@@ -1,12 +1,17 @@
-import { assign, createMachine, sendParent } from 'xstate';
+import { assign, createMachine, Sender } from 'xstate';
 
-export interface InfiniteScrollMachineContext {
+import spotifyConfig from '../../../shared/config';
+import { request } from '../utils';
+
+const DEFAULT_URL = `${spotifyConfig.apiUrl}/me/tracks?offset=0&limit=50`;
+
+export interface LikedSongsMachineContext {
   likedSongs?: SpotifyApi.UsersSavedTracksResponse;
   next?: string;
   errorMessage?: string;
 }
 
-export type InfiniteScrollMachineEvent =
+export type LikedSongsMachineEvent =
   | {
       type: 'SCROLL_TO_BOTTOM';
     }
@@ -15,12 +20,12 @@ export type InfiniteScrollMachineEvent =
       data: SpotifyApi.UsersSavedTracksResponse;
     };
 
-const infiniteScrollMachine = createMachine<
-  InfiniteScrollMachineContext,
-  InfiniteScrollMachineEvent
+const likedSongsMachine = createMachine<
+  LikedSongsMachineContext,
+  LikedSongsMachineEvent
 >(
   {
-    id: 'infiniteScroll',
+    id: 'likedSongs',
     initial: 'fetchingRowOfData',
     context: {
       likedSongs: undefined,
@@ -32,19 +37,7 @@ const infiniteScrollMachine = createMachine<
         on: {
           RECEIVED_DATA: {
             target: 'checkingIfThereIsMoreData',
-            actions: [
-              'assignDataToContext',
-              sendParent((context, event) => {
-                console.log('sendParent');
-                console.log({ event, context });
-                return {
-                  type: 'RECEIVED_DATA',
-                  data: {
-                    likedSongs: context.likedSongs,
-                  },
-                };
-              }),
-            ],
+            actions: 'assignDataToContext',
           },
         },
         invoke: {
@@ -80,7 +73,6 @@ const infiniteScrollMachine = createMachine<
   {
     guards: {
       thereIsMoreData: (context) => {
-        console.log({ context });
         return !!context?.next;
       },
     },
@@ -104,7 +96,19 @@ const infiniteScrollMachine = createMachine<
         };
       }),
     },
+    services: {
+      fetchLikedTracks: (context: LikedSongsMachineContext) => async (
+        send: Sender<LikedSongsMachineEvent>
+      ) => {
+        const url = context.next || DEFAULT_URL;
+        const likedSongs: SpotifyApi.UsersSavedTracksResponse = await request(
+          url
+        );
+
+        send({ type: 'RECEIVED_DATA', data: likedSongs });
+      },
+    },
   }
 );
 
-export default infiniteScrollMachine;
+export default likedSongsMachine;

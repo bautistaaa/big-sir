@@ -58,9 +58,9 @@ const StickyBar: FC = () => {
       <Background background={headerState.backgroundColor} opacity={opacity} />
       <ContentWrapper>
         <DynamicContent>
-          {state.matches('loggedIn.success.success.search') && <SearchForm />}
-          {(state.matches('loggedIn.success.success.details') ||
-            state.matches('loggedIn.success.success.liked')) && (
+          {state.matches('loggedIn.success.search') && <SearchForm />}
+          {(state.matches('loggedIn.success.details') ||
+            state.matches('loggedIn.success.liked')) && (
             <Text opacity={opacity}>{headerState.text}</Text>
           )}
         </DynamicContent>

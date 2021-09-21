@@ -1,47 +1,104 @@
 import { Machine, assign } from 'xstate';
 
-interface FetchStates {
+interface SearchMachineStates {
   states: {
+    checkTerm: {};
     idle: {};
-    pending: {};
+    searching: {};
+    generic: {};
   };
 }
 
-type FetchMachineEvents =
-  | { type: 'FETCH' }
-  | { type: 'RESOLVE'; results: SpotifyApi.SearchResponse }
-  | { type: 'REJECT'; message: string };
+export type SearchMachineEvents =
+  | { type: 'GENERIC_ERROR' }
+  | { type: 'GENERIC_SUCCESS'; data: SpotifyApi.MultipleCategoriesResponse }
+  | { type: 'SEARCH_ERROR' }
+  | { type: 'SEARCH_SUCCESS'; data: SpotifyApi.SearchResponse }
+  | { type: 'TERM_CHANGED'; term: string };
 
-interface FetchContext {
+export interface SearchMachineContext {
   results: SpotifyApi.SearchResponse;
+  genericResults?: SpotifyApi.MultipleCategoriesResponse;
   message: string;
+  term: string;
 }
 
-const fetchMachine = Machine<FetchContext, FetchStates, FetchMachineEvents>(
+const fetchMachine = Machine<
+  SearchMachineContext,
+  SearchMachineStates,
+  SearchMachineEvents
+>(
   {
-    id: 'fetch',
-    initial: 'idle',
+    id: 'search',
+    initial: 'checkTerm',
     context: {
       results: {},
       message: '',
+      term: '',
     },
     states: {
+      checkTerm: {
+        always: [
+          {
+            cond: 'thereIsSearchTerm',
+            target: 'searching',
+          },
+          {
+            target: 'generic',
+          },
+        ],
+      },
       idle: {
         on: {
-          FETCH: 'pending',
+          TERM_CHANGED: {
+            target: 'checkTerm',
+            actions: assign({
+              term: (_, event) => event.term,
+            }),
+          },
         },
       },
-      pending: {
-        entry: ['fetchResults'],
+      searching: {
         on: {
-          RESOLVE: { target: 'idle', actions: ['setResults'] },
-          REJECT: { target: 'idle', actions: ['setMessage'] },
+          SEARCH_SUCCESS: {
+            target: 'idle',
+            actions: assign({
+              results: (_, event) => event.data,
+            }),
+          },
+          SEARCH_ERROR: {
+            target: 'idle',
+            actions: [() => console.error('frick')],
+          },
+        },
+      },
+      generic: {
+        on: {
+          GENERIC_SUCCESS: {
+            target: 'idle',
+            actions: assign({
+              genericResults: (_, event) => event.data,
+            }),
+          },
+          GENERIC_ERROR: {
+            target: 'idle',
+            actions: [() => console.error('frick')],
+          },
         },
       },
     },
   },
   {
+    guards: {
+      thereIsSearchTerm: (context) => {
+        console.log('guard ', context.term);
+        return !!context.term;
+      },
+    },
     actions: {
+      setGenericResults: assign((_, event: any) => ({
+        results: event.results,
+      })),
       setResults: assign((_, event: any) => ({
         results: event.results,
       })),

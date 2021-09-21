@@ -84,7 +84,9 @@ const LikedSongs: FC = () => {
   );
 };
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin-top: -60px;
+`;
 const Hero = styled.div<{ background?: string }>`
   position: relative;
   display: flex;

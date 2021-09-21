@@ -1,7 +1,8 @@
-import { FC, useRef } from 'react';
+import { FC, memo, useRef } from 'react';
 import styled from 'styled-components';
 import { useService } from '@xstate/react';
 
+import { StickyBarProvider } from './StickyBarContext';
 import { useSpotifyContext } from './SpotifyContext';
 import { Context, SpotifyEvent } from './spotify.machine';
 import LikedSongs from './LikedSongs';
@@ -10,7 +11,14 @@ import Search from './Search';
 import StickyBar from './StickyBar';
 import PlaylistDetails from './PlaylistDetails';
 
-const Main: FC = () => {
+const MainWrapper = memo(() => {
+  return (
+    <StickyBarProvider>
+      <Main />
+    </StickyBarProvider>
+  );
+});
+const Main: FC = memo(() => {
   const service = useSpotifyContext();
   const [state] = useService<Context, SpotifyEvent>(service);
 
@@ -20,22 +28,23 @@ const Main: FC = () => {
     <>
       <StickyBar />
       <Wrapper id="main" ref={mainRef}>
-        {state.matches('loggedIn.success.success.home') && (
+        <Spacer />
+        {state.matches('loggedIn.success.home') && (
           <HomeView parentRef={mainRef} />
         )}
-        {state.matches('loggedIn.success.success.search') && <Search />}
-        {state.matches('loggedIn.success.success.library') && (
-          <div>library</div>
-        )}
-        {state.matches('loggedIn.success.success.liked') && <LikedSongs />}
-        {state.matches('loggedIn.success.success.details') && (
-          <PlaylistDetails />
-        )}
+        {state.matches('loggedIn.success.search') && <Search />}
+        {state.matches('loggedIn.success.library') && <div>library</div>}
+        {state.matches('loggedIn.success.liked') && <LikedSongs />}
+        {state.matches('loggedIn.success.details') && <PlaylistDetails />}
       </Wrapper>
     </>
   );
-};
-
+});
+const Spacer = styled.div`
+  height: 60px;
+  position: sticky;
+  top: 0;
+`;
 const Wrapper = styled.div`
   position: relative;
   overflow: auto;
@@ -46,4 +55,4 @@ const Wrapper = styled.div`
   z-index: 10;
 `;
 
-export default Main;
+export default MainWrapper;

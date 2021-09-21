@@ -35,7 +35,6 @@ const PlaylistDetails: FC = () => {
   const items = playlist?.tracks?.items;
 
   const callback = (inView: boolean) => {
-    console.log({ inView });
     setInView(inView);
   };
 
@@ -43,7 +42,6 @@ const PlaylistDetails: FC = () => {
     const el = document.getElementById('main');
 
     if (el) {
-      console.log({ el });
       const destroy = observe(
         document.getElementById('load-more')!,
         callback,
@@ -51,12 +49,10 @@ const PlaylistDetails: FC = () => {
       );
 
       if (playlist?.tracks?.total === playlist?.tracks?.items?.length) {
-        console.log('destory');
         destroy();
       }
 
       return () => {
-        console.log('return destory');
         destroy();
       };
     }
@@ -134,7 +130,9 @@ const PlaylistDetails: FC = () => {
   );
 };
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin-top: -60px;
+`;
 const Hero = styled.div<{ background?: string }>`
   position: relative;
   display: flex;

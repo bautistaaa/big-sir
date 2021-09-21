@@ -7,9 +7,8 @@ import Slider from './Slider';
 interface Props {
   playerState: Spotify.PlaybackState;
   onChange(v: number): void;
-  updatePosition(v: number): void;
 }
-const Scrubber: FC<Props> = ({ onChange, playerState, updatePosition }) => {
+const Scrubber: FC<Props> = ({ onChange, playerState }) => {
   const [isActive, setIsActive] = useState(false);
   const [position, setPosition] = useState(playerState.position);
   const isPaused = playerState.paused;

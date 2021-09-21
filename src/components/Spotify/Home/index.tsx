@@ -1,26 +1,31 @@
-import { FC, MutableRefObject } from 'react';
-import { useSelector } from '@xstate/react';
+import { FC, MutableRefObject, useEffect } from 'react';
+import { useMachine } from '@xstate/react';
 import styled from 'styled-components';
 
-import FeedCard from './FeedCard';
-import { getGreetingByTime } from '../../utils';
-import useRect from '../../hooks/useRect';
-import { SelectorState } from './spotify.machine';
-import { useSpotifyContext } from './SpotifyContext';
-import TopSectionItem from './TopSectionItem';
-
-const selectFeedData = (state: SelectorState) => state.context.feedData;
+import useFeedData from './useFeedData';
+import homeMachine from './home.machine';
+import FeedCard from '../FeedCard';
+import { getGreetingByTime } from '../../../utils';
+import useRect from '../../../hooks/useRect';
+import TopSectionItem from '../TopSectionItem';
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ parentRef }) => {
-  const service = useSpotifyContext();
-  const feedData = useSelector(service, selectFeedData);
+  const feedData = useFeedData();
+  const [state, send] = useMachine(homeMachine);
+  const { data } = state.context;
   const { width } = useRect(parentRef, []);
 
-  const newReleaseItems = feedData?.newReleases?.albums?.items;
-  const featurePlaylists = feedData?.featurePlaylists?.playlists?.items;
-  const trackRecommendations = feedData?.trackRecommendations?.tracks;
+  const newReleaseItems = data?.newReleases?.albums?.items;
+  const featurePlaylists = data?.featurePlaylists?.playlists?.items;
+  const trackRecommendations = data?.trackRecommendations?.tracks;
+
+  useEffect(() => {
+    if (feedData) {
+      send({ type: 'RECEIVED_DATA', data: feedData });
+    }
+  }, [send, feedData]);
 
   const items =
     width >= 1460
@@ -30,6 +35,10 @@ const Home: FC<{
       : width >= 892
       ? newReleaseItems?.slice(0, 6)
       : newReleaseItems?.slice(0, 4);
+
+  if (!feedData) {
+    return null;
+  }
 
   return (
     <Wrapper>

@@ -1,44 +1,23 @@
-import { useMachine } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { BiSearch } from 'react-icons/bi';
 import { IoMdClose } from 'react-icons/io';
 
-import searchMachine from './Search/search.machine';
-import spotifyConfig from '../../shared/config';
-import { request } from './utils';
+import { useStickyBarContext } from './StickyBarContext';
 import useDebouncedValue from '../../hooks/useDebouncedValue';
 import BaseClearButton from '../ClearButton';
+import { useService } from '@xstate/react';
 
 const SearchForm: FC = () => {
+  const service = useStickyBarContext();
+  const [, send] = useService(service);
   const [term, setTerm] = useState('');
   const debouncedTerm = useDebouncedValue(term);
 
-  const [state, send] = useMachine(searchMachine, {
-    devTools: true,
-    actions: {
-      fetchResults: async () => {
-        try {
-          const queryParam = new URLSearchParams({
-            query: term,
-          });
-          const SEARCH_URL = `${spotifyConfig.apiUrl}/search?${queryParam}&offset=0&limit=20&type=album,track,artist`;
-          const data: SpotifyApi.SearchResponse = await request(SEARCH_URL);
-
-          send({ type: 'RESOLVE', results: data });
-        } catch (e) {
-          send({ type: 'REJECT', message: e?.message });
-        }
-      },
-    },
-  });
-  console.log({ context: state.context });
-
+  // TODO: move into search machine (ex: after)
+  // https://xstate-catalogue.com/machines/debounce
   useEffect(() => {
-    // could just be a guard?
-    if (debouncedTerm) {
-      send({ type: 'FETCH' });
-    }
+    send({ type: 'TERM_CHANGED', term: debouncedTerm });
   }, [debouncedTerm, send]);
 
   return (

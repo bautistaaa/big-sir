@@ -1,4 +1,5 @@
 import { FC, memo } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import styled from 'styled-components/macro';
 import { useService } from '@xstate/react';
 
@@ -9,11 +10,15 @@ import Player from './Player';
 import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
 import { Context, SpotifyEvent } from './spotify.machine';
 
+const client = new QueryClient();
+
 const SpotifyWrapper = memo(() => {
   return (
-    <SpotifyProvider>
-      <Spotify />
-    </SpotifyProvider>
+    <QueryClientProvider client={client}>
+      <SpotifyProvider>
+        <Spotify />
+      </SpotifyProvider>
+    </QueryClientProvider>
   );
 });
 const Spotify: FC = () => {

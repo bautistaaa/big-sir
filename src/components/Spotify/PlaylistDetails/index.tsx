@@ -8,7 +8,8 @@ import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import playlistDetailsMachine from './playlistDetails.machine';
 import PlayButton from '../PlayButton';
-import PlaylistTable from '../PlaylistTable';
+import { PlaylistTableV2 } from '../PlaylistTableV2';
+// import PlaylistTable from '../PlaylistTable';
 import UtilityBar from '../UtilityBar';
 import useImageColors from '../../../hooks/useImageColors';
 import { observe } from 'react-intersection-observer';
@@ -34,29 +35,29 @@ const PlaylistDetails: FC = () => {
 
   const items = playlist?.tracks?.items;
 
-  const callback = (inView: boolean) => {
-    setInView(inView);
-  };
+  // const callback = (inView: boolean) => {
+  //   setInView(inView);
+  // };
 
-  useEffect(() => {
-    const el = document.getElementById('main');
+  // useEffect(() => {
+  //   const el = document.getElementById('main');
 
-    if (el) {
-      const destroy = observe(
-        document.getElementById('load-more')!,
-        callback,
-        options
-      );
+  //   if (el) {
+  //     const destroy = observe(
+  //       document.getElementById('load-more')!,
+  //       callback,
+  //       options
+  //     );
 
-      if (playlist?.tracks?.total === playlist?.tracks?.items?.length) {
-        destroy();
-      }
+  //     if (playlist?.tracks?.total === playlist?.tracks?.items?.length) {
+  //       destroy();
+  //     }
 
-      return () => {
-        destroy();
-      };
-    }
-  }, [playlist]);
+  //     return () => {
+  //       destroy();
+  //     };
+  //   }
+  // }, [playlist]);
 
   useEffect(() => {
     if (inView) {
@@ -71,6 +72,12 @@ const PlaylistDetails: FC = () => {
       send({ type: 'REFRESH', payload: { playlistId } });
     }
   }, [playlistId, send]);
+
+  const onLoadMore = () => {
+    send({
+      type: 'SCROLL_TO_BOTTOM',
+    });
+  };
 
   useEffect(() => {
     parentSend({
@@ -125,7 +132,8 @@ const PlaylistDetails: FC = () => {
         </UtilityButtonWrapper>
         <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
-      {items && <PlaylistTable items={items} playlist={playlist} />}
+
+      {items && <PlaylistTableV2 items={items} onLoadMore={onLoadMore} />}
     </Wrapper>
   );
 };

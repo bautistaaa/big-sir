@@ -1,15 +1,15 @@
+import { useService } from '@xstate/react';
 import { FC, memo, useRef } from 'react';
 import styled from 'styled-components';
-import { useService } from '@xstate/react';
 
-import { StickyBarProvider } from './StickyBarContext';
-import { useSpotifyContext } from './SpotifyContext';
-import { Context, SpotifyEvent } from './spotify.machine';
-import LikedSongs from './LikedSongs';
 import HomeView from './Home';
-import Search from './Search';
-import StickyBar from './StickyBar';
+import LikedSongs from './LikedSongs';
 import PlaylistDetails from './PlaylistDetails';
+import Search from './Search';
+import { Context, SpotifyEvent } from './spotify.machine';
+import { useSpotifyContext } from './SpotifyContext';
+import StickyBar from './StickyBar';
+import { StickyBarProvider } from './StickyBarContext';
 
 const MainWrapper = memo(() => {
   return (

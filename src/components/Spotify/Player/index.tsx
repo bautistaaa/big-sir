@@ -1,4 +1,4 @@
-import { useSelector, useService } from '@xstate/react';
+import { useService } from '@xstate/react';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
 import styled from 'styled-components/macro';
@@ -7,14 +7,14 @@ import ClearButton from '../../ClearButton';
 import RepeatIcon from '../icons/Repeat';
 import ShuffleIcon from '../icons/Shuffle';
 import PlayButton from '../PlayButton';
-import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
+import { Context, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import { getToken, loadSpotifyWebPlayerScript } from '../utils';
 import Scrubber from './Scrubber';
 import VolumeSlider from './VolumeSlider';
 
 // const selectCurrentTrackId = (state: SelectorState) =>
-//   state.context.currentTrackId;
+// state.context.currentTrackId;
 const REPEAT_MODES = ['off', 'track', 'context'];
 const Player: FC = () => {
   const service = useSpotifyContext();

@@ -141,7 +141,7 @@ const PlaylistTable = ({
                   alt=""
                 />
                 <div>
-                  <Title isPlaying={isPlaying}>{track?.id}</Title>
+                  <Title isPlaying={isPlaying}>{track?.name}</Title>
                   <ArtistName>
                     <a href="#">{track.album?.artists?.[0]?.name}</a>
                   </ArtistName>
@@ -169,6 +169,9 @@ const PlaylistTable = ({
 const IntersectionDetection = styled.div`
   pointer-events: none;
   position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid red;
   left: 0;
   bottom: 30px;
 `;

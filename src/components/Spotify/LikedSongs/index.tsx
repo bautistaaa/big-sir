@@ -1,8 +1,8 @@
 import { useMachine } from '@xstate/react';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
-import { observe } from 'react-intersection-observer';
 
+import useLoadMore from '../../../hooks/useLoadMore';
 import PlayButton from '../PlayButton';
 import PlaylistTable from '../PlaylistTable';
 import UtilityBar from '../UtilityBar';
@@ -16,32 +16,17 @@ const LikedSongs: FC = () => {
   const [state, send] = useMachine(likedSongsMachine, { devTools: true });
   const likedSongs = state.context?.likedSongs;
   const [inView, setInView] = useState(false);
-
   const callback = (inView: boolean) => {
     setInView(inView);
   };
+  const shouldDestroy = likedSongs?.total === likedSongs?.items.length;
 
-  useEffect(() => {
-    const el = document.getElementById('main');
-
-    if (el) {
-      const destroy = observe(
-        document.getElementById('load-more')!,
-        callback,
-        options
-      );
-
-      if (likedSongs?.total === likedSongs?.items.length) {
-        console.log('des');
-        destroy();
-      }
-
-      return () => {
-        console.log('return destory');
-        destroy();
-      };
-    }
-  }, [likedSongs]);
+  useLoadMore({
+    deps: [likedSongs],
+    callback,
+    options,
+    shouldDestroy,
+  });
 
   useEffect(() => {
     if (inView) {

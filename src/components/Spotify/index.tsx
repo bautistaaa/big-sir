@@ -69,6 +69,7 @@ const SpotifyLayout = styled.div`
   width: 100%;
   flex: 1;
 `;
+
 const NowPlayingBar = styled.div`
   grid-area: now-playing-bar;
   background-color: rgb(24, 24, 24);

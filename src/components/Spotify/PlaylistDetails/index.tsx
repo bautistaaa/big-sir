@@ -8,11 +8,11 @@ import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import playlistDetailsMachine from './playlistDetails.machine';
 import PlayButton from '../PlayButton';
-import { PlaylistTableV2 } from '../PlaylistTableV2';
-// import PlaylistTable from '../PlaylistTable';
+// import { PlaylistTableV2 } from '../PlaylistTableV2';
+import PlaylistTable from '../PlaylistTable';
 import UtilityBar from '../UtilityBar';
 import useImageColors from '../../../hooks/useImageColors';
-import { observe } from 'react-intersection-observer';
+import useLoadMore from '../../../hooks/useLoadMore';
 
 const selectPlaylistId = (state: SelectorState) =>
   state.context.currentPlaylistId;
@@ -32,32 +32,20 @@ const PlaylistDetails: FC = () => {
   const [stickyBarBackgroundColor, heroBackgroundColor] = useImageColors(
     imageSrc
   );
+  const callback = (inView: boolean) => {
+    setInView(inView);
+  };
+  const shouldDestroy =
+    playlist?.tracks?.total === playlist?.tracks?.items?.length;
 
   const items = playlist?.tracks?.items;
 
-  // const callback = (inView: boolean) => {
-  //   setInView(inView);
-  // };
-
-  // useEffect(() => {
-  //   const el = document.getElementById('main');
-
-  //   if (el) {
-  //     const destroy = observe(
-  //       document.getElementById('load-more')!,
-  //       callback,
-  //       options
-  //     );
-
-  //     if (playlist?.tracks?.total === playlist?.tracks?.items?.length) {
-  //       destroy();
-  //     }
-
-  //     return () => {
-  //       destroy();
-  //     };
-  //   }
-  // }, [playlist]);
+  useLoadMore({
+    deps: [playlist],
+    callback,
+    options,
+    shouldDestroy,
+  });
 
   useEffect(() => {
     if (inView) {
@@ -133,7 +121,7 @@ const PlaylistDetails: FC = () => {
         <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
 
-      {items && <PlaylistTableV2 items={items} onLoadMore={onLoadMore} />}
+      {items && <PlaylistTable items={items} playlist={playlist} />}
     </Wrapper>
   );
 };

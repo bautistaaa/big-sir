@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components/macro';
 import { useService } from '@xstate/react';
@@ -33,6 +33,19 @@ const fetchSearchResults = (
   const SEARCH_URL = `${spotifyConfig.apiUrl}/search?${queryParam}&offset=0&limit=20&type=album,track,artist`;
   return request(SEARCH_URL);
 };
+
+const SearchCard = ({ name, src }: { name: string; src: string }) => {
+  return (
+    <CategoryCard
+      background={CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)]}
+    >
+      <h3>{name}</h3>
+      <img src={src} alt={name} />
+    </CategoryCard>
+  );
+};
+
+const MemoSearchCard = memo(SearchCard);
 
 const Search: FC = () => {
   const service = useStickyBarContext();
@@ -73,16 +86,7 @@ const Search: FC = () => {
         <CategoriesGrid>
           {genericResults?.categories.items?.map((category) => {
             const { href, name, icons } = category;
-            return (
-              <CategoryCard
-                background={
-                  CARD_COLORS[Math.floor(Math.random() * CARD_COLORS.length)]
-                }
-              >
-                <h3>{name}</h3>
-                <img src={icons?.[0]?.url} alt={name} />
-              </CategoryCard>
-            );
+            return <MemoSearchCard name={name} src={icons?.[0]?.url} />;
           })}
         </CategoriesGrid>
       </Wrapper>

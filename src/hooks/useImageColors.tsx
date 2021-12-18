@@ -8,6 +8,7 @@ const performed = new Map<string, ConvertedColors>();
 
 const convertToRgb = (rgb: number[]) =>
   `rgb(${rgb?.[0]},${rgb?.[1]}, ${rgb?.[2]} )`;
+
 const useImageColors = (imageSource: string) => {
   const [colors, setColors] = useState<ConvertedColors>([
     'rgb(0,0,0)',

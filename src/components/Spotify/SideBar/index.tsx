@@ -124,6 +124,7 @@ const PlaylistMenu = styled(Menu)`
   flex: 1;
 `;
 const PlaylistScroller = styled.div`
+  background-color: black;
   overflow: auto;
   position: absolute;
   top: 0;

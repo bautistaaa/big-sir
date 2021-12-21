@@ -46,7 +46,16 @@ const PlaylistDetails: FC = () => {
     options,
     shouldDestroy,
   });
-
+  useEffect(() => {
+    if (playlist) {
+      parentSend({
+        type: 'PLAYLIST_UPDATE',
+        payload: {
+          playlist,
+        },
+      });
+    }
+  }, [playlist, parentSend]);
   useEffect(() => {
     if (inView) {
       send({
@@ -115,7 +124,7 @@ const PlaylistDetails: FC = () => {
         <BsThreeDots fill="#a2a2a2" size={24} />
       </UtilityBar>
 
-      {items && <PlaylistTable items={items} playlist={playlist} />}
+      {items && <PlaylistTable items={items} />}
     </Wrapper>
   );
 };

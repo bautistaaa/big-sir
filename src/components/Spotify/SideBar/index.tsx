@@ -23,12 +23,15 @@ const MENU_OPTIONS: Option[] = [
 
 const selectPlaylists = (state: SelectorState) => state.context.playlists;
 const selectView = (state: SelectorState) => state.context.view;
+const selectCurrentPlaylistId = (state: SelectorState) =>
+  state.context.currentPlaylistId;
 
 const SideBar: FC = memo(() => {
   const service = useSpotifyContext();
   const [, send] = useService<Context, SpotifyEvent>(service);
   const playlists = useSelector(service, selectPlaylists);
   const view = useSelector(service, selectView);
+  const currentPlaylistId = useSelector(service, selectCurrentPlaylistId);
   const isLikedView = view === 'liked';
 
   return (
@@ -79,10 +82,11 @@ const SideBar: FC = memo(() => {
               return (
                 <PlaylistListItem
                   key={item.id}
+                  active={item.id === currentPlaylistId && view === 'details'}
                   onClick={() => {
                     send({
                       type: 'DETAILS',
-                      payload: { playlistId: item.id },
+                      payload: { playlistId: item.id, view: 'details' },
                     });
                   }}
                 >
@@ -163,6 +167,7 @@ const SecondaryMenuListItem = styled(MenuListItem)`
 const PlaylistListItem = styled(MenuListItem)`
   transition: none;
   font-weight: 400;
+  ${({ active }) => active && `color: white; opacity: 1; background: none;`}
 `;
 const MenuListItemText = styled.span`
   text-transform: capitalize;

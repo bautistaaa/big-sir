@@ -7,6 +7,7 @@ export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {
   currentPlaylistId?: string;
+  currentPlaylist?: SpotifyApi.PlaylistBaseObject;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   userProfile?: SpotifyApi.UserProfileResponse;
@@ -37,7 +38,7 @@ type LikedEvent = {
 };
 type DetailsEvent = {
   type: 'DETAILS';
-  payload: { playlistId: string };
+  payload: { playlistId: string; view: View };
 };
 type JwtInvalidEvent = {
   type: 'JWT_INVALID';
@@ -57,6 +58,10 @@ type PlayerInitEvent = {
   type: 'PLAYER_INIT';
   payload: { deviceId: string };
 };
+type PlaylistUpdateEvent = {
+  type: 'PLAYLIST_UPDATE';
+  payload: { playlist: SpotifyApi.PlaylistObjectFull };
+};
 type ReceivedDataEvent = {
   type: 'RECEIVED_DATA';
   data: SpotifyApi.UsersSavedTracksResponse;
@@ -73,6 +78,7 @@ export type SpotifyEvent =
   | JwtValidEvent
   | LibraryEvent
   | LikedEvent
+  | PlaylistUpdateEvent
   | PlayTrackEvent
   | PlayerInitEvent
   | ReceivedDataEvent
@@ -87,7 +93,7 @@ const defaultHeaderState = {
 const config = {
   actions: {
     changeView: assign<Context, any>({
-      view: (_, event) => event?.payload?.view ?? 'home',
+      view: (_, event) => event?.payload?.view,
     }),
     transitionHeader: assign<Context, any>({
       headerState: (_, event) => {
@@ -103,6 +109,10 @@ const config = {
     }),
     playerInit: assign<Context, any>({
       deviceId: (_, event) => (event as PlayerInitEvent).payload.deviceId,
+    }),
+    playlistUpdate: assign<Context, any>({
+      currentPlaylist: (_, event) =>
+        (event as PlaylistUpdateEvent).payload.playlist,
     }),
   },
   services: {
@@ -248,6 +258,9 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   SEARCH: { target: '#search' },
                   PLAY_TRACK: {
                     actions: 'playTrack',
+                  },
+                  PLAYLIST_UPDATE: {
+                    actions: ['playlistUpdate'],
                   },
                 },
               },

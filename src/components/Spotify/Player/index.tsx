@@ -45,9 +45,6 @@ const Player: FC = () => {
       // @ts-ignore
       const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
       const trackId = state?.track_window?.current_track?.id ?? '';
-      console.log('===============');
-      console.log({ id: linkedFromId ?? trackId });
-      console.log('===============');
       send({
         type: 'PLAY_TRACK',
         payload: { id: linkedFromId ?? trackId },

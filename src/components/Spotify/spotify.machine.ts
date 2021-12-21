@@ -227,6 +227,9 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   HOME: 'home',
                   LIBRARY: 'library',
                   SEARCH: 'search',
+                  PLAY_TRACK: {
+                    actions: 'playTrack',
+                  },
                 },
               },
               details: {
@@ -244,7 +247,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   DETAILS: { target: '#details' },
                   SEARCH: { target: '#search' },
                   PLAY_TRACK: {
-                    actions: [() => console.log('wtf'), 'playTrack'],
+                    actions: 'playTrack',
                   },
                 },
               },

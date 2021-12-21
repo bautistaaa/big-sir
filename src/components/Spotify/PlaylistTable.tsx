@@ -141,9 +141,7 @@ const PlaylistTable = ({
                   alt=""
                 />
                 <div>
-                  <Title isPlaying={isPlaying}>
-                    {track?.name} {track?.id}
-                  </Title>
+                  <Title isPlaying={isPlaying}>{track?.name}</Title>
                   <ArtistName>
                     <a href="#">{track.album?.artists?.[0]?.name}</a>
                   </ArtistName>

@@ -79,7 +79,6 @@ const Dock: FC<{
               });
             };
             if (imgSrc) {
-              console.log(imgSrc);
               return (
                 <MinimizedWindow
                   key={name}

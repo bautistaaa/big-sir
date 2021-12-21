@@ -1,7 +1,9 @@
-import { useMachine } from '@xstate/react';
+import { useMachine, useSelector, useService } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
+import { useSpotifyContext } from '../SpotifyContext';
+import { SelectorState } from '../spotify.machine';
 import useLoadMore from '../../../hooks/useLoadMore';
 import PlayButton from '../PlayButton';
 import PlaylistTable from '../PlaylistTable';
@@ -12,8 +14,13 @@ const options = {
   root: document.getElementById('main'),
   rootMargin: '300px 0px 0px 0px',
 };
+
+const selectUserProfile = (state: SelectorState) => state.context.userProfile;
+
 const LikedSongs: FC = () => {
+  const service = useSpotifyContext();
   const [state, send] = useMachine(likedSongsMachine, { devTools: true });
+  const userProfile = useSelector(service, selectUserProfile);
   const likedSongs = state.context?.likedSongs;
   const [inView, setInView] = useState(false);
   const callback = (inView: boolean) => {
@@ -46,7 +53,7 @@ const LikedSongs: FC = () => {
           <Category>Playlist</Category>
           <Title id="title">Liked Songs</Title>
           <Metadata>
-            <Author>Chris Bautista</Author>
+            <Author>{userProfile?.display_name}</Author>
             <Songs>
               {new Intl.NumberFormat().format(likedSongs?.total ?? 0)}{' '}
               {(likedSongs?.total ?? 0) !== 1 ? 'Songs' : 'Song'}

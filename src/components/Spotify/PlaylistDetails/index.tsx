@@ -61,12 +61,6 @@ const PlaylistDetails: FC = () => {
     }
   }, [playlistId, send]);
 
-  const onLoadMore = () => {
-    send({
-      type: 'SCROLL_TO_BOTTOM',
-    });
-  };
-
   useEffect(() => {
     parentSend({
       type: 'TRANSITION_HEADER',

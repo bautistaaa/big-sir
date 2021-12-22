@@ -3,6 +3,11 @@ import { assign, createMachine, State } from 'xstate';
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
+interface CurrentTrack {
+  id: string;
+  isPlaying: boolean;
+}
+
 export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {

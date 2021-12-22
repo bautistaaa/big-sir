@@ -1,6 +1,8 @@
 import { FC, useState } from 'react';
 import { useSelector } from '@xstate/react';
 import styled from 'styled-components';
+import { IoIosPause } from 'react-icons/io';
+import { BiPlay } from 'react-icons/bi';
 
 import {
   convertMsToMinutesAndSeconds,
@@ -10,6 +12,7 @@ import { useSpotifyContext } from './SpotifyContext';
 import { SelectorState } from './spotify.machine';
 import { getToken } from './utils';
 import { oneLine } from '../../shared/mixins';
+import ClearButton from '../../components/ClearButton';
 
 interface Props {
   item: any;
@@ -39,11 +42,18 @@ const PlaylistTableItem: FC<Props> = ({
   const currentTrackId = useSelector(service, selectCurrentTrackId);
   const currentPlaylist = useSelector(service, selectCurrentPlayist);
   const deviceId = useSelector(service, selectDeviceId);
+  const [isHovered, setIsHovered] = useState(false);
   const isActive = track.id === activeTrack;
   const isPlaying = track.id === currentTrackId;
+  const displayPlayButton = !isActive && isHovered && !isPlaying;
+  const displayPauseButton = isActive && isHovered && isPlaying;
 
-  const handleDoubleClick = (track: SpotifyApi.TrackObjectFull) => {
-    const play = async () => {
+  const handleTrackStatus = (
+    track: SpotifyApi.TrackObjectFull,
+    play: boolean
+  ) => {
+    const playOrPause = async () => {
+      const method = play ? 'play' : 'pause';
       let body;
       if (currentPlaylist) {
         body = {
@@ -58,7 +68,7 @@ const PlaylistTableItem: FC<Props> = ({
       }
       try {
         const resp = await fetch(
-          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          `https://api.spotify.com/v1/me/player/${method}?device_id=${deviceId}`,
           {
             method: 'PUT',
             body: JSON.stringify(body),
@@ -77,7 +87,7 @@ const PlaylistTableItem: FC<Props> = ({
       }
     };
 
-    play();
+    playOrPause();
   };
 
   if (!track) return null;
@@ -86,22 +96,44 @@ const PlaylistTableItem: FC<Props> = ({
   return (
     <ListItem
       key={`${track.id}-${index}`}
-      onDoubleClick={() => handleDoubleClick(track)}
+      onDoubleClick={() => handleTrackStatus(track, true)}
       isActive={isActive}
       onClick={() => onItemClick(track.id)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
     >
-      <BaseColumn>
-        {isPlaying ? (
-          <img
-            width="14"
-            height="14"
-            alt=""
-            src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
-          />
-        ) : (
-          <>{index + 1}</>
-        )}
-      </BaseColumn>
+      <FirstColumn>
+        <GnarlyColumn>
+          {displayPlayButton && (
+            <ClearButton onClick={() => handleTrackStatus(track, true)}>
+              <BiPlay fill={'white'} size={25} />
+            </ClearButton>
+          )}
+
+          {displayPauseButton && (
+            <ClearButton onClick={() => handleTrackStatus(track, false)}>
+              <IoIosPause fill={'white'} size={23} />
+            </ClearButton>
+          )}
+
+          {!displayPauseButton && !displayPlayButton && isPlaying && (
+            <img
+              width="14"
+              height="14"
+              alt=""
+              src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
+            />
+          )}
+
+          {!displayPauseButton && !displayPlayButton && !isPlaying && (
+            <>{index + 1}</>
+          )}
+        </GnarlyColumn>
+      </FirstColumn>
       <TitleColumn>
         <img loading="lazy" src={track?.album.images?.[2]?.url} alt="" />
         <div>
@@ -124,6 +156,9 @@ const PlaylistTableItem: FC<Props> = ({
 const BaseColumn = styled.div`
   display: flex;
   align-items: center;
+`;
+const FirstColumn = styled(BaseColumn)`
+  justify-content: end;
 `;
 const ListItem = styled.li<{ isActive: boolean }>`
   grid-gap: 16px;
@@ -190,5 +225,11 @@ const ArtistName = styled.div`
   ${oneLine}
 `;
 const AlbumName = styled(BaseColumn)``;
+const GnarlyColumn = styled.div`
+  display: flex;
+  justify-self: start;
+  align-items: center;
+  font-size: 16px;
+`;
 
 export default PlaylistTableItem;

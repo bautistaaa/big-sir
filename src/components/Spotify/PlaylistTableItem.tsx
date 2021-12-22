@@ -22,8 +22,7 @@ interface Props {
   activeTrack: string;
 }
 
-const selectCurrentTrackId = (state: SelectorState) =>
-  state.context.currentTrackId;
+const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 const selectCurrentPlayist = (state: SelectorState) =>
   state.context.currentPlaylist;
@@ -39,14 +38,23 @@ const PlaylistTableItem: FC<Props> = ({
   const token = getToken();
 
   const service = useSpotifyContext();
-  const currentTrackId = useSelector(service, selectCurrentTrackId);
+  const currentTrack = useSelector(service, selectCurrentTrack);
   const currentPlaylist = useSelector(service, selectCurrentPlayist);
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
   const isActive = track.id === activeTrack;
-  const isPlaying = track.id === currentTrackId;
-  const displayPlayButton = !isActive && isHovered && !isPlaying;
-  const displayPauseButton = isActive && isHovered && isPlaying;
+  const isCurrentTrack = track.id === currentTrack?.track.id;
+  const isCurrentTrackAndPlaying = isCurrentTrack && currentTrack?.isPlaying;
+  const displayPlayButton =
+    (isActive && isCurrentTrack && !isCurrentTrackAndPlaying) ||
+    (isActive && !isCurrentTrack && !isCurrentTrackAndPlaying) ||
+    (isHovered && isCurrentTrack && !isCurrentTrackAndPlaying) ||
+    (isHovered && !isCurrentTrack && !isCurrentTrackAndPlaying);
+  const displayPauseButton =
+    (isActive && isCurrentTrack && isCurrentTrackAndPlaying) ||
+    (isActive && !isCurrentTrack && isCurrentTrackAndPlaying) ||
+    (isHovered && isCurrentTrack && isCurrentTrackAndPlaying) ||
+    (isHovered && !isCurrentTrack && isCurrentTrackAndPlaying);
 
   const handleTrackStatus = (
     track: SpotifyApi.TrackObjectFull,
@@ -107,37 +115,54 @@ const PlaylistTableItem: FC<Props> = ({
       }}
     >
       <FirstColumn>
-        <GnarlyColumn>
+        <GnarlyColumn
+          isDisplayingPlayButton={displayPlayButton}
+          isDisplayingPauseButton={displayPauseButton}
+        >
           {displayPlayButton && (
-            <ClearButton onClick={() => handleTrackStatus(track, true)}>
+            <ClearButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTrackStatus(track, true);
+              }}
+            >
               <BiPlay fill={'white'} size={25} />
             </ClearButton>
           )}
 
           {displayPauseButton && (
-            <ClearButton onClick={() => handleTrackStatus(track, false)}>
-              <IoIosPause fill={'white'} size={23} />
+            <ClearButton
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTrackStatus(track, false);
+              }}
+            >
+              <IoIosPause fill={'white'} size={20} />
             </ClearButton>
           )}
 
-          {!displayPauseButton && !displayPlayButton && isPlaying && (
-            <img
-              width="14"
-              height="14"
-              alt=""
-              src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
-            />
-          )}
+          {!displayPauseButton &&
+            !displayPlayButton &&
+            isCurrentTrackAndPlaying && (
+              <img
+                width="14"
+                height="14"
+                alt=""
+                src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
+              />
+            )}
 
-          {!displayPauseButton && !displayPlayButton && !isPlaying && (
-            <>{index + 1}</>
-          )}
+          {!displayPauseButton &&
+            !displayPlayButton &&
+            !isCurrentTrackAndPlaying && (
+              <Index isPlaying={isCurrentTrack}>{index + 1}</Index>
+            )}
         </GnarlyColumn>
       </FirstColumn>
       <TitleColumn>
         <img loading="lazy" src={track?.album.images?.[2]?.url} alt="" />
         <div>
-          <Title isPlaying={isPlaying}>{track?.name}</Title>
+          <Title isPlaying={isCurrentTrack}>{track?.name}</Title>
           <ArtistName>
             <a href="#">{track.album?.artists?.[0]?.name}</a>
           </ArtistName>
@@ -211,6 +236,14 @@ const TitleColumn = styled(BaseColumn)`
     height: 40px;
   }
 `;
+const Index = styled.span<{ isPlaying: boolean }>`
+  transition: none;
+  ${({ isPlaying }) =>
+    isPlaying &&
+    `
+      color: #1db954;
+    `}
+`;
 const Title = styled.div<{ isPlaying: boolean }>`
   transition: none;
   ${oneLine}
@@ -225,11 +258,26 @@ const ArtistName = styled.div`
   ${oneLine}
 `;
 const AlbumName = styled(BaseColumn)``;
-const GnarlyColumn = styled.div`
+const GnarlyColumn = styled.div<{
+  isDisplayingPlayButton: boolean;
+  isDisplayingPauseButton: boolean;
+}>`
   display: flex;
   justify-self: start;
   align-items: center;
   font-size: 16px;
+  ${({ isDisplayingPlayButton }) =>
+    isDisplayingPlayButton &&
+    `
+      position: relative;
+      left: 9px;
+    `}
+  ${({ isDisplayingPauseButton }) =>
+    isDisplayingPauseButton &&
+    `
+      position: relative;
+      left: 6px;
+    `}
 `;
 
 export default PlaylistTableItem;

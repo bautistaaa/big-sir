@@ -3,8 +3,8 @@ import { assign, createMachine, State } from 'xstate';
 import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
-interface CurrentTrack {
-  id: string;
+interface CurrentTrackInfo {
+  track: Spotify.Track;
   isPlaying: boolean;
 }
 
@@ -16,7 +16,7 @@ export interface Context {
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   userProfile?: SpotifyApi.UserProfileResponse;
-  currentTrackId?: string;
+  currentTrack?: CurrentTrackInfo;
   deviceId?: string;
   headerState: {
     text: string;
@@ -55,9 +55,9 @@ type HeaderTransitionEvent = {
   type: 'TRANSITION_HEADER';
   payload: { text: string; backgroundColor: string };
 };
-type PlayTrackEvent = {
-  type: 'PLAY_TRACK';
-  payload: { id: string };
+type UpdateTrackEvent = {
+  type: 'UPDATE_TRACK';
+  payload: { track: Spotify.Track; isPlaying: boolean };
 };
 type PlayerInitEvent = {
   type: 'PLAYER_INIT';
@@ -84,7 +84,7 @@ export type SpotifyEvent =
   | LibraryEvent
   | LikedEvent
   | PlaylistUpdateEvent
-  | PlayTrackEvent
+  | UpdateTrackEvent
   | PlayerInitEvent
   | ReceivedDataEvent
   | ScrollToBottomEvent
@@ -109,8 +109,13 @@ const config = {
         };
       },
     }),
-    playTrack: assign<Context, any>({
-      currentTrackId: (_, event) => (event as PlayTrackEvent).payload.id,
+    updateTrack: assign<Context, any>({
+      currentTrack: (_, event) => {
+        return {
+          track: (event as UpdateTrackEvent).payload.track,
+          isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
+        };
+      },
     }),
     playerInit: assign<Context, any>({
       deviceId: (_, event) => (event as PlayerInitEvent).payload.deviceId,
@@ -194,6 +199,9 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
               PLAYER_INIT: {
                 actions: ['playerInit'],
               },
+              UPDATE_TRACK: {
+                actions: 'updateTrack',
+              },
             },
             states: {
               home: {
@@ -242,9 +250,6 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   HOME: 'home',
                   LIBRARY: 'library',
                   SEARCH: 'search',
-                  PLAY_TRACK: {
-                    actions: 'playTrack',
-                  },
                 },
               },
               details: {
@@ -261,9 +266,6 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   HOME: { target: '#home' },
                   DETAILS: { target: '#details' },
                   SEARCH: { target: '#search' },
-                  PLAY_TRACK: {
-                    actions: 'playTrack',
-                  },
                   PLAYLIST_UPDATE: {
                     actions: ['playlistUpdate'],
                   },

@@ -13,14 +13,11 @@ import { getToken, loadSpotifyWebPlayerScript } from '../utils';
 import Scrubber from './Scrubber';
 import VolumeSlider from './VolumeSlider';
 
-// const selectCurrentTrackId = (state: SelectorState) =>
-// state.context.currentTrackId;
 const REPEAT_MODES = ['off', 'track', 'context'];
 const Player: FC = () => {
   const service = useSpotifyContext();
   const [, send] = useService<Context, SpotifyEvent>(service);
   const player = useRef<Spotify.Player | null>(null);
-  // const currentTrackId = useSelector(service, selectCurrentTrackId);
 
   const [scriptReady, setScriptReady] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -43,11 +40,14 @@ const Player: FC = () => {
       setPlayerState(state);
       // types out of date
       // @ts-ignore
-      const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
-      const trackId = state?.track_window?.current_track?.id ?? '';
+      // const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
+      // const trackId = state?.track_window?.current_track?.id ?? '';
       send({
-        type: 'PLAY_TRACK',
-        payload: { id: linkedFromId ?? trackId },
+        type: 'UPDATE_TRACK',
+        payload: {
+          track: state?.track_window?.current_track,
+          isPlaying: !state.paused,
+        },
       });
     },
     [send]

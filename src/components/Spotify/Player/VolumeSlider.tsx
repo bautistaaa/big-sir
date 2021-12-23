@@ -6,18 +6,18 @@ import Slider from './Slider';
 
 const VolumeSlider: FC<{
   volume: number;
-  setVolume: React.Dispatch<React.SetStateAction<number>>;
+  onChange(v: number): void;
   isMuted: boolean;
   setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ volume, setVolume, isMuted, setIsMuted }) => {
+}> = ({ volume, onChange, isMuted, setIsMuted }) => {
   const [isActive, setIsActive] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = +e.target.value;
     if (v === 0) {
-      setVolume(0.00001);
+      onChange(0.00001);
       setIsMuted(true);
     } else {
-      setVolume(+e.target.value);
+      onChange(+e.target.value);
       setIsMuted(false);
     }
   };

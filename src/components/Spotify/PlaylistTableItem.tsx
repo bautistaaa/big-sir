@@ -72,11 +72,13 @@ const PlaylistTableItem: FC<Props> = ({
         body = {
           context_uri: currentPlaylist.playlist.uri,
           offset: { uri: track?.uri },
+          position_ms: currentTrack?.position,
         };
       } else {
         body = {
           uris,
           offset: { uri: track?.uri },
+          position_ms: currentTrack?.position,
         };
       }
       try {

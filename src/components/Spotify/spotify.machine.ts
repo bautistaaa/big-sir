@@ -7,6 +7,7 @@ interface CurrentTrackInfo {
   track: Spotify.Track;
   isPlaying: boolean;
   playlistId: string;
+  position: number;
 }
 interface CurrentPlaylistInfo {
   playlist: SpotifyApi.PlaylistObjectFull;
@@ -62,7 +63,12 @@ type HeaderTransitionEvent = {
 };
 type UpdateTrackEvent = {
   type: 'UPDATE_TRACK';
-  payload: { track: Spotify.Track; isPlaying: boolean; playlistId: string };
+  payload: {
+    track: Spotify.Track;
+    isPlaying: boolean;
+    playlistId: string;
+    position: number;
+  };
 };
 type PlayerInitEvent = {
   type: 'PLAYER_INIT';
@@ -120,6 +126,7 @@ const config = {
           track: (event as UpdateTrackEvent).payload.track,
           isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
           playlistId: (event as UpdateTrackEvent).payload.playlistId,
+          position: (event as UpdateTrackEvent).payload.position,
         };
       },
     }),

@@ -1,6 +1,5 @@
 import { useMachine, useSelector, useService } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
-import { BsThreeDots } from 'react-icons/bs';
 import { IoMdHeart } from 'react-icons/io';
 import styled from 'styled-components/macro';
 
@@ -58,11 +57,13 @@ const PlaylistDetails: FC = () => {
         body = {
           context_uri: playlist.uri,
           offset: { uri: currentTrackInfo?.track?.uri },
+          position_ms: currentTrackInfo?.position,
         };
       } else {
         body = {
           uris,
           offset: { uri: currentTrackInfo?.track?.uri },
+          position_ms: currentTrackInfo?.position,
         };
       }
       try {

@@ -35,6 +35,9 @@ const Player: FC = () => {
   const token = getToken();
   const isPlaying = playerState?.paused !== undefined && !playerState?.paused;
   const isShuffleEnabled = playerState?.shuffle;
+  const handleVolumeChange = (volume: number) => {
+    setVolume(volume);
+  };
   const handleStateChange = useCallback(
     (state: Spotify.PlaybackState) => {
       setPlayerState(state);
@@ -44,6 +47,7 @@ const Player: FC = () => {
           track: state?.track_window?.current_track,
           isPlaying: !state?.paused,
           playlistId: state?.context?.uri?.split(':')?.[2] ?? '',
+          position: state?.position,
         },
       });
     },
@@ -217,17 +221,6 @@ const Player: FC = () => {
     }
   };
 
-  const updatePosition = useCallback((v: number) => {
-    setPlayerState((state) => {
-      if (state) {
-        return {
-          ...state,
-          position: v,
-        };
-      }
-    });
-  }, []);
-
   const seek = async (v: number) => {
     try {
       await player.current?.seek(v);
@@ -296,7 +289,7 @@ const Player: FC = () => {
           <RightColumn>
             <VolumeSlider
               volume={volume}
-              setVolume={setVolume}
+              onChange={handleVolumeChange}
               isMuted={isMuted}
               setIsMuted={setIsMuted}
             />

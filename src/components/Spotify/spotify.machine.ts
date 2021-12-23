@@ -6,13 +6,18 @@ import { request } from './utils';
 interface CurrentTrackInfo {
   track: Spotify.Track;
   isPlaying: boolean;
+  playlistId: string;
+}
+interface CurrentPlaylistInfo {
+  playlist: SpotifyApi.PlaylistObjectFull;
+  isPlaying: boolean;
 }
 
 export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {
   currentPlaylistId?: string;
-  currentPlaylist?: SpotifyApi.PlaylistBaseObject;
+  currentPlaylistInfo?: CurrentPlaylistInfo;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   userProfile?: SpotifyApi.UserProfileResponse;
@@ -57,7 +62,7 @@ type HeaderTransitionEvent = {
 };
 type UpdateTrackEvent = {
   type: 'UPDATE_TRACK';
-  payload: { track: Spotify.Track; isPlaying: boolean };
+  payload: { track: Spotify.Track; isPlaying: boolean; playlistId: string };
 };
 type PlayerInitEvent = {
   type: 'PLAYER_INIT';
@@ -65,7 +70,7 @@ type PlayerInitEvent = {
 };
 type PlaylistUpdateEvent = {
   type: 'PLAYLIST_UPDATE';
-  payload: { playlist: SpotifyApi.PlaylistObjectFull };
+  payload: { playlist: SpotifyApi.PlaylistObjectFull; isPlaying: boolean };
 };
 type ReceivedDataEvent = {
   type: 'RECEIVED_DATA';
@@ -114,6 +119,7 @@ const config = {
         return {
           track: (event as UpdateTrackEvent).payload.track,
           isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
+          playlistId: (event as UpdateTrackEvent).payload.playlistId,
         };
       },
     }),
@@ -121,8 +127,12 @@ const config = {
       deviceId: (_, event) => (event as PlayerInitEvent).payload.deviceId,
     }),
     playlistUpdate: assign<Context, any>({
-      currentPlaylist: (_, event) =>
-        (event as PlaylistUpdateEvent).payload.playlist,
+      currentPlaylistInfo: (_, event) => {
+        return {
+          playlist: (event as PlaylistUpdateEvent).payload.playlist,
+          isPlaying: (event as PlaylistUpdateEvent).payload.isPlaying,
+        };
+      },
     }),
   },
   services: {

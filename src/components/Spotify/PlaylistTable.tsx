@@ -56,7 +56,7 @@ const PlaylistTable = ({ items }: { items: any }) => {
         {items.map((item: any, i: number) => {
           return (
             <PlaylistTableItem
-              key={item.track?.id}
+              key={item.track?.id + i}
               item={item}
               index={i}
               uris={uris}

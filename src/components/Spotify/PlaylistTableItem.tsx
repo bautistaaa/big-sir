@@ -25,7 +25,7 @@ interface Props {
 const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 const selectCurrentPlayist = (state: SelectorState) =>
-  state.context.currentPlaylist;
+  state.context.currentPlaylistInfo;
 
 const PlaylistTableItem: FC<Props> = ({
   item,
@@ -43,8 +43,8 @@ const PlaylistTableItem: FC<Props> = ({
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
   const isActive = track.id === activeTrack;
-  const isCurrentTrack = track.id === currentTrack?.track.id;
-  const isCurrentTrackAndPlaying = isCurrentTrack && currentTrack?.isPlaying;
+  const isCurrentTrack = track.id === currentTrack?.track?.id;
+  const isCurrentTrackAndPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
   const displayPlayButton =
     (isActive && isCurrentTrack && !isCurrentTrackAndPlaying) ||
     (isActive && !isCurrentTrack && !isCurrentTrackAndPlaying) ||
@@ -55,6 +55,11 @@ const PlaylistTableItem: FC<Props> = ({
     (isActive && !isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && !isCurrentTrack && isCurrentTrackAndPlaying);
+  // console.log({
+  //   isCurrentTrack,
+  //   isCurrentTrackAndPlaying,
+  //   isActive,
+  // });
 
   const handleTrackStatus = (
     track: SpotifyApi.TrackObjectFull,
@@ -63,9 +68,9 @@ const PlaylistTableItem: FC<Props> = ({
     const playOrPause = async () => {
       const method = play ? 'play' : 'pause';
       let body;
-      if (currentPlaylist) {
+      if (currentPlaylist?.playlist) {
         body = {
-          context_uri: currentPlaylist?.uri,
+          context_uri: currentPlaylist.playlist.uri,
           offset: { uri: track?.uri },
         };
       } else {

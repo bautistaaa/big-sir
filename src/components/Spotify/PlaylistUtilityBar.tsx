@@ -25,7 +25,7 @@ const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
   const currentTrackInfo = useSelector(service, selectCurrentTrack);
   const isLikedSongsView = state.matches('loggedIn.success.liked');
   const isSelectedPlaylistDiffFromTheOnePlaying =
-    currentTrackInfo?.playlistId !== playlist.id;
+    currentTrackInfo?.playlistId !== playlist?.id;
   const uris = playlist?.tracks?.items.map((item) => item?.track?.uri);
   const isPlaylistPlaying =
     currentTrackInfo?.playlistId === playlist?.id &&

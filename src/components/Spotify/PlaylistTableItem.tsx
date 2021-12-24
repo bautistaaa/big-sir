@@ -1,15 +1,15 @@
 import { FC, useState } from 'react';
-import { useSelector } from '@xstate/react';
+import { useSelector, useService } from '@xstate/react';
 import styled from 'styled-components';
 import { IoIosPause } from 'react-icons/io';
 import { BiPlay } from 'react-icons/bi';
 
+import { Context, SelectorState, SpotifyEvent } from './spotify.machine';
 import {
   convertMsToMinutesAndSeconds,
   formatDateForSpotify,
 } from '../../utils';
 import { useSpotifyContext } from './SpotifyContext';
-import { SelectorState } from './spotify.machine';
 import { getToken } from './utils';
 import { oneLine } from '../../shared/mixins';
 import ClearButton from '../../components/ClearButton';
@@ -38,12 +38,14 @@ const PlaylistTableItem: FC<Props> = ({
   const token = getToken();
 
   const service = useSpotifyContext();
+  const [state] = useService<Context, SpotifyEvent>(service);
+  const isLikedSongsView = state.matches('loggedIn.success.liked');
   const currentTrack = useSelector(service, selectCurrentTrack);
   const currentPlaylist = useSelector(service, selectCurrentPlayist);
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
   const isActive = track.id === activeTrack;
-  const isCurrentTrack = track.id === currentTrack?.track?.id;
+  const isCurrentTrack = track.id === currentTrack?.trackId;
   const isCurrentTrackAndPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
   const displayPlayButton =
     (isActive && isCurrentTrack && !isCurrentTrackAndPlaying) ||
@@ -63,22 +65,23 @@ const PlaylistTableItem: FC<Props> = ({
 
   const handleTrackStatus = (
     track: SpotifyApi.TrackObjectFull,
-    play: boolean
+    play: boolean,
+    reset: boolean
   ) => {
     const playOrPause = async () => {
       const method = play ? 'play' : 'pause';
       let body;
-      if (currentPlaylist?.playlist) {
-        body = {
-          context_uri: currentPlaylist.playlist.uri,
-          offset: { uri: track?.uri },
-          position_ms: currentTrack?.position,
-        };
-      } else {
+      if (isLikedSongsView) {
         body = {
           uris,
           offset: { uri: track?.uri },
-          position_ms: currentTrack?.position,
+          position_ms: reset ? 0 : currentTrack?.position,
+        };
+      } else {
+        body = {
+          context_uri: currentPlaylist?.playlist.uri,
+          offset: { uri: track?.uri },
+          position_ms: reset ? 0 : currentTrack?.position,
         };
       }
       try {
@@ -111,7 +114,7 @@ const PlaylistTableItem: FC<Props> = ({
   return (
     <ListItem
       key={`${track.id}-${index}`}
-      onDoubleClick={() => handleTrackStatus(track, true)}
+      onDoubleClick={() => handleTrackStatus(track, true, true)}
       isActive={isActive}
       onClick={() => onItemClick(track.id)}
       onMouseEnter={() => {
@@ -130,7 +133,7 @@ const PlaylistTableItem: FC<Props> = ({
             <ClearButton
               onClick={(e) => {
                 e.stopPropagation();
-                handleTrackStatus(track, true);
+                handleTrackStatus(track, true, false);
               }}
             >
               <BiPlay fill={'white'} size={25} />
@@ -141,7 +144,7 @@ const PlaylistTableItem: FC<Props> = ({
             <ClearButton
               onClick={(e) => {
                 e.stopPropagation();
-                handleTrackStatus(track, false);
+                handleTrackStatus(track, false, false);
               }}
             >
               <IoIosPause fill={'white'} size={20} />

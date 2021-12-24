@@ -1,42 +1,30 @@
 import { useMachine, useSelector, useService } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
-import { IoMdHeart } from 'react-icons/io';
 import styled from 'styled-components/macro';
 
 import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import playlistDetailsMachine from './playlistDetails.machine';
-import PlayButton from '../PlayButton';
 // import { PlaylistTableV2 } from '../PlaylistTableV2';
-import { getToken } from '../utils';
 import PlaylistTable from '../PlaylistTable';
-import UtilityBar from '../UtilityBar';
+import UtilityBar from '../PlaylistUtilityBar';
 import useImageColors from '../../../hooks/useImageColors';
 import useLoadMore from '../../../hooks/useLoadMore';
 
 const selectPlaylistId = (state: SelectorState) =>
   state.context.currentPlaylistId;
-const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
-const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 
 const options = {
   root: document.getElementById('main'),
   rootMargin: '300px 0px 0px 0px',
 };
 const PlaylistDetails: FC = () => {
-  const token = getToken();
   const service = useSpotifyContext();
   const [, parentSend] = useService<Context, SpotifyEvent>(service);
   const playlistId = useSelector(service, selectPlaylistId);
-  const deviceId = useSelector(service, selectDeviceId);
-  const currentTrackInfo = useSelector(service, selectCurrentTrack);
   const [state, send] = useMachine(playlistDetailsMachine(playlistId ?? ''));
   const [inView, setInView] = useState(false);
   const playlist = state.context.playlistDetails;
-  const uris = playlist?.tracks?.items.map((item) => item?.track?.uri);
-  const isPlaylistPlaying =
-    currentTrackInfo?.playlistId === playlist?.id &&
-    !!currentTrackInfo?.isPlaying;
   const imageSrc = playlist?.images?.[0]?.url ?? '';
   const [stickyBarBackgroundColor, heroBackgroundColor] = useImageColors(
     imageSrc
@@ -48,47 +36,6 @@ const PlaylistDetails: FC = () => {
     playlist?.tracks?.total === playlist?.tracks?.items?.length;
 
   const items = playlist?.tracks?.items;
-
-  const handleUtilityPlayButtonClick = () => {
-    const playOrPause = async () => {
-      const method = currentTrackInfo?.isPlaying ? 'pause' : 'play';
-      let body;
-      if (playlist) {
-        body = {
-          context_uri: playlist.uri,
-          offset: { uri: currentTrackInfo?.track?.uri },
-          position_ms: currentTrackInfo?.position,
-        };
-      } else {
-        body = {
-          uris,
-          offset: { uri: currentTrackInfo?.track?.uri },
-          position_ms: currentTrackInfo?.position,
-        };
-      }
-      try {
-        const resp = await fetch(
-          `https://api.spotify.com/v1/me/player/${method}?device_id=${deviceId}`,
-          {
-            method: 'PUT',
-            body: JSON.stringify(body),
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!resp.ok) {
-          throw new Error('shit!');
-        }
-        // onPlay(track.id);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    playOrPause();
-  };
 
   useLoadMore({
     deps: [playlist],
@@ -160,20 +107,7 @@ const PlaylistDetails: FC = () => {
           </Metadata>
         </PlaylistInfo>
       </Hero>
-      <UtilityBar>
-        <UtilityButtonWrapper>
-          <PlayButton
-            onClick={handleUtilityPlayButtonClick}
-            isPlaying={isPlaylistPlaying}
-            size="large"
-            type="default"
-          />
-        </UtilityButtonWrapper>
-        <UtilityButtonWrapper>
-          <IoMdHeart fill="#1db954" size={32} />
-        </UtilityButtonWrapper>
-      </UtilityBar>
-
+      <UtilityBar playlist={playlist} />
       {items && <PlaylistTable items={items} />}
     </Wrapper>
   );

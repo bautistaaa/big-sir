@@ -1,14 +1,13 @@
-import { useMachine, useSelector, useService } from '@xstate/react';
+import { useMachine, useSelector } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
 import { useSpotifyContext } from '../SpotifyContext';
 import { SelectorState } from '../spotify.machine';
 import useLoadMore from '../../../hooks/useLoadMore';
-import PlayButton from '../PlayButton';
 import PlaylistTable from '../PlaylistTable';
-import UtilityBar from '../UtilityBar';
 import likedSongsMachine from './likedSongs.machine';
+import UtilityBar from '../PlaylistUtilityBar';
 
 const options = {
   root: document.getElementById('main'),
@@ -61,16 +60,7 @@ const LikedSongs: FC = () => {
           </Metadata>
         </PlaylistInfo>
       </Hero>
-      <UtilityBar>
-        <UtilityButtonWrapper>
-          <PlayButton
-            onClick={() => {}}
-            isPlaying={false}
-            size="large"
-            type="default"
-          />
-        </UtilityButtonWrapper>
-      </UtilityBar>
+      <UtilityBar playlist={likedSongs as any} />
       {likedSongs?.items && <PlaylistTable items={likedSongs?.items} />}
     </Wrapper>
   );
@@ -146,9 +136,6 @@ const Author = styled.div``;
 const Songs = styled.div`
   opacity: 0.7;
   letter-spacing: -0.6px;
-`;
-const UtilityButtonWrapper = styled.div`
-  margin-right: 24px;
 `;
 
 export default LikedSongs;

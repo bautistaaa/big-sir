@@ -41,9 +41,14 @@ const Player: FC = () => {
   const handleStateChange = useCallback(
     (state: Spotify.PlaybackState) => {
       setPlayerState(state);
+      // types out of date
+      // @ts-ignore
+      const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
+      const trackId = state?.track_window?.current_track?.id;
       send({
         type: 'UPDATE_TRACK',
         payload: {
+          trackId: linkedFromId ?? trackId, // this is because spotify created playlist link weird(ex: Top Songs 2021)
           track: state?.track_window?.current_track,
           isPlaying: !state?.paused,
           playlistId: state?.context?.uri?.split(':')?.[2] ?? '',

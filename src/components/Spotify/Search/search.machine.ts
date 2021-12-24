@@ -91,7 +91,6 @@ const fetchMachine = Machine<
   {
     guards: {
       thereIsSearchTerm: (context) => {
-        console.log('guard ', context.term);
         return !!context.term;
       },
     },

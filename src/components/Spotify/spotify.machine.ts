@@ -4,6 +4,7 @@ import spotifyConfig from '../../shared/config';
 import { request } from './utils';
 
 interface CurrentTrackInfo {
+  trackId: string;
   track: Spotify.Track;
   isPlaying: boolean;
   playlistId: string;
@@ -64,6 +65,7 @@ type HeaderTransitionEvent = {
 type UpdateTrackEvent = {
   type: 'UPDATE_TRACK';
   payload: {
+    trackId: string;
     track: Spotify.Track;
     isPlaying: boolean;
     playlistId: string;
@@ -123,6 +125,7 @@ const config = {
     updateTrack: assign<Context, any>({
       currentTrack: (_, event) => {
         return {
+          trackId: (event as UpdateTrackEvent).payload.trackId,
           track: (event as UpdateTrackEvent).payload.track,
           isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
           playlistId: (event as UpdateTrackEvent).payload.playlistId,
@@ -259,6 +262,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                       backgroundColor: 'rgb(30 21 62)',
                       text: 'Liked Songs',
                     },
+                    currentPlaylistId: undefined,
                   }),
                   'changeView',
                 ],

@@ -55,12 +55,14 @@ const SideBar: FC = memo(() => {
       </Menu>
       <SecondaryMenu>
         <MenuList>
+        {/*
           <SecondaryMenuListItem>
             <PlusContainer>
               <GoPlus fill="black" />
             </PlusContainer>
             Create Playlist
           </SecondaryMenuListItem>
+        */}
           <SecondaryMenuListItem
             onClick={() => {
               send({ type: 'LIKED', payload: { view: 'liked' } });

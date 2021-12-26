@@ -1,42 +1,41 @@
 import { useSelector } from '@xstate/react';
 import styled from 'styled-components/macro';
 
-import PlayButton from './PlayButton';
-import { SelectorState } from './spotify.machine';
-import { useSpotifyContext } from './SpotifyContext';
-import { getToken } from './utils';
+import PlayButton from '../PlayButton';
+import { SelectorState } from '../spotify.machine';
+import { useSpotifyContext } from '../SpotifyContext';
+import { getToken } from '../utils';
 
-interface PlaylistUtilityBarProps {
-  playlist: SpotifyApi.PlaylistObjectFull;
+interface LikedSongsUtilityBarProps {
+  likedSongs: SpotifyApi.UsersSavedTracksResponse;
 }
 
 const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 
-const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
+const LikedSongsUtilityBar = ({ likedSongs }: LikedSongsUtilityBarProps) => {
   const token = getToken();
 
   const service = useSpotifyContext();
   const deviceId = useSelector(service, selectDeviceId);
   const currentTrackInfo = useSelector(service, selectCurrentTrack);
+  const uris = likedSongs?.items.map((item) => item?.track?.uri);
   const isSelectedPlaylistDiffFromTheOnePlaying =
-    currentTrackInfo?.playlistId !== playlist?.id;
+    currentTrackInfo?.playlistId !== '';
   const isPlaylistPlaying =
-    currentTrackInfo?.playlistId === playlist?.id &&
-    !!currentTrackInfo?.isPlaying;
+    currentTrackInfo?.playlistId === '' && !!currentTrackInfo?.isPlaying;
 
   const getBody = () => {
-    const firstSong = playlist.tracks.items[0].track.uri;
+    const firstSong = likedSongs.items[0].track.uri;
     if (isSelectedPlaylistDiffFromTheOnePlaying) {
       return {
-        context_uri: playlist.uri,
+        uris,
         offset: { uri: firstSong },
         position_ms: 0,
       };
     }
-
     return {
-      context_uri: playlist.uri,
+      uris,
       offset: { uri: currentTrackInfo?.track?.uri ?? firstSong },
       position_ms: currentTrackInfo?.position,
     };
@@ -99,4 +98,4 @@ const UtilityButtonWrapper = styled.div`
   margin-right: 24px;
 `;
 
-export default PlaylistUtilityBar;
+export default LikedSongsUtilityBar;

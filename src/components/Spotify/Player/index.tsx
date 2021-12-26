@@ -45,6 +45,7 @@ const Player: FC = () => {
       // @ts-ignore
       const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
       const trackId = state?.track_window?.current_track?.id;
+      console.log(state?.context?.uri);
       send({
         type: 'UPDATE_TRACK',
         payload: {

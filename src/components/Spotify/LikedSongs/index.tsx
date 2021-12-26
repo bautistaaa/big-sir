@@ -7,7 +7,7 @@ import { SelectorState } from '../spotify.machine';
 import useLoadMore from '../../../hooks/useLoadMore';
 import PlaylistTable from '../PlaylistTable';
 import likedSongsMachine from './likedSongs.machine';
-import UtilityBar from '../PlaylistUtilityBar';
+import UtilityBar from './LikedSongsUtilityBar';
 
 const options = {
   root: document.getElementById('main'),
@@ -60,7 +60,7 @@ const LikedSongs: FC = () => {
           </Metadata>
         </PlaylistInfo>
       </Hero>
-      <UtilityBar playlist={likedSongs as any} />
+      {likedSongs && <UtilityBar likedSongs={likedSongs} />}
       {likedSongs?.items && <PlaylistTable items={likedSongs?.items} />}
     </Wrapper>
   );

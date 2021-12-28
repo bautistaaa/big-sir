@@ -17,6 +17,11 @@ const useImageColors = (imageSource: string) => {
 
   useEffect(() => {
     setColors(['rgb(0,0,0)', 'rgb(0,0,0)']);
+
+    if (!imageSource) {
+      return;
+    }
+
     if (performed.has(imageSource)) {
       setColors(performed.get(imageSource)!);
       return;

@@ -14,16 +14,15 @@ interface CurrentPlaylistInfo {
   playlist: SpotifyApi.PlaylistObjectFull;
   isPlaying: boolean;
 }
-
 export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {
   currentPlaylistId?: string;
+  currentTrack?: CurrentTrackInfo;
   currentPlaylistInfo?: CurrentPlaylistInfo;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   userProfile?: SpotifyApi.UserProfileResponse;
-  currentTrack?: CurrentTrackInfo;
   deviceId?: string;
   headerState: {
     text: string;
@@ -190,7 +189,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
         },
         on: {
           TRANSITION_HEADER: {
-            actions: ['transitionHeader'],
+            actions: 'transitionHeader',
           },
         },
         states: {
@@ -217,7 +216,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
             initial: 'home',
             on: {
               PLAYER_INIT: {
-                actions: ['playerInit'],
+                actions: 'playerInit',
               },
               UPDATE_TRACK: {
                 actions: 'updateTrack',
@@ -288,7 +287,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   DETAILS: { target: '#details' },
                   SEARCH: { target: '#search' },
                   PLAYLIST_UPDATE: {
-                    actions: ['playlistUpdate'],
+                    actions: 'playlistUpdate',
                   },
                 },
               },

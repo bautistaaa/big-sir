@@ -1,4 +1,5 @@
 import { useSelector } from '@xstate/react';
+import { memo } from 'react';
 import styled from 'styled-components/macro';
 
 import PlayButton from './PlayButton';
@@ -99,4 +100,5 @@ const UtilityButtonWrapper = styled.div`
   margin-right: 24px;
 `;
 
-export default PlaylistUtilityBar;
+// export default PlaylistUtilityBar;
+export default memo(PlaylistUtilityBar);

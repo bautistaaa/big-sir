@@ -73,7 +73,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
     "@types/react-window-infinite-loader": "^1.0.5",
-    "@types/spotify-api": "0.0.8",
+    "@types/spotify-api": "0.0.12",
     "@types/spotify-web-playback-sdk": "^0.1.10",
     "@types/styled-components": "^5.1.8",
     "babel-plugin-macros": "^3.0.1",

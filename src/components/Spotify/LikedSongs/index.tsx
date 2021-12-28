@@ -28,7 +28,7 @@ const LikedSongs: FC = () => {
   const shouldDestroy = likedSongs?.total === likedSongs?.items.length;
 
   useLoadMore({
-    deps: [likedSongs],
+    dep: likedSongs,
     callback,
     options,
     shouldDestroy,

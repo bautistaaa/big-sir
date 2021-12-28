@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { observe, IntersectionOptions } from 'react-intersection-observer';
 
 interface Props {
-  deps: unknown[];
+  dep: unknown;
   callback(v: boolean): void;
   options: IntersectionOptions;
   shouldDestroy: boolean;
@@ -12,7 +12,7 @@ interface Props {
  * This is really specific to the playlist views
  * So I don't feel like passing in everything
  */
-const useLoadMore = ({ deps, callback, options, shouldDestroy }: Props) => {
+const useLoadMore = ({ dep, callback, options, shouldDestroy }: Props) => {
   useEffect(() => {
     const el = document.getElementById('main');
 
@@ -31,7 +31,7 @@ const useLoadMore = ({ deps, callback, options, shouldDestroy }: Props) => {
         destroy();
       };
     }
-  }, deps);
+  }, [dep, callback, options, shouldDestroy]);
 };
 
 export default useLoadMore;

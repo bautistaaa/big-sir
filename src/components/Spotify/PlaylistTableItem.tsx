@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { useSelector, useService } from '@xstate/react';
 import styled from 'styled-components';
 import { IoIosPause } from 'react-icons/io';
@@ -19,7 +19,7 @@ interface Props {
   index: number;
   uris: string[];
   onItemClick(v: string): void;
-  activeTrack: string;
+  isActive: boolean;
 }
 
 const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
@@ -32,7 +32,7 @@ const PlaylistTableItem: FC<Props> = ({
   uris,
   index,
   onItemClick,
-  activeTrack,
+  isActive,
 }) => {
   const { track, added_at } = item;
   const token = getToken();
@@ -44,7 +44,6 @@ const PlaylistTableItem: FC<Props> = ({
   const currentPlaylist = useSelector(service, selectCurrentPlayist);
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
-  const isActive = track.id === activeTrack;
   const isCurrentTrack = track.id === currentTrack?.trackId;
   const isCurrentTrackAndPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
   const displayPlayButton =
@@ -96,6 +95,18 @@ const PlaylistTableItem: FC<Props> = ({
             },
           }
         );
+
+        // send({
+        //   type: 'UPDATE_TRACK',
+        //   payload: {
+        //     trackId: track?.id ?? '',
+        //     track,
+        //     isPlaying: method === 'play',
+        //     playlistId: currentPlaylist?.playlist?.id ?? '',
+        //     position: 0,
+        //   },
+        // });
+
         if (!resp.ok) {
           throw new Error('shit!');
         }
@@ -290,4 +301,5 @@ const GnarlyColumn = styled.div<{
     `}
 `;
 
-export default PlaylistTableItem;
+// export default PlaylistTableItem;
+export default memo(PlaylistTableItem);

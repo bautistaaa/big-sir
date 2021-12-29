@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import mergeRefs from 'react-merge-refs';
 import { useResizeDetector } from 'react-resize-detector';
 import { useInView } from 'react-intersection-observer';
@@ -12,7 +12,7 @@ const PlaylistTable = ({ items }: { items: any }) => {
   // HELP: i couldnt figure out how to do this with sticky + intersection observer
   const tableWrapperRef = useRef<HTMLDivElement | null>(null);
   const wrapperWidth = useRef<number | undefined>();
-  const uris = items?.map((x: any) => x?.track?.uri);
+  const uris = useMemo(() => items?.map((x: any) => x?.track?.uri), []);
   const { ref: resizeRef } = useResizeDetector({
     onResize: () => {
       wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;
@@ -23,9 +23,12 @@ const PlaylistTable = ({ items }: { items: any }) => {
     threshold: [1],
   });
 
-  const onItemClick = (trackId: string) => {
-    setActiveTrack(trackId);
-  };
+  const onItemClick = useCallback(
+    (trackId: string) => {
+      setActiveTrack(trackId);
+    },
+    []
+  );
 
   return (
     <TableWrapper ref={mergeRefs([tableWrapperRef, resizeRef])}>
@@ -61,7 +64,7 @@ const PlaylistTable = ({ items }: { items: any }) => {
               index={i}
               uris={uris}
               onItemClick={onItemClick}
-              activeTrack={activeTrack}
+              isActive={item?.track?.id === activeTrack}
             />
           );
         })}

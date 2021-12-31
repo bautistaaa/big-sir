@@ -13,7 +13,7 @@ import useLoadMore from '../../../hooks/useLoadMore';
 import PlaylistHero from '../PlaylistHero';
 
 const selectPlaylistId = (state: SelectorState) =>
-  state.context.currentPlaylistId;
+  state.context.currentListId;
 
 const options = {
   root: document.getElementById('main'),

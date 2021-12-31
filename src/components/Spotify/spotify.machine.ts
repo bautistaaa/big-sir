@@ -14,10 +14,10 @@ interface CurrentPlaylistInfo {
   playlist: SpotifyApi.PlaylistObjectFull;
   isPlaying: boolean;
 }
-export type View = 'home' | 'library' | 'search' | 'liked' | 'details';
+export type View = 'home' | 'library' | 'search' | 'liked' | 'playlist';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {
-  currentPlaylistId?: string;
+  currentListId?: string;
   currentTrack?: CurrentTrackInfo;
   currentPlaylistInfo?: CurrentPlaylistInfo;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
@@ -47,8 +47,8 @@ type LikedEvent = {
   type: 'LIKED';
   payload: { view: View };
 };
-type DetailsEvent = {
-  type: 'DETAILS';
+type PlaylistEvent = {
+  type: 'PLAYLIST';
   payload: { playlistId: string; view: View };
 };
 type JwtInvalidEvent = {
@@ -88,7 +88,7 @@ type ScrollToBottomEvent = {
 };
 
 export type SpotifyEvent =
-  | DetailsEvent
+  | PlaylistEvent
   | HeaderTransitionEvent
   | HomeEvent
   | JwtInvalidEvent
@@ -227,7 +227,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 id: 'home',
                 entry: 'changeView',
                 on: {
-                  DETAILS: 'details',
+                  PLAYLIST: 'playlist',
                   SEARCH: 'search',
                   LIBRARY: 'library',
                   LIKED: 'liked',
@@ -237,7 +237,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 id: 'search',
                 entry: 'changeView',
                 on: {
-                  DETAILS: 'details',
+                  PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
                   LIKED: 'liked',
@@ -247,7 +247,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 id: 'library',
                 entry: 'changeView',
                 on: {
-                  DETAILS: 'details',
+                  PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIKED: 'liked',
                   SEARCH: 'search',
@@ -261,30 +261,30 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                       backgroundColor: 'rgb(30 21 62)',
                       text: 'Liked Songs',
                     },
-                    currentPlaylistId: undefined,
+                    currentListId: undefined,
                   }),
                   'changeView',
                 ],
                 on: {
-                  DETAILS: 'details',
+                  PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
                   SEARCH: 'search',
                 },
               },
-              details: {
-                id: 'details',
+              playlist: {
+                id: 'playlist',
                 entry: [
                   'changeView',
                   assign<Context, any>({
-                    currentPlaylistId: (_, event) => event?.payload?.playlistId,
+                    currentListId: (_, event) => event?.payload?.playlistId,
                   }),
                 ],
                 on: {
                   LIBRARY: { target: '#library' },
                   LIKED: { target: '#liked' },
                   HOME: { target: '#home' },
-                  DETAILS: { target: '#details' },
+                  PLAYLIST: { target: '#playlist' },
                   SEARCH: { target: '#search' },
                   PLAYLIST_UPDATE: {
                     actions: 'playlistUpdate',

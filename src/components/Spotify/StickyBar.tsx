@@ -13,7 +13,7 @@ const selectHeaderState = (state: SelectorState) => state.context.headerState;
 const selectUserProfile = (state: SelectorState) => state.context.userProfile;
 const selectView = (state: SelectorState) => state.context.view;
 const selectPlaylistId = (state: SelectorState) =>
-  state.context.currentPlaylistId;
+  state.context.currentListId;
 
 const StickyBar: FC = () => {
   const service = useSpotifyContext();
@@ -59,7 +59,7 @@ const StickyBar: FC = () => {
       <ContentWrapper>
         <DynamicContent>
           {state.matches('loggedIn.success.search') && <SearchForm />}
-          {(state.matches('loggedIn.success.details') ||
+          {(state.matches('loggedIn.success.playlist') ||
             state.matches('loggedIn.success.liked')) && (
             <Text opacity={opacity}>{headerState.text}</Text>
           )}

@@ -28,6 +28,7 @@ const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
 
   const getBody = () => {
     const firstSong = playlist.tracks.items[0].track.uri;
+    console.log({ currentTrackInfo });
     if (isSelectedPlaylistDiffFromTheOnePlaying) {
       return {
         context_uri: playlist.uri,
@@ -38,7 +39,7 @@ const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
 
     return {
       context_uri: playlist.uri,
-      offset: { uri: currentTrackInfo?.track?.uri ?? firstSong },
+      offset: { uri: `spotify:track:${currentTrackInfo?.trackId}` ?? firstSong },
       position_ms: currentTrackInfo?.position,
     };
   };

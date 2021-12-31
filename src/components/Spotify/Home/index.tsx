@@ -1,17 +1,21 @@
 import { FC, MutableRefObject, useEffect } from 'react';
-import { useMachine } from '@xstate/react';
+import { useMachine, useService } from '@xstate/react';
 import styled from 'styled-components';
 
 import useFeedData from './useFeedData';
 import homeMachine from './home.machine';
+import { Context, SpotifyEvent } from '../spotify.machine';
 import FeedCard from '../FeedCard';
 import { getGreetingByTime } from '../../../utils';
 import useRect from '../../../hooks/useRect';
 import TopSectionItem from '../TopSectionItem';
+import { useSpotifyContext } from '../SpotifyContext';
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ parentRef }) => {
+  const service = useSpotifyContext();
+  const [, sendParent] = useService<Context, SpotifyEvent>(service);
   const feedData = useFeedData();
   const [state, send] = useMachine(homeMachine);
   const { data } = state.context;
@@ -62,6 +66,12 @@ const Home: FC<{
                   key={item.id}
                   imageSrc={item?.images?.[0]?.url}
                   name={item?.name}
+                  onClick={() => {
+                    sendParent({
+                      type: 'PLAYLIST',
+                      payload: { playlistId: item.id, view: 'playlist' },
+                    });
+                  }}
                 />
               );
             })}
@@ -71,12 +81,14 @@ const Home: FC<{
           <FeaturedSectionTitle>Recommendations</FeaturedSectionTitle>
           <SectionContent>
             {trackRecommendations?.map((item) => {
+              console.log({ item });
               return (
                 <FeedCard
                   key={item.id}
                   /* @ts-ignore */
                   imageSrc={item?.album?.images?.[1]?.url}
                   name={item?.name}
+                  onClick={() => {}}
                 />
               );
             })}

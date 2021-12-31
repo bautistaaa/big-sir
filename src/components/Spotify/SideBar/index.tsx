@@ -1,7 +1,6 @@
 import { useSelector, useService } from '@xstate/react';
 import { FC, memo } from 'react';
 import { AiFillHeart } from 'react-icons/ai';
-import { GoPlus } from 'react-icons/go';
 import styled from 'styled-components';
 
 import Home from '../icons/Home';
@@ -24,7 +23,7 @@ const MENU_OPTIONS: Option[] = [
 const selectPlaylists = (state: SelectorState) => state.context.playlists;
 const selectView = (state: SelectorState) => state.context.view;
 const selectCurrentPlaylistId = (state: SelectorState) =>
-  state.context.currentPlaylistId;
+  state.context.currentListId;
 
 const SideBar: FC = memo(() => {
   const service = useSpotifyContext();
@@ -84,11 +83,11 @@ const SideBar: FC = memo(() => {
               return (
                 <PlaylistListItem
                   key={item.id}
-                  active={item.id === currentPlaylistId && view === 'details'}
+                  active={item.id === currentPlaylistId && view === 'playlist'}
                   onClick={() => {
                     send({
-                      type: 'DETAILS',
-                      payload: { playlistId: item.id, view: 'details' },
+                      type: 'PLAYLIST',
+                      payload: { playlistId: item.id, view: 'playlist' },
                     });
                   }}
                 >

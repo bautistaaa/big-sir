@@ -2,7 +2,7 @@ import { useService } from '@xstate/react';
 import { FC, memo, useRef } from 'react';
 import styled from 'styled-components';
 
-import HomeView from './Home';
+import Home from './Home';
 import LikedSongs from './LikedSongs';
 import PlaylistDetails from './PlaylistDetails';
 import Search from './Search';
@@ -30,12 +30,12 @@ const Main: FC = memo(() => {
       <Wrapper id="main" ref={mainRef}>
         <Spacer />
         {state.matches('loggedIn.success.home') && (
-          <HomeView parentRef={mainRef} />
+          <Home parentRef={mainRef} />
         )}
         {state.matches('loggedIn.success.search') && <Search />}
         {state.matches('loggedIn.success.library') && <div>library</div>}
         {state.matches('loggedIn.success.liked') && <LikedSongs />}
-        {state.matches('loggedIn.success.details') && <PlaylistDetails />}
+        {state.matches('loggedIn.success.playlist') && <PlaylistDetails />}
       </Wrapper>
     </>
   );

@@ -44,7 +44,7 @@ const PlaylistTableItem: FC<Props> = ({
   const currentPlaylist = useSelector(service, selectCurrentPlayist);
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
-  const isCurrentTrack = track.id === currentTrack?.trackId;
+  const isCurrentTrack = track?.id === currentTrack?.trackId;
   const isCurrentTrackAndPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
   const displayPlayButton =
     (isActive && isCurrentTrack && !isCurrentTrackAndPlaying) ||

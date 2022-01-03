@@ -182,11 +182,6 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
       },
       loggedIn: {
         initial: 'loading',
-        context: {
-          view: 'home',
-          headerState: defaultHeaderState,
-          error: '',
-        },
         on: {
           TRANSITION_HEADER: {
             actions: 'transitionHeader',

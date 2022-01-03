@@ -5,7 +5,7 @@ export type WindowEvent =
   | { type: 'MINIMIZE' }
   | { type: 'MAXIMIZE' };
 
-const windowMachine = createMachine<any, any, WindowEvent>({
+const windowMachine = createMachine<any, WindowEvent>({
   id: 'window',
   initial: 'floating',
   states: {

@@ -81,7 +81,6 @@ const Home: FC<{
           <FeaturedSectionTitle>Recommendations</FeaturedSectionTitle>
           <SectionContent>
             {trackRecommendations?.map((item) => {
-              console.log({ item });
               return (
                 <FeedCard
                   key={item.id}

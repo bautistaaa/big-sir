@@ -152,7 +152,9 @@ const createPlaylistDetailsMachine = (id: string) =>
           send
         ) => {
           if (context.next) {
-            const playlistDetails = await request(context.next);
+            const playlistDetails = await request<SpotifyApi.UsersSavedTracksResponse>(
+              context.next
+            );
             send({ type: 'RECEIVED_DATA', data: playlistDetails });
           }
         },

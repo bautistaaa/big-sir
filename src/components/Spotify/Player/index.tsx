@@ -1,52 +1,58 @@
-import { useService } from '@xstate/react';
+import { useMachine, useActor } from '@xstate/react';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
 import styled from 'styled-components/macro';
 
+import playerMachine from './player.machine';
 import ClearButton from '../../ClearButton';
 import RepeatIcon from '../icons/Repeat';
 import ShuffleIcon from '../icons/Shuffle';
 import PlayButton from '../PlayButton';
-import { Context, SpotifyEvent } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import { getToken, loadSpotifyWebPlayerScript } from '../utils';
 import Scrubber from './Scrubber';
 import VolumeSlider from './VolumeSlider';
 
-const REPEAT_MODES = ['off', 'track', 'context'];
 const Player: FC = () => {
-  const service = useSpotifyContext();
-  const [, send] = useService<Context, SpotifyEvent>(service);
-  const player = useRef<Spotify.Player | null>(null);
-
-  const [scriptReady, setScriptReady] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playerState, setPlayerState] = useState<
-    Spotify.PlaybackState | undefined
-  >();
-  const shuffleRef = useRef(playerState?.shuffle);
-  /**
-   * 0: NO_REPEAT
-   * 1: ONCE_REPEAT
-   * 2: FULL_REPEAT
-   */
-  const [repeatMode, setRepeatMode] = useState(0);
   const token = getToken();
-  const isPlaying = playerState?.paused !== undefined && !playerState?.paused;
-  const isShuffleEnabled = playerState?.shuffle;
+
+  const service = useSpotifyContext();
+  const [, sendParent] = useActor(service);
+  const [
+    {
+      context: { isShuffle, isMuted, volume, playerState, repeatMode },
+    },
+    send,
+  ] = useMachine(playerMachine);
+  const player = useRef<Spotify.Player | null>(null);
+  const [scriptReady, setScriptReady] = useState(false);
+
+  const handleToggleMute = (value?: boolean) => {
+    send({
+      type: 'TOGGLE_MUTE',
+      payload: { value: value ?? !isMuted },
+    });
+  };
   const handleVolumeChange = (volume: number) => {
-    setVolume(volume);
+    send({
+      type: 'VOLUME_UPDATE',
+      payload: { volume },
+    });
   };
   const handleStateChange = useCallback(
     (state: Spotify.PlaybackState) => {
-      setPlayerState(state);
+      send({
+        type: 'PLAYER_UPDATE',
+        payload: {
+          state,
+        },
+      });
       // types out of date
       // @ts-ignore
       const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
       const trackId = state?.track_window?.current_track?.id;
-      console.log({ linkedFromId, trackId });
-      send({
+      // console.log({ linkedFromId, trackId });
+      sendParent({
         type: 'UPDATE_TRACK',
         payload: {
           trackId: linkedFromId ?? trackId, // this is because spotify created playlist link weird(ex: Top Songs 2021)
@@ -57,7 +63,7 @@ const Player: FC = () => {
         },
       });
     },
-    [send]
+    [send, sendParent]
   );
 
   useEffect(() => {
@@ -69,12 +75,6 @@ const Player: FC = () => {
       }
     }
   }, [playerState?.paused]);
-
-  useEffect(() => {
-    if (playerState?.repeat_mode !== undefined) {
-      setRepeatMode(playerState.repeat_mode);
-    }
-  }, [playerState?.repeat_mode]);
 
   useEffect(() => {
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -101,7 +101,7 @@ const Player: FC = () => {
       }
 
       player.current?.addListener('ready', ({ device_id }) => {
-        send({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
+        sendParent({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
       });
 
       player.current?.connect();
@@ -115,7 +115,7 @@ const Player: FC = () => {
         );
       };
     }
-  }, [scriptReady, handleStateChange, send, token]);
+  }, [scriptReady, handleStateChange, send, sendParent, token]);
 
   useEffect(() => {
     // @ts-ignore
@@ -130,7 +130,7 @@ const Player: FC = () => {
       }
 
       player.current?.addListener('ready', ({ device_id }) => {
-        send({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
+        sendParent({ type: 'PLAYER_INIT', payload: { deviceId: device_id } });
       });
 
       player.current?.connect();
@@ -144,7 +144,7 @@ const Player: FC = () => {
         );
       };
     }
-  }, [token, handleStateChange, send]);
+  }, [token, handleStateChange, sendParent, send]);
 
   useEffect(() => {
     if (player.current) {
@@ -157,58 +157,25 @@ const Player: FC = () => {
   }, [volume, isMuted]);
 
   const handlePlayButtonClicked = () => {
-    // @ts-ignore
-    setPlayerState((state) => {
-      return {
-        ...state,
-        paused: !state?.paused,
-      };
-    });
+    if (playerState) {
+      send({
+        type: 'PLAYER_UPDATE',
+        payload: {
+          state: {
+            ...playerState,
+            paused: !playerState.paused,
+          },
+        },
+      });
+    }
   };
 
   const handleShuffleClick = () => {
-    const shuffle = async () => {
-      try {
-        shuffleRef.current = !shuffleRef.current;
-        await fetch(
-          `https://api.spotify.com/v1/me/player/shuffle?state=${shuffleRef.current}`,
-          {
-            method: 'PUT',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } catch (e) {
-        shuffleRef.current = !shuffleRef.current;
-        console.error(e);
-      }
-    };
-
-    shuffle();
+    send({ type: 'TOGGLE_SHUFFLE' });
   };
 
   const handleRepeatClick = async () => {
-    const shuffle = async () => {
-      try {
-        let tempIndex = (repeatMode + 1) % REPEAT_MODES.length;
-        await fetch(
-          `https://api.spotify.com/v1/me/player/repeat?state=${REPEAT_MODES[tempIndex]}`,
-          {
-            method: 'PUT',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setRepeatMode(tempIndex);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    shuffle();
+    send({ type: 'TOGGLE_REPEAT' });
   };
 
   const handlePreviousClick = async () => {
@@ -259,7 +226,7 @@ const Player: FC = () => {
             <TopRow>
               <TopRowLeft>
                 <ControlButton onClick={handleShuffleClick}>
-                  <ShuffleIcon enabled={!!isShuffleEnabled} />
+                  <ShuffleIcon enabled={isShuffle} />
                 </ControlButton>
                 <PrevNextButton>
                   <MdSkipPrevious
@@ -271,7 +238,7 @@ const Player: FC = () => {
               </TopRowLeft>
               <PlayButton
                 onClick={handlePlayButtonClicked}
-                isPlaying={isPlaying}
+                isPlaying={!playerState.paused}
                 size="medium"
                 type="inverse"
               />
@@ -284,7 +251,7 @@ const Player: FC = () => {
                   />
                 </PrevNextButton>
                 <ControlButton onClick={handleRepeatClick}>
-                  <RepeatIcon mode={repeatMode ?? 0} />
+                  <RepeatIcon mode={repeatMode} />
                 </ControlButton>
               </TopRowRight>
             </TopRow>
@@ -297,7 +264,7 @@ const Player: FC = () => {
               volume={volume}
               onChange={handleVolumeChange}
               isMuted={isMuted}
-              setIsMuted={setIsMuted}
+              toggleMute={handleToggleMute}
             />
           </RightColumn>
         </>

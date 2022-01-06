@@ -8,21 +8,21 @@ const VolumeSlider: FC<{
   volume: number;
   onChange(v: number): void;
   isMuted: boolean;
-  setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ volume, onChange, isMuted, setIsMuted }) => {
+  toggleMute(v?: boolean): void;
+}> = ({ volume, onChange, isMuted, toggleMute }) => {
   const [isActive, setIsActive] = useState(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = +e.target.value;
     if (v === 0) {
       onChange(0.00001);
-      setIsMuted(true);
+      toggleMute(true);
     } else {
       onChange(+e.target.value);
-      setIsMuted(false);
+      toggleMute(false);
     }
   };
   const handleMuteButtonClick = () => {
-    setIsMuted((val) => !val);
+    toggleMute();
   };
 
   return (

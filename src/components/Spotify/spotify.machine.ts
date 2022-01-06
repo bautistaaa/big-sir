@@ -214,7 +214,15 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 actions: 'playerInit',
               },
               UPDATE_TRACK: {
-                actions: 'updateTrack',
+                actions: [
+                  // (c, e) => {
+                  //   console.log({
+                  //     c: c.currentTrack?.trackId,
+                  //     p: e.payload?.trackId,
+                  //   });
+                  // },
+                  'updateTrack',
+                ],
               },
             },
             states: {

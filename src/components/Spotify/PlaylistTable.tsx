@@ -77,8 +77,8 @@ const PlaylistTable = ({ items }: { items: any }) => {
 const IntersectionDetection = styled.div`
   pointer-events: none;
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 0;
+  height: 0;
   border: 1px solid red;
   left: 0;
   bottom: 30px;

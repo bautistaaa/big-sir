@@ -1,10 +1,15 @@
 import { FC, memo, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components/macro';
-import { useService } from '@xstate/react';
+import { useActor, useSelector } from '@xstate/react';
 import spotifyConfig from '../../../shared/config';
 import { request } from '../utils';
 import { useStickyBarContext } from '../StickyBarContext';
+import TopResult from './TopResult';
+import Songs from './Songs';
+import Artists from './Artists';
+import Albums from './Albums';
+import { SearchSelectorState } from './search.machine';
 
 const CARD_COLORS = [
   'rgb(39, 133, 106)',
@@ -47,13 +52,21 @@ const SearchCard = ({ name, src }: { name: string; src: string }) => {
 
 const MemoSearchCard = memo(SearchCard);
 
+const selectTerm = (state: SearchSelectorState) => state.context.term;
+const selectGenericResults = (state: SearchSelectorState) =>
+  state.context.genericResults;
+const selectResults = (state: SearchSelectorState) => state.context.results;
+
 const Search: FC = () => {
   const service = useStickyBarContext();
-  const [state, send] = useService(service);
-  const { genericResults, results, term } = state.context;
+  const [, send] = useActor(service);
+  const term = useSelector(service, selectTerm);
+  const genericResults = useSelector(service, selectGenericResults);
+  const results = useSelector(service, selectResults);
   const { data } = useQuery(['search', term], () => fetchSearchResults(term), {
     enabled: !!term,
   });
+  console.log({ term });
   // have to add term to trigger the useEffect
   // so we can send an event to the machine
   // which pretty much defeats the purpose of using this... but it works for now
@@ -64,6 +77,8 @@ const Search: FC = () => {
       enabled: !term,
     }
   );
+
+  const [topResult, ...artists] = data?.artists?.items ?? [];
 
   useEffect(() => {
     if (data) {
@@ -85,8 +100,10 @@ const Search: FC = () => {
         </CategoryHeaderWrapper>
         <CategoriesGrid>
           {genericResults?.categories.items?.map((category) => {
-            const { href, name, icons } = category;
-            return <MemoSearchCard name={name} src={icons?.[0]?.url} />;
+            const { name, icons } = category;
+            return (
+              <MemoSearchCard key={name} name={name} src={icons?.[0]?.url} />
+            );
           })}
         </CategoriesGrid>
       </Wrapper>
@@ -95,11 +112,14 @@ const Search: FC = () => {
 
   return (
     <Wrapper>
-      <div>
-        <div>{state.value}</div>
-        {!term && <span>Generic</span>}
-        {!!term && <span>Searching</span>}
-      </div>
+      <Grid>
+        <GridContent>
+          <TopResult result={topResult} />
+          <Songs songs={data?.tracks?.items ?? []} />
+          <Artists artists={artists} />
+          <Albums albums={data?.albums?.items ?? []} />
+        </GridContent>
+      </Grid>
       {!term && <span>{JSON.stringify(genericResults, null, 2)}</span>}
       {!!term && <span>{JSON.stringify(results, null, 2)}</span>}
     </Wrapper>
@@ -107,10 +127,8 @@ const Search: FC = () => {
 };
 
 const Wrapper = styled.div`
+  margin-top: 16px;
   padding: 0 32px;
-`;
-const FullGridRow = styled.div`
-  grid-column: 1/-1;
 `;
 const CategoryHeaderWrapper = styled.div`
   margin-bottom: 16px;
@@ -169,6 +187,15 @@ const CategoryCard = styled.a<{ background: string }>`
     display: block;
     padding-bottom: 100%;
   }
+`;
+const Grid = styled.div`
+  grid-gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+`;
+const GridContent = styled(Grid)`
+  row-gap: 32px;
+  grid-column: 1/-1;
 `;
 
 export default Search;

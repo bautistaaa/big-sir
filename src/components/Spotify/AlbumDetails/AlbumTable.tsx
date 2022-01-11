@@ -5,14 +5,16 @@ import { useInView } from 'react-intersection-observer';
 import styled from 'styled-components/macro';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 
-import PlaylistTableItem from './PlaylistTableItem';
+import AlbumTableItem from './AlbumTableItem';
 
-const PlaylistTable = ({ items }: { items: any }) => {
+interface AlbumTableProps {
+  items: SpotifyApi.TrackObjectSimplified[];
+}
+const AlbumTable = ({ items }: AlbumTableProps) => {
   const [activeTrack, setActiveTrack] = useState<string>('');
   // HELP: i couldnt figure out how to do this with sticky + intersection observer
   const tableWrapperRef = useRef<HTMLDivElement | null>(null);
   const wrapperWidth = useRef<number | undefined>();
-  const uris = useMemo(() => items?.map((x: any) => x?.track?.uri), []);
   const { ref: resizeRef } = useResizeDetector({
     onResize: () => {
       wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;
@@ -23,12 +25,9 @@ const PlaylistTable = ({ items }: { items: any }) => {
     threshold: [1],
   });
 
-  const onItemClick = useCallback(
-    (trackId: string) => {
-      setActiveTrack(trackId);
-    },
-    []
-  );
+  const onItemClick = useCallback((trackId: string) => {
+    setActiveTrack(trackId);
+  }, []);
 
   return (
     <TableWrapper ref={mergeRefs([tableWrapperRef, resizeRef])}>
@@ -47,41 +46,28 @@ const PlaylistTable = ({ items }: { items: any }) => {
           <Header isSticky={!inView}>
             <ColumnName>#</ColumnName>
             <ColumnName>Title</ColumnName>
-            <ColumnName>Album</ColumnName>
-            <ColumnName>Date Added</ColumnName>
-            <ColumnName>
+            <ColumnName style={{ justifySelf: 'end' }}>
               <AiOutlineClockCircle stroke="#ffffff" size={16} />
             </ColumnName>
           </Header>
         </HeaderPositioner>
       </HeaderWrapper>
       <List isSticky={!inView}>
-        {items.map((item: any, i: number) => {
+        {items.map((item, i: number) => {
           return (
-            <PlaylistTableItem
-              key={item.track?.id + i}
+            <AlbumTableItem
+              key={item?.id + i}
               item={item}
               index={i}
-              uris={uris}
               onItemClick={onItemClick}
-              isActive={item?.track?.id === activeTrack}
+              isActive={item?.id === activeTrack}
             />
           );
         })}
-        <IntersectionDetection id="load-more" />
       </List>
     </TableWrapper>
   );
 };
-
-const IntersectionDetection = styled.div`
-  pointer-events: none;
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: 0;
-  bottom: 30px;
-`;
 
 const TableWrapper = styled.div`
   position: relative;
@@ -138,10 +124,7 @@ const Header = styled.div<{ isSticky: boolean }>`
   grid-gap: 16px;
   display: grid;
   padding: 0 16px;
-  grid-template-columns: [index] 16px [first] 6fr [var1] 4fr [var2] 3fr [last] minmax(
-      120px,
-      1fr
-    );
+  grid-template-columns: [index] 16px [first] 4fr [last] minmax(120px, 1fr);
   border-bottom: 1px solid hsla(0, 0%, 100%, 0.1);
   color: #b3b3b3;
   height: 100%;
@@ -162,4 +145,4 @@ const ColumnName = styled.div`
   line-height: 16px;
 `;
 
-export default PlaylistTable;
+export default AlbumTable;

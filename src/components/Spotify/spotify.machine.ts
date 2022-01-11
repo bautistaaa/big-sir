@@ -14,11 +14,22 @@ interface CurrentPlaylistInfo {
   playlist: SpotifyApi.PlaylistObjectFull;
   isPlaying: boolean;
 }
-export type View = 'home' | 'library' | 'search' | 'liked' | 'playlist';
+interface CurrentAlbumInfo {
+  album: SpotifyApi.SingleAlbumResponse;
+  isPlaying: boolean;
+}
+export type View =
+  | 'home'
+  | 'library'
+  | 'search'
+  | 'liked'
+  | 'playlist'
+  | 'album';
 export type SelectorState = State<Context, SpotifyEvent, any, any>;
 export interface Context {
   currentListId?: string;
   currentTrack?: CurrentTrackInfo;
+  currentAlbumInfo?: CurrentAlbumInfo;
   currentPlaylistInfo?: CurrentPlaylistInfo;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
@@ -50,6 +61,14 @@ type LikedEvent = {
 type PlaylistEvent = {
   type: 'PLAYLIST';
   payload: { playlistId: string; view: View };
+};
+type AlbumEvent = {
+  type: 'ALBUM';
+  payload: { albumId: string; view: View };
+};
+type AlbumUpdateEvent = {
+  type: 'ALBUM_UPDATE';
+  payload: { album: SpotifyApi.SingleAlbumResponse; isPlaying: boolean };
 };
 type JwtInvalidEvent = {
   type: 'JWT_INVALID';
@@ -88,19 +107,21 @@ type ScrollToBottomEvent = {
 };
 
 export type SpotifyEvent =
-  | PlaylistEvent
+  | AlbumEvent
+  | AlbumUpdateEvent
   | HeaderTransitionEvent
   | HomeEvent
   | JwtInvalidEvent
   | JwtValidEvent
   | LibraryEvent
   | LikedEvent
-  | PlaylistUpdateEvent
-  | UpdateTrackEvent
+  | PlaylistEvent
   | PlayerInitEvent
+  | PlaylistUpdateEvent
   | ReceivedDataEvent
   | ScrollToBottomEvent
-  | SearchEvent;
+  | SearchEvent
+  | UpdateTrackEvent;
 
 const defaultHeaderState = {
   backgroundColor: 'transparent',
@@ -136,10 +157,18 @@ const config = {
       deviceId: (_, event) => (event as PlayerInitEvent).payload.deviceId,
     }),
     playlistUpdate: assign<Context, any>({
-      currentPlaylistInfo: (_, event) => {
+      currentPlaylistInfo: (_, event: PlaylistUpdateEvent) => {
         return {
-          playlist: (event as PlaylistUpdateEvent).payload.playlist,
-          isPlaying: (event as PlaylistUpdateEvent).payload.isPlaying,
+          playlist: event.payload.playlist,
+          isPlaying: event.payload.isPlaying,
+        };
+      },
+    }),
+    albumUpdate: assign<Context, any>({
+      currentAlbumInfo: (_, event: AlbumUpdateEvent) => {
+        return {
+          album: event.payload.album,
+          isPlaying: event.payload.isPlaying,
         };
       },
     }),
@@ -240,6 +269,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 id: 'search',
                 entry: 'changeView',
                 on: {
+                  ALBUM: { target: '#album' },
                   PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
@@ -269,10 +299,34 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   'changeView',
                 ],
                 on: {
+                  ALBUM: { target: '#album' },
                   PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
                   SEARCH: 'search',
+                },
+              },
+              album: {
+                id: 'album',
+                entry: [
+                  'changeView',
+                  assign<Context, any>({
+                    currentListId: (_, event: AlbumEvent) =>
+                      event?.payload?.albumId,
+                  }),
+                ],
+                on: {
+                  LIBRARY: { target: '#library' },
+                  LIKED: { target: '#liked' },
+                  HOME: { target: '#home' },
+                  PLAYLIST: { target: '#playlist' },
+                  SEARCH: { target: '#search' },
+                  PLAYLIST_UPDATE: {
+                    actions: 'playlistUpdate',
+                  },
+                  ALBUM_UPDATE: {
+                    actions: 'albumUpdate',
+                  },
                 },
               },
               playlist: {
@@ -284,6 +338,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   }),
                 ],
                 on: {
+                  ALBUM: { target: '#album' },
                   LIBRARY: { target: '#library' },
                   LIKED: { target: '#liked' },
                   HOME: { target: '#home' },
@@ -291,6 +346,9 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   SEARCH: { target: '#search' },
                   PLAYLIST_UPDATE: {
                     actions: 'playlistUpdate',
+                  },
+                  ALBUM_UPDATE: {
+                    actions: 'albumUpdate',
                   },
                 },
               },

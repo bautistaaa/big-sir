@@ -6,11 +6,11 @@ import { IoMdClose } from 'react-icons/io';
 import { useStickyBarContext } from './StickyBarContext';
 import useDebouncedValue from '../../hooks/useDebouncedValue';
 import BaseClearButton from '../ClearButton';
-import { useService } from '@xstate/react';
+import { useActor } from '@xstate/react';
 
 const SearchForm: FC = () => {
   const service = useStickyBarContext();
-  const [, send] = useService(service);
+  const [, send] = useActor(service);
   const [term, setTerm] = useState('');
   const debouncedTerm = useDebouncedValue(term);
 

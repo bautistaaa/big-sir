@@ -1,12 +1,11 @@
-import { useSelector, useService } from '@xstate/react';
+import { useSelector, useActor } from '@xstate/react';
 import { FC, memo } from 'react';
 import { AiFillHeart } from 'react-icons/ai';
 import styled from 'styled-components';
 
 import Home from '../icons/Home';
-import Library from '../icons/Library';
 import Search from '../icons/Search';
-import { Context, SelectorState, SpotifyEvent, View } from '../spotify.machine';
+import { SelectorState, View } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 
 interface Option {
@@ -17,7 +16,7 @@ interface Option {
 const MENU_OPTIONS: Option[] = [
   { text: 'home', icon: <Home />, type: 'HOME' },
   { text: 'search', icon: <Search />, type: 'SEARCH' },
-  { text: 'library', icon: <Library />, type: 'LIBRARY' },
+  // { text: 'library', icon: <Library />, type: 'LIBRARY' },
 ];
 
 const selectPlaylists = (state: SelectorState) => state.context.playlists;
@@ -27,7 +26,7 @@ const selectCurrentPlaylistId = (state: SelectorState) =>
 
 const SideBar: FC = memo(() => {
   const service = useSpotifyContext();
-  const [, send] = useService<Context, SpotifyEvent>(service);
+  const [, send] = useActor(service);
   const playlists = useSelector(service, selectPlaylists);
   const view = useSelector(service, selectView);
   const currentPlaylistId = useSelector(service, selectCurrentPlaylistId);
@@ -54,7 +53,7 @@ const SideBar: FC = memo(() => {
       </Menu>
       <SecondaryMenu>
         <MenuList>
-        {/*
+          {/*
           <SecondaryMenuListItem>
             <PlusContainer>
               <GoPlus fill="black" />

@@ -1,50 +1,37 @@
-import { FC, memo, useState } from 'react';
-import { useSelector, useActor } from '@xstate/react';
+import { memo, useState } from 'react';
+import { useSelector } from '@xstate/react';
 import styled from 'styled-components';
 import { IoIosPause } from 'react-icons/io';
 import { BiPlay } from 'react-icons/bi';
 
-import { SelectorState } from './spotify.machine';
-import {
-  convertMsToMinutesAndSeconds,
-  formatDateForSpotify,
-} from '../../utils';
-import { useSpotifyContext } from './SpotifyContext';
-import { getToken } from './utils';
-import { oneLine } from '../../shared/mixins';
-import ClearButton from '../../components/ClearButton';
+import { SelectorState } from '../spotify.machine';
+import { convertMsToMinutesAndSeconds } from '../../../utils';
+import { useSpotifyContext } from '../SpotifyContext';
+import { getToken } from '../utils';
+import { oneLine } from '../../../shared/mixins';
+import ClearButton from '../../../components/ClearButton';
 
 interface Props {
-  item: any;
+  item: SpotifyApi.TrackObjectSimplified;
   index: number;
-  uris: string[];
   onItemClick(v: string): void;
   isActive: boolean;
 }
 
 const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
-const selectCurrentPlayist = (state: SelectorState) =>
-  state.context.currentPlaylistInfo;
+const selectCurrentAlbum = (state: SelectorState) =>
+  state.context.currentAlbumInfo;
 
-const PlaylistTableItem: FC<Props> = ({
-  item,
-  uris,
-  index,
-  onItemClick,
-  isActive,
-}) => {
-  const { track, added_at } = item;
+const AlbumTableItem = ({ item, index, onItemClick, isActive }: Props) => {
   const token = getToken();
 
   const service = useSpotifyContext();
-  const [state] = useActor(service);
-  const isLikedSongsView = state.matches('loggedIn.success.liked');
   const currentTrack = useSelector(service, selectCurrentTrack);
-  const currentPlaylist = useSelector(service, selectCurrentPlayist);
+  const currentAlbum = useSelector(service, selectCurrentAlbum);
   const deviceId = useSelector(service, selectDeviceId);
   const [isHovered, setIsHovered] = useState(false);
-  const isCurrentTrack = track?.id === currentTrack?.trackId;
+  const isCurrentTrack = item.id === currentTrack?.trackId;
   const isCurrentTrackAndPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
   const displayPlayButton =
     (isActive && isCurrentTrack && !isCurrentTrackAndPlaying) ||
@@ -56,33 +43,19 @@ const PlaylistTableItem: FC<Props> = ({
     (isActive && !isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && !isCurrentTrack && isCurrentTrackAndPlaying);
-  // console.log({
-  //   isCurrentTrack,
-  //   isCurrentTrackAndPlaying,
-  //   isActive,
-  // });
 
   const handleTrackStatus = (
-    track: SpotifyApi.TrackObjectFull,
+    track: SpotifyApi.TrackObjectSimplified,
     play: boolean,
     reset: boolean
   ) => {
     const playOrPause = async () => {
       const method = play ? 'play' : 'pause';
-      let body;
-      if (isLikedSongsView) {
-        body = {
-          uris,
-          offset: { uri: track?.uri },
-          position_ms: reset ? 0 : currentTrack?.position,
-        };
-      } else {
-        body = {
-          context_uri: currentPlaylist?.playlist.uri,
-          offset: { uri: track?.uri },
-          position_ms: reset ? 0 : currentTrack?.position,
-        };
-      }
+      const body = {
+        context_uri: currentAlbum?.album.uri,
+        offset: { uri: track?.uri },
+        position_ms: reset ? 0 : currentTrack?.position,
+      };
       try {
         const resp = await fetch(
           `https://api.spotify.com/v1/me/player/${method}?device_id=${deviceId}`,
@@ -96,17 +69,6 @@ const PlaylistTableItem: FC<Props> = ({
           }
         );
 
-        // send({
-        //   type: 'UPDATE_TRACK',
-        //   payload: {
-        //     trackId: track?.id ?? '',
-        //     track,
-        //     isPlaying: method === 'play',
-        //     playlistId: currentPlaylist?.playlist?.id ?? '',
-        //     position: 0,
-        //   },
-        // });
-
         if (!resp.ok) {
           throw new Error('shit!');
         }
@@ -119,15 +81,15 @@ const PlaylistTableItem: FC<Props> = ({
     playOrPause();
   };
 
-  if (!track) return null;
+  if (!item) return null;
   // apparently you can add the same track twice
   // track number isnt unique either.. so index will work for now?
   return (
     <ListItem
-      key={`${track.id}-${index}`}
-      onDoubleClick={() => handleTrackStatus(track, true, true)}
+      key={`${item.id}-${index}`}
+      onDoubleClick={() => handleTrackStatus(item, true, true)}
       isActive={isActive}
-      onClick={() => onItemClick(track.id)}
+      onClick={() => onItemClick(item.id)}
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -144,7 +106,7 @@ const PlaylistTableItem: FC<Props> = ({
             <ClearButton
               onClick={(e) => {
                 e.stopPropagation();
-                handleTrackStatus(track, true, false);
+                handleTrackStatus(item, true, false);
               }}
             >
               <BiPlay fill={'white'} size={25} />
@@ -155,7 +117,7 @@ const PlaylistTableItem: FC<Props> = ({
             <ClearButton
               onClick={(e) => {
                 e.stopPropagation();
-                handleTrackStatus(track, false, false);
+                handleTrackStatus(item, false, false);
               }}
             >
               <IoIosPause fill={'white'} size={20} />
@@ -181,20 +143,17 @@ const PlaylistTableItem: FC<Props> = ({
         </GnarlyColumn>
       </FirstColumn>
       <TitleColumn>
-        <img loading="lazy" src={track?.album.images?.[2]?.url} alt="" />
         <div>
-          <Title isPlaying={isCurrentTrack}>{track?.name}</Title>
+          <Title isPlaying={isCurrentTrack}>{item?.name}</Title>
           <ArtistName>
-            <a href="#">{track.album?.artists?.[0]?.name}</a>
+            <a href="#">{item?.artists?.[0]?.name}</a>
           </ArtistName>
         </div>
       </TitleColumn>
-      <AlbumName>
-        <a href="#">{track.album?.name}</a>
-      </AlbumName>
       {/* @ts-ignore */}
-      <BaseColumn>{formatDateForSpotify(new Date(added_at))}</BaseColumn>
-      <BaseColumn>{convertMsToMinutesAndSeconds(track.duration_ms)}</BaseColumn>
+      <BaseColumn style={{ justifySelf: 'end' }}>
+        {convertMsToMinutesAndSeconds(item.duration_ms)}
+      </BaseColumn>
     </ListItem>
   );
 };
@@ -210,10 +169,7 @@ const ListItem = styled.li<{ isActive: boolean }>`
   grid-gap: 16px;
   display: grid;
   padding: 8px 16px;
-  grid-template-columns: [index] 16px [first] 6fr [var1] 4fr [var2] 3fr [last] minmax(
-      120px,
-      1fr
-    );
+  grid-template-columns: [index] 16px [first] 4fr [last] minmax(120px, 1fr);
   color: #b3b3b3;
   font-size: 14px;
   border-radius: 4px;
@@ -302,4 +258,4 @@ const GnarlyColumn = styled.div<{
 `;
 
 // export default PlaylistTableItem;
-export default memo(PlaylistTableItem);
+export default memo(AlbumTableItem);

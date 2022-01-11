@@ -1,4 +1,4 @@
-import { Machine, assign } from 'xstate';
+import { Machine, assign, State } from 'xstate';
 
 interface SearchMachineStates {
   states: {
@@ -8,6 +8,13 @@ interface SearchMachineStates {
     generic: {};
   };
 }
+
+export type SearchSelectorState = State<
+  SearchMachineContext,
+  SearchMachineEvents,
+  any,
+  any
+>;
 
 export type SearchMachineEvents =
   | { type: 'GENERIC_ERROR' }

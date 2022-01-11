@@ -1,10 +1,9 @@
 import { FC, MutableRefObject, useEffect } from 'react';
-import { useMachine, useService } from '@xstate/react';
+import { useMachine, useActor } from '@xstate/react';
 import styled from 'styled-components';
 
 import useFeedData from './useFeedData';
 import homeMachine from './home.machine';
-import { Context, SpotifyEvent } from '../spotify.machine';
 import FeedCard from '../FeedCard';
 import { getGreetingByTime } from '../../../utils';
 import useRect from '../../../hooks/useRect';
@@ -15,7 +14,7 @@ const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ parentRef }) => {
   const service = useSpotifyContext();
-  const [, sendParent] = useService<Context, SpotifyEvent>(service);
+  const [, sendParent] = useActor(service);
   const feedData = useFeedData();
   const [state, send] = useMachine(homeMachine);
   const { data } = state.context;
@@ -71,6 +70,9 @@ const Home: FC<{
                       type: 'PLAYLIST',
                       payload: { playlistId: item.id, view: 'playlist' },
                     });
+                  }}
+                  onPlayButtonClick={() => {
+
                   }}
                 />
               );

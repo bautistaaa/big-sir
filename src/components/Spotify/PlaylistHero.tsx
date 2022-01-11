@@ -6,7 +6,7 @@ interface PlaylistHeroProps {
   image: string;
   category: string;
   title: string;
-  description: string;
+  description?: string;
   author: string;
   followers?: number;
   tracksTotal: number;
@@ -25,13 +25,11 @@ const PlaylistHero = ({
   return (
     <Hero background={backgroundColor}>
       <Skrim />
-      <ArtWrapper>
-        <Art src={image}></Art>
-      </ArtWrapper>
+      <ArtWrapper>{image && <Art src={image}></Art>}</ArtWrapper>
       <PlaylistInfo>
         <Category>{category}</Category>
         <Title id="title">{title}</Title>
-        <Description>{description}</Description>
+        {description && <Description>{description}</Description>}
         <Metadata>
           <Author>{author}</Author>
           {followers && followers > 0 && (

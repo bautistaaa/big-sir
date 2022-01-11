@@ -1,8 +1,8 @@
-import { useMachine, useSelector, useService } from '@xstate/react';
+import { useMachine, useSelector, useActor } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
-import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
+import { SelectorState  } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import playlistDetailsMachine from './playlistDetails.machine';
 // import { PlaylistTableV2 } from '../PlaylistTableV2';
@@ -12,8 +12,7 @@ import useImageColors from '../../../hooks/useImageColors';
 import useLoadMore from '../../../hooks/useLoadMore';
 import PlaylistHero from '../PlaylistHero';
 
-const selectPlaylistId = (state: SelectorState) =>
-  state.context.currentListId;
+const selectPlaylistId = (state: SelectorState) => state.context.currentListId;
 
 const options = {
   root: document.getElementById('main'),
@@ -21,7 +20,7 @@ const options = {
 };
 const PlaylistDetails: FC = () => {
   const service = useSpotifyContext();
-  const [, parentSend] = useService<Context, SpotifyEvent>(service);
+  const [, parentSend] = useActor(service);
   const playlistId = useSelector(service, selectPlaylistId);
   const [state, send] = useMachine(playlistDetailsMachine(playlistId ?? ''));
   const [inView, setInView] = useState(false);

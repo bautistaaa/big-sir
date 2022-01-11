@@ -28,7 +28,6 @@ const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
 
   const getBody = () => {
     const firstSong = playlist.tracks.items[0].track.uri;
-    console.log({ currentTrackInfo });
     if (isSelectedPlaylistDiffFromTheOnePlaying) {
       return {
         context_uri: playlist.uri,

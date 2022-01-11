@@ -1,14 +1,13 @@
 import { FC, memo } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import styled from 'styled-components/macro';
-import { useService } from '@xstate/react';
+import { useActor } from '@xstate/react';
 
 import SideBar from './SideBar';
 import Main from './Main';
 import LoginScreen from './LoginScreen';
 import Player from './Player';
 import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
-import { Context, SpotifyEvent } from './spotify.machine';
 
 const client = new QueryClient();
 
@@ -23,7 +22,7 @@ const SpotifyWrapper = memo(() => {
 });
 const Spotify: FC = () => {
   const service = useSpotifyContext();
-  const [state] = useService<Context, SpotifyEvent>(service);
+  const [state] = useActor(service);
 
   return (
     <Wrapper>

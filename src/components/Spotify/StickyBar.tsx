@@ -1,10 +1,10 @@
 import { useSelector } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
-import { useService } from '@xstate/react';
+import { useActor } from '@xstate/react';
 import { AiFillCaretDown } from 'react-icons/ai';
 
-import { Context, SelectorState, SpotifyEvent } from './spotify.machine';
+import { SelectorState  } from './spotify.machine';
 import SearchForm from './SearchForm';
 import { useSpotifyContext } from './SpotifyContext';
 import { useInView } from 'react-intersection-observer';
@@ -17,7 +17,7 @@ const selectPlaylistId = (state: SelectorState) =>
 
 const StickyBar: FC = () => {
   const service = useSpotifyContext();
-  const [state] = useService<Context, SpotifyEvent>(service);
+  const [state] = useActor(service);
   const headerState = useSelector(service, selectHeaderState);
   const userProfile = useSelector(service, selectUserProfile);
   const playlistId = useSelector(service, selectPlaylistId);

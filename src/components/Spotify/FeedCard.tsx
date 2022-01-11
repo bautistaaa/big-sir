@@ -7,14 +7,26 @@ interface Props {
   name?: string;
   description?: string;
   onClick(): void;
+  onPlayButtonClick?: () => void;
 }
-const FeedCard: FC<Props> = ({ imageSrc, name, description, onClick }) => {
+const FeedCard: FC<Props> = ({
+  imageSrc,
+  name,
+  description,
+  onClick,
+  onPlayButtonClick,
+}) => {
   return (
     <Wrapper onClick={onClick}>
       <CardImage>
         <img src={imageSrc} alt="" />
         <ButtonWrapper>
-          <button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlayButtonClick?.();
+            }}
+          >
             <MdPlayArrow color="white" size={40} />
           </button>
         </ButtonWrapper>

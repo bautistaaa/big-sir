@@ -56,11 +56,6 @@ const PlaylistTableItem: FC<Props> = ({
     (isActive && !isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && isCurrentTrack && isCurrentTrackAndPlaying) ||
     (isHovered && !isCurrentTrack && isCurrentTrackAndPlaying);
-  // console.log({
-  //   isCurrentTrack,
-  //   isCurrentTrackAndPlaying,
-  //   isActive,
-  // });
 
   const handleTrackStatus = (
     track: SpotifyApi.TrackObjectFull,
@@ -96,21 +91,9 @@ const PlaylistTableItem: FC<Props> = ({
           }
         );
 
-        // send({
-        //   type: 'UPDATE_TRACK',
-        //   payload: {
-        //     trackId: track?.id ?? '',
-        //     track,
-        //     isPlaying: method === 'play',
-        //     playlistId: currentPlaylist?.playlist?.id ?? '',
-        //     position: 0,
-        //   },
-        // });
-
         if (!resp.ok) {
           throw new Error('shit!');
         }
-        // onPlay(track.id);
       } catch (e) {
         console.error(e);
       }

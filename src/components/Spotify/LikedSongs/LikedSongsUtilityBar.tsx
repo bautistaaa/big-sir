@@ -21,9 +21,9 @@ const LikedSongsUtilityBar = ({ likedSongs }: LikedSongsUtilityBarProps) => {
   const currentTrackInfo = useSelector(service, selectCurrentTrack);
   const uris = likedSongs?.items.map((item) => item?.track?.uri);
   const isSelectedPlaylistDiffFromTheOnePlaying =
-    currentTrackInfo?.playlistId !== '';
+    currentTrackInfo?.listId !== '';
   const isPlaylistPlaying =
-    currentTrackInfo?.playlistId === '' && !!currentTrackInfo?.isPlaying;
+    currentTrackInfo?.listId === '' && !!currentTrackInfo?.isPlaying;
 
   const getBody = () => {
     const firstSong = likedSongs.items[0].track.uri;

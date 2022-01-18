@@ -55,18 +55,15 @@ const MemoSearchCard = memo(SearchCard);
 const selectTerm = (state: SearchSelectorState) => state.context.term;
 const selectGenericResults = (state: SearchSelectorState) =>
   state.context.genericResults;
-const selectResults = (state: SearchSelectorState) => state.context.results;
 
 const Search: FC = () => {
   const service = useStickyBarContext();
   const [, send] = useActor(service);
   const term = useSelector(service, selectTerm);
   const genericResults = useSelector(service, selectGenericResults);
-  const results = useSelector(service, selectResults);
   const { data } = useQuery(['search', term], () => fetchSearchResults(term), {
     enabled: !!term,
   });
-  console.log({ term });
   // have to add term to trigger the useEffect
   // so we can send an event to the machine
   // which pretty much defeats the purpose of using this... but it works for now
@@ -94,7 +91,7 @@ const Search: FC = () => {
 
   if (!term) {
     return (
-      <Wrapper>
+      <Wrapper id="title">
         <CategoryHeaderWrapper>
           <h2>Browse All</h2>
         </CategoryHeaderWrapper>
@@ -111,7 +108,7 @@ const Search: FC = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper id="title">
       <Grid>
         <GridContent>
           <TopResult result={topResult} />
@@ -120,8 +117,6 @@ const Search: FC = () => {
           <Albums albums={data?.albums?.items ?? []} />
         </GridContent>
       </Grid>
-      {!term && <span>{JSON.stringify(genericResults, null, 2)}</span>}
-      {!!term && <span>{JSON.stringify(results, null, 2)}</span>}
     </Wrapper>
   );
 };

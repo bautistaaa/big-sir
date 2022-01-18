@@ -7,7 +7,7 @@ interface CurrentTrackInfo {
   trackId: string;
   track: Spotify.Track;
   isPlaying: boolean;
-  playlistId: string;
+  listId: string;
   position: number;
 }
 interface CurrentPlaylistInfo {
@@ -18,7 +18,12 @@ interface CurrentAlbumInfo {
   album: SpotifyApi.SingleAlbumResponse;
   isPlaying: boolean;
 }
+interface CurrentArtistInfo {
+  artist: SpotifyApi.SingleArtistResponse;
+  isPlaying: boolean;
+}
 export type View =
+  | 'artist'
   | 'home'
   | 'library'
   | 'search'
@@ -30,11 +35,12 @@ export interface Context {
   currentListId?: string;
   currentTrack?: CurrentTrackInfo;
   currentAlbumInfo?: CurrentAlbumInfo;
+  currentArtistInfo?: CurrentArtistInfo;
   currentPlaylistInfo?: CurrentPlaylistInfo;
   playlists?: SpotifyApi.ListOfUsersPlaylistsResponse;
   error?: string;
   userProfile?: SpotifyApi.UserProfileResponse;
-  deviceId?: string;
+  deviceId: string;
   headerState: {
     text: string;
     backgroundColor: string;
@@ -42,6 +48,14 @@ export interface Context {
   view?: View;
 }
 
+type ArtistEvent = {
+  type: 'ARTIST';
+  payload: { artistId: string; view: View };
+};
+type ArtistUpdateEvent = {
+  type: 'ARTIST_UPDATE';
+  payload: { artist: SpotifyApi.SingleArtistResponse; isPlaying: boolean };
+};
 type HomeEvent = {
   type: 'HOME';
   payload: { view: View };
@@ -80,6 +94,9 @@ type HeaderTransitionEvent = {
   type: 'TRANSITION_HEADER';
   payload: { text: string; backgroundColor: string };
 };
+type LoggedOutEvent = {
+  type: 'LOG_OUT';
+};
 type UpdateTrackEvent = {
   type: 'UPDATE_TRACK';
   payload: {
@@ -109,12 +126,15 @@ type ScrollToBottomEvent = {
 export type SpotifyEvent =
   | AlbumEvent
   | AlbumUpdateEvent
+  | ArtistEvent
+  | ArtistUpdateEvent
   | HeaderTransitionEvent
   | HomeEvent
   | JwtInvalidEvent
   | JwtValidEvent
   | LibraryEvent
   | LikedEvent
+  | LoggedOutEvent
   | PlaylistEvent
   | PlayerInitEvent
   | PlaylistUpdateEvent
@@ -148,7 +168,7 @@ const config = {
           trackId: (event as UpdateTrackEvent).payload.trackId,
           track: (event as UpdateTrackEvent).payload.track,
           isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
-          playlistId: (event as UpdateTrackEvent).payload.playlistId,
+          listId: (event as UpdateTrackEvent).payload.playlistId,
           position: (event as UpdateTrackEvent).payload.position,
         };
       },
@@ -172,6 +192,14 @@ const config = {
         };
       },
     }),
+    artistUpdate: assign<Context, any>({
+      currentArtistInfo: (_, event: ArtistUpdateEvent) => {
+        return {
+          artist: event.payload.artist,
+          isPlaying: event.payload.isPlaying,
+        };
+      },
+    }),
   },
   services: {
     fetchUserData: async () => {
@@ -190,6 +218,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
     id: 'spotify',
     initial: 'checkIfLoggedIn',
     context: {
+      deviceId: '',
       view: 'home',
       headerState: defaultHeaderState,
       error: '',
@@ -215,6 +244,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
           TRANSITION_HEADER: {
             actions: 'transitionHeader',
           },
+          LOG_OUT: 'loggedOut',
         },
         states: {
           loading: {
@@ -259,6 +289,8 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 id: 'home',
                 entry: 'changeView',
                 on: {
+                  ALBUM: { target: '#album' },
+                  ARTIST: { target: '#artist' },
                   PLAYLIST: 'playlist',
                   SEARCH: 'search',
                   LIBRARY: 'library',
@@ -267,9 +299,19 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
               },
               search: {
                 id: 'search',
-                entry: 'changeView',
+                entry: [
+                  assign<Context, any>({
+                    headerState: {
+                      backgroundColor: 'rgb(18, 18, 18);',
+                      text: 'search',
+                    },
+                    currentListId: undefined,
+                  }),
+                  'changeView',
+                ],
                 on: {
                   ALBUM: { target: '#album' },
+                  ARTIST: { target: '#artist' },
                   PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
@@ -300,6 +342,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 ],
                 on: {
                   ALBUM: { target: '#album' },
+                  ARTIST: { target: '#artist' },
                   PLAYLIST: 'playlist',
                   HOME: 'home',
                   LIBRARY: 'library',
@@ -316,6 +359,7 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   }),
                 ],
                 on: {
+                  ARTIST: { target: '#artist' },
                   LIBRARY: { target: '#library' },
                   LIKED: { target: '#liked' },
                   HOME: { target: '#home' },
@@ -326,6 +370,40 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   },
                   ALBUM_UPDATE: {
                     actions: 'albumUpdate',
+                  },
+                  ARTIST_UPDATE: {
+                    actions: 'artistUpdate',
+                  },
+                },
+              },
+              artist: {
+                id: 'artist',
+                entry: [
+                  'changeView',
+                  assign<Context, any>({
+                    currentListId: (_, event: ArtistEvent) =>
+                      event?.payload?.artistId,
+                    headerState: {
+                      backgroundColor: 'rgb(18, 18, 18);',
+                      text: 'artist',
+                    },
+                  }),
+                ],
+                on: {
+                  ALBUM: { target: '#album' },
+                  LIBRARY: { target: '#library' },
+                  LIKED: { target: '#liked' },
+                  HOME: { target: '#home' },
+                  PLAYLIST: { target: '#playlist' },
+                  SEARCH: { target: '#search' },
+                  PLAYLIST_UPDATE: {
+                    actions: 'playlistUpdate',
+                  },
+                  ALBUM_UPDATE: {
+                    actions: 'albumUpdate',
+                  },
+                  ARTIST_UPDATE: {
+                    actions: 'artistUpdate',
                   },
                 },
               },
@@ -349,6 +427,9 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                   },
                   ALBUM_UPDATE: {
                     actions: 'albumUpdate',
+                  },
+                  ARTIST_UPDATE: {
+                    actions: 'artistUpdate',
                   },
                 },
               },

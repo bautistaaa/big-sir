@@ -164,7 +164,6 @@ const createAlbumDetailsMachine = (id: string) =>
           const albumDetails: SpotifyApi.SingleAlbumResponse = await request(
             `${spotifyConfig.apiUrl}/albums/${context.id}`
           );
-          console.log({albumDetails})
           return albumDetails;
         },
       },

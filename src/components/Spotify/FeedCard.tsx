@@ -1,33 +1,38 @@
-import { FC } from 'react';
 import styled from 'styled-components/macro';
-import { MdPlayArrow } from 'react-icons/md';
+import { MdPlayArrow, MdPause } from 'react-icons/md';
 
 interface Props {
-  imageSrc: string;
-  name?: string;
   description?: string;
+  imageSrc: string;
+  isPlaying: boolean;
+  name: string;
   onClick(): void;
-  onPlayButtonClick?: () => void;
+  onPlayClick(): void;
 }
-const FeedCard: FC<Props> = ({
-  imageSrc,
-  name,
+const FeedCard = ({
   description,
+  imageSrc,
+  isPlaying,
+  name,
   onClick,
-  onPlayButtonClick,
-}) => {
+  onPlayClick,
+}: Props) => {
   return (
     <Wrapper onClick={onClick}>
       <CardImage>
-        <img src={imageSrc} alt="" />
+        <img loading="lazy" src={imageSrc} alt="" />
         <ButtonWrapper>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onPlayButtonClick?.();
+              onPlayClick();
             }}
           >
-            <MdPlayArrow color="white" size={40} />
+            {isPlaying ? (
+              <MdPause color="white" size={40} />
+            ) : (
+              <MdPlayArrow color="white" size={40} />
+            )}
           </button>
         </ButtonWrapper>
       </CardImage>

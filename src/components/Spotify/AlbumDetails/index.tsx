@@ -54,7 +54,6 @@ const AlbumDetails = () => {
     });
   }, [parentSend, stickyBarBackgroundColor, albumDetails?.name]);
 
-  console.log({ albumDetails });
   if (!albumDetails) {
     return null;
   }

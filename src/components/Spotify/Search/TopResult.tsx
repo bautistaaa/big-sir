@@ -2,16 +2,30 @@ import styled from 'styled-components/macro';
 import { MdPlayArrow } from 'react-icons/md';
 
 import { Category } from './Category';
+import { useSpotifyContext } from '../SpotifyContext';
+import { useActor } from '@xstate/react';
 interface TopResultProps {
   result: SpotifyApi.ArtistObjectFull;
 }
 const TopResult = ({ result }: TopResultProps) => {
+  const service = useSpotifyContext();
+  const [, send] = useActor(service);
   if (!result) {
     return null;
   }
 
+  const handleClick = () => {
+    send({
+      type: 'ARTIST',
+      payload: {
+        artistId: result.id,
+        view: 'artist',
+      },
+    });
+  };
+
   return (
-    <TopResultSection>
+    <TopResultSection onClick={handleClick}>
       <Category>Top Result</Category>
       <TopResultContent>
         <Top>

@@ -20,7 +20,7 @@ export type PlaylistDetailsMachineEvent =
     }
   | {
       type: 'RECEIVED_DATA';
-      data: SpotifyApi.UsersSavedTracksResponse;
+      data: SpotifyApi.PlaylistObjectFull;
     }
   | RefreshEvent;
 
@@ -152,7 +152,7 @@ const createPlaylistDetailsMachine = (id: string) =>
           send
         ) => {
           if (context.next) {
-            const playlistDetails = await request<SpotifyApi.UsersSavedTracksResponse>(
+            const playlistDetails = await request<SpotifyApi.PlaylistObjectFull>(
               context.next
             );
             send({ type: 'RECEIVED_DATA', data: playlistDetails });

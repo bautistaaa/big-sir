@@ -60,13 +60,11 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
         }),
       },
       PLAYER_UPDATE: {
-        actions: assign<PlayerContext, PlayerStateEvent>({
-          playerState: (_, event: PlayerStateEvent) => {
-            return event.payload.state;
-          },
-          isShuffle: (_, event: PlayerStateEvent) => {
-            return event.payload.state?.shuffle;
-          },
+        actions: assign<PlayerContext, PlayerStateEvent>((_, event) => {
+          return {
+            playerState: event.payload.state,
+            isShuffle: event.payload.state?.shuffle,
+          };
         }),
       },
       VOLUME_UPDATE: {

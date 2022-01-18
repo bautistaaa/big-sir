@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import Home from './Home';
 import AlbumDetails from './AlbumDetails';
+import ArtistDetails from './ArtistDetails';
 import LikedSongs from './LikedSongs';
 import PlaylistDetails from './PlaylistDetails';
 import Search from './Search';
@@ -33,6 +34,7 @@ const Main: FC = memo(() => {
           <Home parentRef={mainRef} />
         )}
         {state.matches('loggedIn.success.album') && <AlbumDetails />}
+        {state.matches('loggedIn.success.artist') && <ArtistDetails />}
         {state.matches('loggedIn.success.search') && <Search />}
         {state.matches('loggedIn.success.liked') && <LikedSongs />}
         {state.matches('loggedIn.success.playlist') && <PlaylistDetails />}

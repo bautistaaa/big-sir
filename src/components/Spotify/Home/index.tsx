@@ -1,20 +1,17 @@
 import { FC, MutableRefObject, useEffect } from 'react';
-import { useMachine, useActor } from '@xstate/react';
+import { useMachine } from '@xstate/react';
 import styled from 'styled-components';
 
 import useFeedData from './useFeedData';
 import homeMachine from './home.machine';
-import FeedCard from '../FeedCard';
+import PlaylistFeedCard from '../PlaylistFeedCard';
 import { getGreetingByTime } from '../../../utils';
 import useRect from '../../../hooks/useRect';
 import TopSectionItem from '../TopSectionItem';
-import { useSpotifyContext } from '../SpotifyContext';
 
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ parentRef }) => {
-  const service = useSpotifyContext();
-  const [, sendParent] = useActor(service);
   const feedData = useFeedData();
   const [state, send] = useMachine(homeMachine);
   const { data } = state.context;
@@ -22,7 +19,6 @@ const Home: FC<{
 
   const newReleaseItems = data?.newReleases?.albums?.items;
   const featurePlaylists = data?.featurePlaylists?.playlists?.items;
-  const trackRecommendations = data?.trackRecommendations?.tracks;
 
   useEffect(() => {
     if (feedData) {
@@ -60,44 +56,11 @@ const Home: FC<{
           <FeaturedSectionTitle>Featured Playlists</FeaturedSectionTitle>
           <SectionContent>
             {featurePlaylists?.map((item) => {
-              return (
-                <FeedCard
-                  key={item.id}
-                  imageSrc={item?.images?.[0]?.url}
-                  name={item?.name}
-                  onClick={() => {
-                    sendParent({
-                      type: 'PLAYLIST',
-                      payload: { playlistId: item.id, view: 'playlist' },
-                    });
-                  }}
-                  onPlayButtonClick={() => {
-
-                  }}
-                />
-              );
-            })}
-          </SectionContent>
-        </FeaturedSectionWrapper>
-        <FeaturedSectionWrapper>
-          <FeaturedSectionTitle>Recommendations</FeaturedSectionTitle>
-          <SectionContent>
-            {trackRecommendations?.map((item) => {
-              return (
-                <FeedCard
-                  key={item.id}
-                  /* @ts-ignore */
-                  imageSrc={item?.album?.images?.[1]?.url}
-                  name={item?.name}
-                  onClick={() => {}}
-                />
-              );
+              return <PlaylistFeedCard key={item.id} listId={item.id} />;
             })}
           </SectionContent>
         </FeaturedSectionWrapper>
       </div>
-      <section></section>
-      <section></section>
     </Wrapper>
   );
 };

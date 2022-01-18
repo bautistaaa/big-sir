@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 
 import { Category } from './Category';
-import FeedCard from '../FeedCard';
+import ArtistFeedCard from '../ArtistFeedCard';
 
 interface ArtistsProps {
   artists: SpotifyApi.ArtistObjectFull[];
@@ -12,15 +12,7 @@ const Artists = ({ artists }: ArtistsProps) => {
       <Category>Artists</Category>
       <Items>
         {artists.slice(0, 4).map((artist) => {
-          return (
-            <FeedCard
-              key={artist.id}
-              imageSrc={artist?.images?.[0]?.url}
-              name={artist?.name}
-              onClick={() => {}}
-              onPlayButtonClick={() => {}}
-            />
-          );
+          return <ArtistFeedCard listId={artist.id} />;
         })}
       </Items>
     </Wrapper>

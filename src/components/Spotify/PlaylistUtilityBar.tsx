@@ -21,9 +21,9 @@ const PlaylistUtilityBar = ({ playlist }: PlaylistUtilityBarProps) => {
   const deviceId = useSelector(service, selectDeviceId);
   const currentTrackInfo = useSelector(service, selectCurrentTrack);
   const isSelectedPlaylistDiffFromTheOnePlaying =
-    currentTrackInfo?.playlistId !== playlist?.id;
+    currentTrackInfo?.listId !== playlist?.id;
   const isPlaylistPlaying =
-    currentTrackInfo?.playlistId === playlist?.id &&
+    currentTrackInfo?.listId === playlist?.id &&
     !!currentTrackInfo?.isPlaying;
 
   const getBody = () => {

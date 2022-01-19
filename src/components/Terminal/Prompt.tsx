@@ -375,11 +375,14 @@ const CursorWrapper = styled.div`
 `;
 const Cursor = styled.div`
   position: absolute;
-  top: ${navigator.userAgent.indexOf('Firefox') !== -1 ? '2px' : '-17px'};
+  top: -17px;
   left: 0;
   background: #b6b6b6;
   width: 12px;
   height: 22px;
+  @-moz-document url-prefix() {
+    top: 2px;
+  }
 `;
 
 export default Prompt;

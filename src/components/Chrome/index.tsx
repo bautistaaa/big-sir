@@ -165,7 +165,7 @@ const Wrapper = styled.div`
 `;
 const TopBar = styled.div`
   height: 40px;
-  background: ${({ theme }) => theme.topBarBackground};
+  background: ${({ theme }) => theme.chromeTopBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 `;

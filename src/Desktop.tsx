@@ -16,6 +16,7 @@ const App: FC = () => {
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
   const { xPos, yPos, showMenu } = useContextMenu();
   const [activeIcon, setIsActiveIcon] = useState('');
+  console.count('desktop');
   const handleCleanUpClick = () => {
     setReset(true);
   };
@@ -41,7 +42,14 @@ const App: FC = () => {
   }, [send]);
 
   return (
-    <Wrapper>
+    <Wrapper
+      style={{
+        background: `url('./bg-3.jpg') no-repeat center top fixed`,
+        backgroundSize: 'cover',
+        minHeight: '100%',
+        height: '100%',
+      }}
+    >
       <TopBar />
       <Main className="bounds">
         {current.context.activeWindows.map((aw) => (
@@ -76,10 +84,6 @@ const App: FC = () => {
 };
 
 const Wrapper = styled.div`
-  min-height: 100%;
-  height: 100%;
-  background: url('./bg-3.jpg') no-repeat center top fixed;
-  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

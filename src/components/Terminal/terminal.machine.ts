@@ -76,7 +76,6 @@ const config = {
           ? context.index + 1
           : context.index;
       return {
-        ...context,
         index: newIndex,
         historyIndex: newIndex,
         commands: [
@@ -86,9 +85,8 @@ const config = {
         currentCommand: '',
       };
     }),
-    clear: assign<Context, TerminalEvent>((context) => {
+    clear: assign<Context, TerminalEvent>(() => {
       return {
-        ...context,
         index: 0,
         historyIndex: 0,
         commands: [],
@@ -136,12 +134,9 @@ const config = {
       }
 
       if (typeof newCwdContents === 'string') {
-        return {
-          ...context,
-        };
+        return context;
       }
       return {
-        ...context,
         cwd: newCwd,
         cwdContents: newCwdContents,
       };
@@ -151,7 +146,6 @@ const config = {
       const newHistoryIndex =
         context.historyIndex - 1 < 0 ? 0 : context.historyIndex - 1;
       return {
-        ...context,
         historyIndex: newHistoryIndex,
         currentCommand: realCommands[newHistoryIndex]?.input ?? '',
       };
@@ -163,14 +157,12 @@ const config = {
           ? context.commands.length
           : context.historyIndex + 1;
       return {
-        ...context,
         historyIndex: newHistoryIndex,
         currentCommand: realCommands[newHistoryIndex]?.input ?? '',
       };
     }),
     keyDown: assign<Context, TerminalEvent>((context, event) => {
       return {
-        ...context,
         keysCurrentlyPressed: [
           ...filterDuplicates(
             context.keysCurrentlyPressed,
@@ -186,22 +178,19 @@ const config = {
       } = event as KeyUpEvent;
       if (key === 'Meta') {
         return {
-          ...context,
           keysCurrentlyPressed: [],
         };
       }
 
       return {
-        ...context,
         keysCurrentlyPressed: filterDuplicates(
           context.keysCurrentlyPressed,
           key
         ),
       };
     }),
-    setCurrentCommand: assign<Context, TerminalEvent>((context, event) => {
+    setCurrentCommand: assign<Context, TerminalEvent>((_, event) => {
       return {
-        ...context,
         currentCommand: (event as SetCurrentCommandEvent).payload.command,
       };
     }),

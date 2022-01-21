@@ -8,6 +8,19 @@ import { View } from '../Terminal';
 require('codemirror/mode/htmlmixed/htmlmixed');
 require('codemirror/keymap/vim');
 
+const BLOCKED_LIST = [
+  'Backspace',
+  'Shift',
+  'Meta',
+  'Escape',
+  'Control',
+  'Alt',
+  'Enter',
+  'Tab',
+  'ArrowUp',
+  'ArrowDown',
+];
+
 const options = {
   theme: 'dracula',
   lineNumbers: true,
@@ -63,14 +76,19 @@ const Editor: FC<{
           if (stateRef.current.command === ':q') {
             setView('terminal');
           }
-          commandRef.current = '';
           if (commandTextAreaRef.current) {
+            commandRef.current = '';
+            commandTextAreaRef.current!.blur();
             commandTextAreaRef.current.value = '';
           }
           dispatch({ type: 'modeChanged', payload: { mode: 'normal' } });
         } else if (key === 'Escape') {
           commandRef.current = '';
-          commandTextAreaRef.current!.value = '';
+
+          if (commandTextAreaRef.current) {
+            commandTextAreaRef.current!.value = '';
+            commandTextAreaRef.current!.blur();
+          }
           dispatch({ type: 'modeChanged', payload: { mode: 'normal' } });
         } else if (key === 'Backspace') {
           const command = commandRef.current ?? '';
@@ -82,10 +100,12 @@ const Editor: FC<{
             payload: { command: `${strippedLastLetter.join('')}` },
           });
         } else {
-          dispatch({
-            type: 'addCommand',
-            payload: { command: `${commandRef.current}${key}` },
-          });
+          if (!BLOCKED_LIST.includes(key)) {
+            dispatch({
+              type: 'addCommand',
+              payload: { command: `${commandRef.current}${key}` },
+            });
+          }
         }
       }
     };
@@ -145,6 +165,9 @@ const FileContent = styled.div`
   .react-codemirror2 > div {
     color: white !important;
     height: 100%;
+  }
+  .react-codemirror2 * {
+    transition: none !important;
   }
 `;
 const HiddenTextArea = styled.textarea`

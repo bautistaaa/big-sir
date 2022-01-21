@@ -4,7 +4,8 @@ import { useMachine } from '@xstate/react';
 import windowMachine from './window.machine';
 import StopLights from '../StopLights';
 import { useAppContext } from '../../AppContext';
-import configs, { AppType } from '../../shared/configs';
+import configs, { AppType } from '../../shared/app-configs';
+import Spotify from '../Spotify';
 import Chrome from '../Chrome';
 import Finder from '../Finder';
 import Terminal from '../Terminal';
@@ -15,15 +16,15 @@ import useResizeWindow from '../../hooks/useResizeWindow';
 import useIsFocused from '../../hooks/useIsFocused';
 import styled from 'styled-components/macro';
 
-export type WindowSize = {
+export interface WindowSize {
   width: string | number;
   height: string | number;
-};
+}
 
-export type WindowPosition = {
+export interface WindowPosition {
   x: number;
   y: number;
-};
+}
 
 interface WindowProps {
   name: AppType;
@@ -36,6 +37,7 @@ const getComponentByName = (name: AppType) => {
     chrome: Chrome,
     finder: Finder,
     terminal: Terminal,
+    spotify: Spotify,
   };
   return components[name];
 };
@@ -44,7 +46,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
 
   const ref = useRef<HTMLDivElement | null>(null);
   const { current: currentParent, send: sendParent } = useAppContext();
-  const [current, send] = useMachine(windowMachine);
+  const [current, send] = useMachine(windowMachine, { devTools: true });
   const { isFocused } = useIsFocused(ref);
 
   const isMinimized = !!currentParent.context.minimizedWindows.find(
@@ -60,6 +62,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     minHeight,
     minWidth,
   } = configs[name];
+
   const mounted = useRef(false);
   const windowRef = useRef<Rnd>();
   useResizeWindow(

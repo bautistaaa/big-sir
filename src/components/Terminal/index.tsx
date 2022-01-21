@@ -13,7 +13,7 @@ export type View = 'terminal' | 'nvim';
 
 const Terminal: FC = () => {
   const [view, setView] = useState<View>('terminal');
-  const [current, send] = useMachine(terminalMachine);
+  const [current, send] = useMachine(terminalMachine, { devTools: true });
   const [fileContent, setFileContent] = useState('');
   const [lastLogin, setLastLogin] = useLocalStorage(
     'lastLogin',
@@ -52,7 +52,7 @@ const Terminal: FC = () => {
               padding: '3px',
             }}
           >
-            <Message>{`Last login: ${lastLogin} on ttys001`}</Message>
+            <Message>{`Last login: ${lastLogin ?? formatDate(new Date())} on ttys001`}</Message>
             <Message>{`View resume at /home/personal/Resume.js (ex: nvim home/personal/Resume.js)`}</Message>
             <Prompt
               isTerminalFocused={isFocused}

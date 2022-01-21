@@ -1,7 +1,7 @@
 import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
-import { AppType } from '../shared/configs';
+import { AppType } from '../shared/app-configs';
 
 interface DockItem {
   name: AppType;
@@ -28,10 +28,10 @@ const items: DockItem[] = [
     name: 'chrome',
     path: './chrome.png',
   },
-  // {
-  //   name: 'spotify',
-  //   path: './spotify.svg',
-  // },
+  {
+    name: 'spotify',
+    path: './spotify.svg',
+  },
 ];
 
 const Dock: FC<{
@@ -121,7 +121,7 @@ const MinimizedWindow = styled.div`
 const Separator = styled.div`
   height: 100%;
   width: 1px;
-  background: ${({theme}) => theme.dockSeparator};
+  background: ${({ theme }) => theme.dockSeparator};
   margin-right: 10px;
 `;
 const BaseContainer = styled.div`
@@ -140,7 +140,7 @@ const ContentWrapper = styled.div`
   height: 50px;
   width: 30%;
   padding: 7px;
-  background: ${({theme}) => theme.dockBackground};
+  background: ${({ theme }) => theme.dockBackground};
   backdrop-filter: blur(5px);
   box-shadow: inset 0px 0px 0px 0.2px rgb(255 255 255 / 35%);
 `;

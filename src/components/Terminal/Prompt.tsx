@@ -380,6 +380,9 @@ const Cursor = styled.div`
   background: #b6b6b6;
   width: 12px;
   height: 22px;
+  @-moz-document url-prefix() {
+    top: 2px;
+  }
 `;
 
 export default Prompt;

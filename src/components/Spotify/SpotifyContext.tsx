@@ -37,7 +37,6 @@ const useSpotifyContext = () => {
 const SpotifyProvider: FC = ({ children }) => {
   const [token] = useLocalStorage('token', '');
   const [, , service] = useMachine(spotifyMachine, {
-    devTools: true,
     services: {
       checkedIfLoggedIn: () => (send: Sender<SpotifyEvent>) => {
         if (!!token) {

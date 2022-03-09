@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, memo, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
-import { useMachine } from '@xstate/react';
+import { useActor, useMachine } from '@xstate/react';
 import windowMachine from './window.machine';
 import StopLights from '../StopLights';
 import { useAppContext } from '../../AppContext';
@@ -45,8 +45,9 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const Component = getComponentByName(name);
 
   const ref = useRef<HTMLDivElement | null>(null);
-  const { current: currentParent, send: sendParent } = useAppContext();
-  const [current, send] = useMachine(windowMachine, { devTools: true });
+  const service = useAppContext();
+  const [currentParent, sendParent] = useActor(service);
+  const [current, send] = useMachine(windowMachine);
   const { isFocused } = useIsFocused(ref);
 
   const isMinimized = !!currentParent.context.minimizedWindows.find(
@@ -145,7 +146,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       minWidth={minWidth ?? 300}
       default={{
         x: Math.round(window.innerWidth / 2 - windowWidth / 2),
-        y: Math.round(window.innerHeight / 2 - windowHeight / 2),
+        y: 0,
         width: `${windowWidth}px`,
         height: `${windowHeight}px`,
       }}

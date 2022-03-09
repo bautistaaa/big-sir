@@ -1,3 +1,4 @@
+import { useActor } from '@xstate/react';
 import { FC, MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
@@ -37,7 +38,8 @@ const items: DockItem[] = [
 const Dock: FC<{
   minimizedTargetRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ minimizedTargetRef }) => {
-  const { current, send } = useAppContext();
+  const service = useAppContext();
+  const [current, send] = useActor(service);
 
   return (
     <Wrapper>
@@ -52,7 +54,10 @@ const Dock: FC<{
                 }
                 key={name}
                 onClick={() => {
-                  send('FOCUS_WINDOW', { payload: { name } });
+                  send({
+                    type: 'FOCUS_WINDOW',
+                    payload: { name },
+                  });
                 }}
               >
                 <img src={path} alt={name} />

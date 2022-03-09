@@ -6,6 +6,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
 import { LeftArrow, RightArrow } from './icons';
+import { useActor } from '@xstate/react';
 
 interface Bookmark {
   favico: string;
@@ -47,7 +48,8 @@ const DEFAULT_URL = {
   title: 'Google',
 };
 const Chrome: FC = (): JSX.Element => {
-  const { current } = useAppContext();
+  const service = useAppContext();
+  const [current] = useActor(service);
   const themeContext = useContext(ThemeContext);
   const windowState = current.context.activeWindows.find(
     (x) => x.name === 'chrome'

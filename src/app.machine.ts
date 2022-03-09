@@ -13,6 +13,7 @@ interface MinimizedWindow {
   name: AppType;
 }
 type Mode = 'light' | 'dark';
+
 export interface Context {
   activeWindows: ActiveWindow[];
   minimizedWindows: MinimizedWindow[];
@@ -45,6 +46,8 @@ export type AppEvent =
 const config = {
   actions: {
     focusWindow: assign<Context, AppEvent>((context, event) => {
+      console.log({ event });
+
       const minimizedWindows = context.minimizedWindows.filter(
         (w) => w.name !== (event as FocusWindowEvent).payload.name
       );

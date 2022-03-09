@@ -5,9 +5,11 @@ import { Apple } from './icons';
 import CommandPanel from './CommandPanel';
 import Clock from './Clock';
 import { useAppContext } from '../../AppContext';
+import { useActor } from '@xstate/react';
 
 const TopBar: FC = () => {
-  const { send: sendParent } = useAppContext();
+  const service = useAppContext();
+  const [, sendParent] = useActor(service);
 
   const handleAboutThisMacClick = () => {
     sendParent({
@@ -74,7 +76,7 @@ const StyledMenuButton = styled.button`
 const StyledMenuItems = styled.ul`
   outline: none;
   position: absolute;
-  background: ${({theme}) => theme.menuBackground};
+  background: ${({ theme }) => theme.menuBackground};
   backdrop-filter: blur(72px);
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   left: 0;

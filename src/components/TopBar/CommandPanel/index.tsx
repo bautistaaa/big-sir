@@ -10,6 +10,7 @@ import ButtonItem, {
   Settings as SettingsEnum,
 } from './ButtonItem';
 import { useAppContext } from '../../../AppContext';
+import { useActor } from '@xstate/react';
 
 export interface ButtonItemProps extends BaseButtonItemProps {}
 const buttonListItems: ButtonItemProps[] = [
@@ -33,7 +34,8 @@ const buttonListItems: ButtonItemProps[] = [
   },
 ];
 const CommandPanel: FC = () => {
-  const { current: currentParent, send: sendParent } = useAppContext();
+  const service = useAppContext();
+  const [currentParent, sendParent] = useActor(service);
   const themeContext = useContext(ThemeContext);
   return (
     <Wrapper>

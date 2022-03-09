@@ -8,9 +8,11 @@ import { useAppContext } from './AppContext';
 import useRect from './hooks/useRect';
 import useContextMenu from './hooks/useContextMenu';
 import DesktopIcon, { ICONS } from './components/DesktopIcon';
+import { useActor } from '@xstate/react';
 
 const App: FC = () => {
-  const { current, send } = useAppContext();
+  const service = useAppContext();
+  const [current, send] = useActor(service);
   const minimizedTargetRef = useRef(null);
   const [reset, setReset] = useState(false);
   const minimizedTargetRect = useRect(minimizedTargetRef, []);

@@ -5,6 +5,7 @@
   "dependencies": {
     "@headlessui/react": "^1.4.2",
     "@rooks/use-mutation-observer": "^4.9.2",
+    "@types/codemirror": "^5.60.5",
     "@xstate/inspect": "^0.6.0",
     "@xstate/react": "^1.6.3",
     "codemirror": "^5.60.0",

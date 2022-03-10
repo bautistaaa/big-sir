@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import { useContext } from 'react';
 import { useMachine } from '@xstate/react';
 import { Icons, Details, List } from './icons/';

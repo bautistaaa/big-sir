@@ -1,5 +1,5 @@
 import { FC, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import { BsBrightnessAltHigh } from 'react-icons/bs';
 import { Menu } from '@headlessui/react';
 import CircleButton from './CircleButton';

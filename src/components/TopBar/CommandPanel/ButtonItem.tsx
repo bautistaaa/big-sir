@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import CircleButton from './CircleButton';
 
 export enum Settings {

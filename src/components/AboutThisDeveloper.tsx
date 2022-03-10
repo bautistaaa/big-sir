@@ -1,5 +1,5 @@
 import { FC, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import { IoLogoTwitch } from 'react-icons/io';
 import { ImGithub } from 'react-icons/im';
 import { GrTwitter } from 'react-icons/gr';

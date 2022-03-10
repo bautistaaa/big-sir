@@ -18,7 +18,7 @@ const App: FC = () => {
   const minimizedTargetRect = useRect(minimizedTargetRef, []);
   const { xPos, yPos, showMenu } = useContextMenu();
   const [activeIcon, setIsActiveIcon] = useState('');
-  console.count('desktop');
+
   const handleCleanUpClick = () => {
     setReset(true);
   };

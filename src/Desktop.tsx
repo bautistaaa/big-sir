@@ -3,7 +3,7 @@ import TopBar from './components/TopBar';
 import Dock from './components/Dock';
 import Window from './components/Window';
 import ContextMenu from './components/ContextMenu';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { useAppContext } from './AppContext';
 import useRect from './hooks/useRect';
 import useContextMenu from './hooks/useContextMenu';

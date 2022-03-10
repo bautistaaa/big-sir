@@ -1,6 +1,6 @@
 import { FC, memo, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { useActor, useSelector } from '@xstate/react';
 import spotifyConfig from '../../../shared/config';
 import { request } from '../utils';

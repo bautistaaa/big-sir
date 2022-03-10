@@ -1,4 +1,4 @@
-import { ThemeProvider } from 'styled-components/macro';
+import { ThemeProvider } from 'styled-components';
 import { FC } from 'react';
 import Desktop from './Desktop';
 import GlobalStyling from './shared/GlobalStyling';

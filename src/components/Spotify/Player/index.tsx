@@ -1,7 +1,7 @@
 import { useMachine, useActor } from '@xstate/react';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import playerMachine from './player.machine';
 import ClearButton from '../../ClearButton';

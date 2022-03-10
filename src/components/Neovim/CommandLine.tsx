@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 const CommandLine: FC<{ command: string }> = ({ command }) => {
   return <Wrapper>{command}</Wrapper>;

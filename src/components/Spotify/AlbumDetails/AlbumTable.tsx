@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import mergeRefs from 'react-merge-refs';
 import { useResizeDetector } from 'react-resize-detector';
 import { useInView } from 'react-intersection-observer';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 
 import AlbumTableItem from './AlbumTableItem';

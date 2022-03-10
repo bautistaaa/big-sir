@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { MdPause, MdPlayArrow } from 'react-icons/md';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 type ButtonType = 'default' | 'inverse';
 interface Props {

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Command, Context, TerminalEvent } from './terminal.machine';
 import { useAppContext } from '../../AppContext';
 import { View } from '../Terminal';

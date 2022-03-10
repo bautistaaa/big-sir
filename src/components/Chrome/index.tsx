@@ -1,5 +1,5 @@
 import { FC, FormEvent, useEffect, useRef, useState, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components';
+import styled, { ThemeContext } from 'styled-components/macro';
 import { VscBrowser } from 'react-icons/vsc';
 import { IoMdRefresh } from 'react-icons/io';
 import { FaExternalLinkAlt } from 'react-icons/fa';

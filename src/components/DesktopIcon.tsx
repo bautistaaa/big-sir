@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
 import useIsFocused from '../hooks/useIsFocused';
 

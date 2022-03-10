@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   isActive: boolean;

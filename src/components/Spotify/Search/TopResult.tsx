@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { MdPlayArrow } from 'react-icons/md';
 
 import { Category } from './Category';

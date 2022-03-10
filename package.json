@@ -23,6 +23,7 @@
     "react-resize-detector": "^6.7.4",
     "react-rnd": "^10.2.4",
     "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
     "react-virtualized": "^9.22.3",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
@@ -33,9 +34,10 @@
     "xstate": "^4.27.0"
   },
   "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -56,18 +58,9 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.20",
-    "@types/node": "^12.20.5",
     "@types/query-string": "^6.3.0",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
-    "@types/react-query": "^1.2.9",
     "@types/react-resize-detector": "^6.1.0",
     "@types/react-rnd": "^8.0.0",
-    "@types/react-router-dom": "^5.1.7",
     "@types/react-virtualized": "^9.21.15",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
@@ -75,9 +68,16 @@
     "@types/spotify-api": "0.0.12",
     "@types/spotify-web-playback-sdk": "^0.1.10",
     "@types/styled-components": "^5.1.8",
-    "@vitejs/plugin-react": "^1.2.0",
-    "prettier": "^2.2.1",
-    "vite": "^2.8.6",
-    "vite-plugin-svgr": "^1.0.1"
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^12.20.5",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-query": "^1.2.9",
+    "@types/react-router-dom": "^5.1.7",
+    "babel-plugin-macros": "^3.0.1",
+    "prettier": "^2.2.1"
   }
 }

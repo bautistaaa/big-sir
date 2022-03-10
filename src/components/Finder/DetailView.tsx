@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
 import { File, Contents } from '../../shared/fileDirectory';
 import { useAppContext } from '../../AppContext';

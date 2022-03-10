@@ -1,5 +1,5 @@
 import { FC, MutableRefObject } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
 import { AppType } from '../shared/app-configs';
 

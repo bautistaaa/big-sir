@@ -51,32 +51,26 @@ const App: FC = () => {
       }}
     >
       <TopBar />
-      <Main>
-        <InnerWrapper>
-          <Top className="bounds">
-            {current.context.activeWindows.map((aw) => (
-              <Window
-                key={aw.name}
-                name={aw.name}
-                minimizedTargetRect={minimizedTargetRect}
-              />
-            ))}
-            {ICONS.map((icon) => {
-              return (
-                <DesktopIcon
-                  key={icon.displayName}
-                  icon={icon}
-                  reset={reset}
-                  activeIcon={activeIcon}
-                  setActiveIcon={setIsActiveIcon}
-                />
-              );
-            })}
-          </Top>
-          <Bottom>
-            <Dock minimizedTargetRef={minimizedTargetRef} />
-          </Bottom>
-        </InnerWrapper>
+      <Main className="bounds">
+        {current.context.activeWindows.map((aw) => (
+          <Window
+            key={aw.name}
+            name={aw.name}
+            minimizedTargetRect={minimizedTargetRect}
+          />
+        ))}
+        {ICONS.map((icon) => {
+          return (
+            <DesktopIcon
+              key={icon.displayName}
+              icon={icon}
+              reset={reset}
+              activeIcon={activeIcon}
+              setActiveIcon={setIsActiveIcon}
+            />
+          );
+        })}
+        <Dock minimizedTargetRef={minimizedTargetRef} />
       </Main>
       {showMenu && (
         <ContextMenu
@@ -99,21 +93,4 @@ const Main = styled.div`
   width: 100%;
   position: relative;
 `;
-
-const InnerWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  position: relative;
-`;
-
-const Top = styled.div`
-  flex: 1;
-`;
-const Bottom = styled.div`
-  height: 55px;
-`;
-
 export default App;

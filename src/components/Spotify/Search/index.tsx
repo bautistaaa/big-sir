@@ -107,22 +107,18 @@ const Search: FC = () => {
     );
   }
 
-  if (topResult && artists) {
-    return (
-      <Wrapper id="title">
-        <Grid>
-          <GridContent>
-            <TopResult result={topResult} />
-            <Songs songs={data?.tracks?.items ?? []} />
-            <Artists artists={artists} />
-            <Albums albums={data?.albums?.items ?? []} />
-          </GridContent>
-        </Grid>
-      </Wrapper>
-    );
-  }
-
-  return null;
+  return (
+    <Wrapper id="title">
+      <Grid>
+        <GridContent>
+          <TopResult result={topResult} />
+          <Songs songs={data?.tracks?.items ?? []} />
+          <Artists artists={artists} />
+          <Albums albums={data?.albums?.items ?? []} />
+        </GridContent>
+      </Grid>
+    </Wrapper>
+  );
 };
 
 const Wrapper = styled.div`

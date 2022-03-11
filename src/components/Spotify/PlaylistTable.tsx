@@ -7,12 +7,12 @@ import { AiOutlineClockCircle } from 'react-icons/ai';
 
 import PlaylistTableItem from './PlaylistTableItem';
 
-const PlaylistTable = ({ items }: { items: any }) => {
+const PlaylistTable = ({ items }: { items: Pick<SpotifyApi.PlaylistTrackObject, 'track'>[] }) => {
   const [activeTrack, setActiveTrack] = useState<string>('');
   // HELP: i couldnt figure out how to do this with sticky + intersection observer
   const tableWrapperRef = useRef<HTMLDivElement | null>(null);
   const wrapperWidth = useRef<number | undefined>();
-  const uris = useMemo(() => items?.map((x: any) => x?.track?.uri), []);
+  const uris = useMemo(() => items?.map((x) => x?.track?.uri), [items]);
   const { ref: resizeRef } = useResizeDetector({
     onResize: () => {
       wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;
@@ -56,7 +56,7 @@ const PlaylistTable = ({ items }: { items: any }) => {
         </HeaderPositioner>
       </HeaderWrapper>
       <List isSticky={!inView}>
-        {items.map((item: any, i: number) => {
+        {items.map((item, i) => {
           return (
             <PlaylistTableItem
               key={item.track?.id + i}

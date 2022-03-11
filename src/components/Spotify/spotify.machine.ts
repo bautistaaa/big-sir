@@ -154,26 +154,27 @@ const config = {
       view: (_, event) => event?.payload?.view,
     }),
     transitionHeader: assign<Context, any>({
-      headerState: (_, event: HeaderTransitionEvent) => {
+      headerState: (_, event) => {
         return {
-          backgroundColor: event.payload.backgroundColor,
-          text: event.payload.text,
+          backgroundColor: (event as HeaderTransitionEvent).payload
+            .backgroundColor,
+          text: (event as HeaderTransitionEvent).payload.text,
         };
       },
     }),
     updateTrack: assign<Context, any>({
-      currentTrack: (_, event: UpdateTrackEvent) => {
+      currentTrack: (_, event) => {
         return {
-          trackId: event.payload.trackId,
-          track: event.payload.track,
-          isPlaying: event.payload.isPlaying,
-          listId: event.payload.playlistId,
-          position: event.payload.position,
+          trackId: (event as UpdateTrackEvent).payload.trackId,
+          track: (event as UpdateTrackEvent).payload.track,
+          isPlaying: (event as UpdateTrackEvent).payload.isPlaying,
+          listId: (event as UpdateTrackEvent).payload.playlistId,
+          position: (event as UpdateTrackEvent).payload.position,
         };
       },
     }),
     playerInit: assign<Context, any>({
-      deviceId: (_, event: PlayerInitEvent) => event.payload.deviceId,
+      deviceId: (_, event) => (event as PlayerInitEvent).payload.deviceId,
     }),
     playlistUpdate: assign<Context, any>({
       currentPlaylistInfo: (_, event: PlaylistUpdateEvent) => {
@@ -272,7 +273,15 @@ const spotifyMachine = createMachine<Context, SpotifyEvent>(
                 actions: 'playerInit',
               },
               UPDATE_TRACK: {
-                actions: 'updateTrack',
+                actions: [
+                  // (c, e) => {
+                  //   console.log({
+                  //     c: c.currentTrack?.trackId,
+                  //     p: e.payload?.trackId,
+                  //   });
+                  // },
+                  'updateTrack',
+                ],
               },
             },
             states: {

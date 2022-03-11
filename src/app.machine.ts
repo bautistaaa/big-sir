@@ -45,9 +45,11 @@ export type AppEvent =
 
 const config = {
   actions: {
-    focusWindow: assign<Context, any>((context, event: FocusWindowEvent) => {
+    focusWindow: assign<Context, AppEvent>((context, event) => {
+      console.log({ event });
+
       const minimizedWindows = context.minimizedWindows.filter(
-        (w) => w.name !== event.payload.name
+        (w) => w.name !== (event as FocusWindowEvent).payload.name
       );
       const maxZIndex = Math.max(
         ...context.activeWindows.map((x) => x.zIndex),
@@ -55,12 +57,12 @@ const config = {
       );
 
       const refocusedWindows = context.activeWindows.map((aw) => {
-        if (aw.name === event.payload.name) {
+        if (aw.name === (event as FocusWindowEvent).payload.name) {
           return {
             ...aw,
             zIndex: maxZIndex + 1,
             focused: true,
-            defaultUrl: event.payload.defaultUrl,
+            defaultUrl: (event as FocusWindowEvent).payload.defaultUrl,
           };
         }
 
@@ -70,12 +72,13 @@ const config = {
       // We need to open a new window:
       if (
         !refocusedWindows.find(
-          ({ name }: { name: string }) => name === event.payload.name
+          ({ name }: { name: string }) =>
+            name === (event as FocusWindowEvent).payload.name
         )
       ) {
         refocusedWindows.push({
-          name: event.payload.name,
-          defaultUrl: event.payload.defaultUrl,
+          name: (event as FocusWindowEvent).payload.name,
+          defaultUrl: (event as FocusWindowEvent).payload.defaultUrl,
           zIndex: maxZIndex + 1,
           focused: true,
         });
@@ -86,20 +89,18 @@ const config = {
         minimizedWindows,
       };
     }),
-    minimizeWindow: assign<Context, any>(
-      (context, event: MinimizeWindowEvent) => {
-        return {
-          ...context,
-          minimizedWindows: [
-            ...context.minimizedWindows,
-            { name: event.payload.name },
-          ],
-        };
-      }
-    ),
-    removeWindow: assign<Context, any>((context, event) => {
+    minimizeWindow: assign<Context, AppEvent>((context, event) => {
+      return {
+        ...context,
+        minimizedWindows: [
+          ...context.minimizedWindows,
+          { name: (event as MinimizeWindowEvent).payload.name },
+        ],
+      };
+    }),
+    removeWindow: assign<Context, AppEvent>((context, event) => {
       const activeWindows = context.activeWindows
-        .filter((aw) => aw.name !== event.payload.name)
+        .filter((aw) => aw.name !== (event as RemoveWindowEvent).payload.name)
         .sort((a, b) => {
           return b.zIndex - a.zIndex;
         })
@@ -118,9 +119,9 @@ const config = {
         activeWindows,
       };
     }),
-    toggleMode: assign<Context, any>((_, event) => {
+    toggleMode: assign<Context, AppEvent>((_, event) => {
       return {
-        mode: event.payload.mode,
+        mode: (event as ToggleModeEvent).payload.mode,
       };
     }),
   },

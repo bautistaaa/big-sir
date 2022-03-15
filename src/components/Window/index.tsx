@@ -195,6 +195,7 @@ const Container = styled.div`
   height: 100%;
   margin: 1px 1px 1px 1px;
   border-radius: inherit;
+  overflow: hidden;
 `;
 const Border = styled.div`
   display: flex;

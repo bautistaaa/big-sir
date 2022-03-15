@@ -4,6 +4,7 @@ import { login } from './utils';
 const LoginScreen = () => {
   return (
     <Wrapper>
+      <DraggableBar className="action-bar" />
       <Header>
         Hi!&nbsp;
         <Blurb>
@@ -27,6 +28,13 @@ const Wrapper = styled.div`
   justify-content: center;
   color: white;
   padding: 100px;
+`;
+const DraggableBar = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
 `;
 const Header = styled.div`
   font-size: 40px;

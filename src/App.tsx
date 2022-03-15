@@ -1,14 +1,17 @@
+import { useActor } from '@xstate/react';
+// import { inspect } from '@xstate/inspect';
 import { ThemeProvider } from 'styled-components/macro';
-import { FC } from 'react';
 import Desktop from './Desktop';
 import GlobalStyling from './shared/GlobalStyling';
 import { useAppContext } from './AppContext';
 import { darkTheme, lightTheme } from './shared/theme';
-import { useActor } from '@xstate/react';
 
-const App: FC = () => {
+const App = () => {
   const service = useAppContext();
   const [state] = useActor(service);
+
+  // inspect();
+
   return (
     <ThemeProvider
       theme={state.context.mode === 'light' ? lightTheme : darkTheme}

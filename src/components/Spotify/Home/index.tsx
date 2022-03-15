@@ -1,8 +1,7 @@
-import { FC, MutableRefObject, useEffect } from 'react';
+import { FC, MutableRefObject } from 'react';
 import { useMachine } from '@xstate/react';
 import styled from 'styled-components';
 
-import useFeedData from './useFeedData';
 import homeMachine from './home.machine';
 import PlaylistFeedCard from '../PlaylistFeedCard';
 import { getGreetingByTime } from '../../../utils';
@@ -12,20 +11,14 @@ import TopSectionItem from '../TopSectionItem';
 const Home: FC<{
   parentRef: MutableRefObject<HTMLDivElement | null>;
 }> = ({ parentRef }) => {
-  const feedData = useFeedData();
-  const [state, send] = useMachine(homeMachine);
+  const [state] = useMachine(homeMachine);
   const { data } = state.context;
   const { width } = useRect(parentRef, []);
 
   const newReleaseItems = data?.newReleases?.albums?.items;
   const featurePlaylists = data?.featurePlaylists?.playlists?.items;
 
-  useEffect(() => {
-    if (feedData) {
-      send({ type: 'RECEIVED_DATA', data: feedData });
-    }
-  }, [send, feedData]);
-
+  // we can fix this with container queries
   const items =
     width >= 1460
       ? newReleaseItems?.slice(0, 10)
@@ -35,7 +28,7 @@ const Home: FC<{
       ? newReleaseItems?.slice(0, 6)
       : newReleaseItems?.slice(0, 4);
 
-  if (!feedData) {
+  if (!data) {
     return null;
   }
 

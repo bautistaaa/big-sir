@@ -67,6 +67,8 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
         }),
       },
       VOLUME_UPDATE: {
+        // guard: make sure volume level is valid
+        // <= 1 && >= 0
         actions: assign<PlayerContext, VolumeEvent>({
           volume: (_, event) => {
             return event.payload.volume;
@@ -170,6 +172,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
           const token = getToken();
           console.log(context.repeatMode);
           // we can handle this better with states
+          console.log({ token, playerState: context.playerState });
           if (token && context.playerState) {
             await fetch(
               `https://api.spotify.com/v1/me/player/repeat?state=${context.repeatMode}`,

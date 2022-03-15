@@ -61,6 +61,13 @@ const GlobalStyling = createGlobalStyle`
   textarea {
     caret-color: transparent;
   }
+  iframe {
+    position: absolute;
+    top: 50px;
+    width: 1000px;
+    height: 600px;
+    z-index: 10000;
+  }
 `;
 
 export default GlobalStyling;

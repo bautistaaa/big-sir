@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import { memo } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import styled from 'styled-components/macro';
 import { useActor } from '@xstate/react';
@@ -20,7 +20,7 @@ const SpotifyWrapper = memo(() => {
     </QueryClientProvider>
   );
 });
-const Spotify: FC = () => {
+const Spotify = () => {
   const service = useSpotifyContext();
   const [state] = useActor(service);
 

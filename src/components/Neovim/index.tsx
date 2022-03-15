@@ -1,41 +1,31 @@
-import { FC, useEffect, useState } from 'react';
 import Loading from './Loading';
 import Editor from './Editor';
-import { View } from '../Terminal';
+import { useMachine } from '@xstate/react';
+import { neovimMachine } from './neovim.machine';
 
-type EditorState = 'loading' | 'nvim';
-const Neovim: FC<{
+interface Props {
   isTerminalFocused: boolean;
   fileContent: string;
-  setView: React.Dispatch<React.SetStateAction<View>>;
-}> = ({ isTerminalFocused, fileContent, setView }) => {
-  const [editorState, setEditorState] = useState<EditorState>('loading');
+  onViewChanged(view: string): void;
+}
+const Neovim = ({ isTerminalFocused, fileContent, onViewChanged }: Props) => {
+  const [current] = useMachine(neovimMachine);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setEditorState('nvim');
-    }, 2000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  if (editorState === 'loading') {
+  if (current.matches('loading')) {
     return <Loading />;
   }
 
-  if (editorState === 'nvim') {
+  if (current.matches('neovim')) {
     return (
       <Editor
         fileContent={fileContent}
-        setView={setView}
+        onViewChanged={onViewChanged}
         isTerminalFocused={isTerminalFocused}
       />
     );
   }
 
-  return <></>;
+  return null;
 };
 
 export default Neovim;

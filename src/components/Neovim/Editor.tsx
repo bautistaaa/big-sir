@@ -3,8 +3,9 @@ import styled from 'styled-components/macro';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import ModeLine from './ModeLine';
 import CommandLine from './CommandLine';
-import useEditorState from '../../hooks/useEditorState';
 import { View } from '../Terminal';
+import { useMachine } from '@xstate/react';
+import editorMachine from './editor.machine';
 require('codemirror/mode/htmlmixed/htmlmixed');
 require('codemirror/keymap/vim');
 
@@ -31,17 +32,18 @@ const options = {
 const Editor: FC<{
   isTerminalFocused: boolean;
   fileContent: string;
-  setView: React.Dispatch<React.SetStateAction<View>>;
-}> = ({ isTerminalFocused, fileContent, setView }) => {
-  const [state, dispatch] = useEditorState();
+  onViewChanged(view: string): void;
+}> = ({ isTerminalFocused, fileContent, onViewChanged }) => {
+  // const [state, dispatch] = useEditorState();
+  const [{ context: current }, send] = useMachine(editorMachine);
   const [code, setCode] = useState(fileContent);
   const ref = useRef<HTMLDivElement>(null);
   const commandTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const commandRef = useRef<string | null>(null);
-  const stateRef = useRef(state);
+  const stateRef = useRef(current);
 
   useEffect(() => {
-    stateRef.current = state;
+    stateRef.current = current;
   });
 
   useEffect(() => {
@@ -53,12 +55,14 @@ const Editor: FC<{
   }, [isTerminalFocused]);
 
   useEffect(() => {
-    setTimeout(() => {
+    const id = setTimeout(() => {
       if (ref.current) {
         const scrollHeight = ref.current.scrollHeight;
         ref.current.scrollTo(0, scrollHeight);
       }
     }, 3000);
+
+    return () => clearTimeout(id);
   }, []);
 
   useEffect(() => {
@@ -70,18 +74,18 @@ const Editor: FC<{
         if (commandTextAreaRef.current) {
           commandTextAreaRef.current.focus();
         }
-        dispatch({ type: 'modeChanged', payload: { mode: 'command' } });
+        send({ type: 'MODE_CHANGED', payload: { mode: 'command' } });
       } else if (stateRef.current.mode === 'command') {
         if (key === 'Enter') {
           if (stateRef.current.command === ':q') {
-            setView('terminal');
+            onViewChanged('terminal');
           }
           if (commandTextAreaRef.current) {
             commandRef.current = '';
             commandTextAreaRef.current!.blur();
             commandTextAreaRef.current.value = '';
           }
-          dispatch({ type: 'modeChanged', payload: { mode: 'normal' } });
+          send({ type: 'MODE_CHANGED', payload: { mode: 'normal' } });
         } else if (key === 'Escape') {
           commandRef.current = '';
 
@@ -89,20 +93,20 @@ const Editor: FC<{
             commandTextAreaRef.current!.value = '';
             commandTextAreaRef.current!.blur();
           }
-          dispatch({ type: 'modeChanged', payload: { mode: 'normal' } });
+          send({ type: 'MODE_CHANGED', payload: { mode: 'normal' } });
         } else if (key === 'Backspace') {
           const command = commandRef.current ?? '';
           const strippedLastLetter = command.split('');
           strippedLastLetter.pop();
 
-          dispatch({
-            type: 'addCommand',
+          send({
+            type: 'ADD_COMMAND',
             payload: { command: `${strippedLastLetter.join('')}` },
           });
         } else {
           if (!BLOCKED_LIST.includes(key)) {
-            dispatch({
-              type: 'addCommand',
+            send({
+              type: 'ADD_COMMAND',
               payload: { command: `${commandRef.current}${key}` },
             });
           }
@@ -137,12 +141,12 @@ const Editor: FC<{
             }}
           />
         </FileContent>
-        <ModeLine mode={state.mode} />
-        <CommandLine command={state.command} />
+        <ModeLine mode={current.mode} />
+        <CommandLine command={current.command} />
         <HiddenTextArea
           ref={commandTextAreaRef}
           onChange={(e) => {
-            if (state.mode === 'command') {
+            if (current.mode === 'command') {
               commandRef.current = e.target.value;
             }
           }}

@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Neovim from '../../components/Neovim';
@@ -11,9 +11,9 @@ import terminalMachine from './terminal.machine';
 
 export type View = 'terminal' | 'nvim';
 
-const Terminal: FC = () => {
+const Terminal = () => {
   const [view, setView] = useState<View>('terminal');
-  const [current, send] = useMachine(terminalMachine, { devTools: true });
+  const [current, send] = useMachine(terminalMachine);
   const [fileContent, setFileContent] = useState('');
   const [lastLogin, setLastLogin] = useLocalStorage(
     'lastLogin',
@@ -37,6 +37,7 @@ const Terminal: FC = () => {
   };
 
   const { isFocused } = useIsFocused(ref);
+  const onViewChanged = (view: View) => setView(view);
 
   useMutationObserver(consoleRef, callback);
 
@@ -52,7 +53,9 @@ const Terminal: FC = () => {
               padding: '3px',
             }}
           >
-            <Message>{`Last login: ${lastLogin ?? formatDate(new Date())} on ttys001`}</Message>
+            <Message>{`Last login: ${
+              lastLogin ?? formatDate(new Date())
+            } on ttys001`}</Message>
             <Message>{`View resume at /home/personal/Resume.js (ex: nvim home/personal/Resume.js)`}</Message>
             <Prompt
               isTerminalFocused={isFocused}
@@ -68,7 +71,7 @@ const Terminal: FC = () => {
         <Console>
           <Neovim
             fileContent={fileContent}
-            setView={setView}
+            onViewChanged={onViewChanged}
             isTerminalFocused={true}
           />
         </Console>

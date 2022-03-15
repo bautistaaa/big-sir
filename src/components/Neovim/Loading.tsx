@@ -2,7 +2,7 @@ import { FC } from 'react';
 import styled from 'styled-components/macro';
 
 const text = `
-            NVIM v0.5.0-dev+5ad3288
+            NVIM v0.6.0
 
  Nvim is open source and freely distributable
             https://neovim.io/#chat

@@ -16,6 +16,7 @@ export interface Context {
   keysCurrentlyQueued: string[];
 }
 type Mode = 'command' | 'visual' | 'insert' | 'normal';
+
 type ModeChangedEvent = {
   type: 'MODE_CHANGED';
   payload: { mode: Mode };
@@ -68,7 +69,7 @@ const config = {
   },
 };
 
-const appMachine = createMachine<Context, EditorEvent, any>(
+const editorMachine = createMachine<Context, EditorEvent, any>(
   {
     id: 'app',
     context: {
@@ -92,4 +93,4 @@ const appMachine = createMachine<Context, EditorEvent, any>(
   config as any
 );
 
-export default appMachine;
+export default editorMachine;

@@ -2,7 +2,7 @@ import { useMachine, useSelector, useActor } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
-import { SelectorState  } from '../spotify.machine';
+import { SelectorState } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';
 import playlistDetailsMachine from './playlistDetails.machine';
 // import { PlaylistTableV2 } from '../PlaylistTableV2';
@@ -22,7 +22,9 @@ const PlaylistDetails: FC = () => {
   const service = useSpotifyContext();
   const [, parentSend] = useActor(service);
   const playlistId = useSelector(service, selectPlaylistId);
-  const [state, send] = useMachine(playlistDetailsMachine(playlistId ?? ''));
+  const [state, send] = useMachine(playlistDetailsMachine(playlistId ?? ''), {
+    devTools: true,
+  });
   const [inView, setInView] = useState(false);
   const playlist = state.context.playlistDetails;
   const imageSrc = playlist?.images?.[0]?.url ?? '';

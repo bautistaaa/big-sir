@@ -92,6 +92,7 @@ const Player: FC = () => {
   useEffect(() => {
     if (scriptReady && !player.current) {
       if (token) {
+        console.log('instantiate new player');
         player.current = new Spotify.Player({
           name: 'Web Playback SDK Quick Start Player',
           getOAuthToken: (cb) => {
@@ -121,6 +122,7 @@ const Player: FC = () => {
     // @ts-ignore
     if (window.hasBeenLoaded) {
       if (token) {
+        console.log('instantiate new player');
         player.current = new Spotify.Player({
           name: 'Web Playback SDK Quick Start Player',
           getOAuthToken: (cb) => {

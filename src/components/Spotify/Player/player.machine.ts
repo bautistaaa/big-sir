@@ -128,7 +128,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
                 invoke: {
                   src: 'repeat',
                 },
-                on: { TOGGLE_REPEAT: 'track' },
+                on: { TOGGLE_REPEAT: 'context' },
               },
               track: {
                 entry: assign<PlayerContext, any>({
@@ -139,7 +139,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
                 invoke: {
                   src: 'repeat',
                 },
-                on: { TOGGLE_REPEAT: 'context' },
+                on: { TOGGLE_REPEAT: 'off' },
               },
               context: {
                 entry: assign<PlayerContext, any>({
@@ -150,7 +150,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
                 invoke: {
                   src: 'repeat',
                 },
-                on: { TOGGLE_REPEAT: 'off' },
+                on: { TOGGLE_REPEAT: 'track' },
               },
             },
           },
@@ -168,6 +168,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
       repeat: async (context) => {
         try {
           const token = getToken();
+          console.log(context.repeatMode);
           // we can handle this better with states
           if (token && context.playerState) {
             await fetch(

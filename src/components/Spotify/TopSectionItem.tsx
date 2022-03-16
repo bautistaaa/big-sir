@@ -11,7 +11,6 @@ import { getToken, request } from './utils';
 interface Props {
   item: SpotifyApi.AlbumObjectSimplified;
 }
-const token = getToken();
 const selectCurrentTrack = (state: SelectorState) => state.context.currentTrack;
 const selectDeviceId = (state: SelectorState) => state.context.deviceId;
 /**
@@ -53,6 +52,7 @@ const TopSectionItem = ({ item }: Props) => {
         position_ms: 0,
       };
       try {
+        const token = getToken();
         const resp = await fetch(
           `https://api.spotify.com/v1/me/player/${method}?device_id=${deviceId}`,
           {

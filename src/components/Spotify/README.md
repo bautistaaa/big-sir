@@ -16,6 +16,8 @@
       - (everytime a track is played it rerenders at least 4x when event is dispatched)
 
 ## Bugs
+  - [top result view | search] - hittig play on songs will start track from same place current track is player
+    - should reset to beginning of track like when a track is double clicked
   - artist feed cards show pause button no matter what?
       - play button flashes (seems to disappear if you remove the image)
 

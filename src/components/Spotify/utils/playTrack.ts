@@ -1,7 +1,5 @@
 import { getToken } from '../utils';
 
-const token = getToken();
-
 const playTrack = async ({
   method,
   deviceId,
@@ -12,6 +10,7 @@ const playTrack = async ({
   body: unknown;
 }) => {
   try {
+    const token = getToken();
     const resp = await fetch(
       `https://api.spotify.com/v1/me/player/${method}?device_id=${deviceId}`,
       {

@@ -40,7 +40,6 @@ type PlayerEvent =
   | RepeatEvent
   | MuteEvent;
 
-const token = getToken();
 const playerMachine = createMachine<PlayerContext, PlayerEvent>(
   {
     id: 'player',
@@ -168,6 +167,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
     services: {
       repeat: async (context) => {
         try {
+          const token = getToken();
           // we can handle this better with states
           if (token && context.playerState) {
             await fetch(
@@ -185,6 +185,7 @@ const playerMachine = createMachine<PlayerContext, PlayerEvent>(
         }
       },
       shuffle: async (context) => {
+        const token = getToken();
         // we can handle this better with states
         if (token && context.playerState) {
           await fetch(

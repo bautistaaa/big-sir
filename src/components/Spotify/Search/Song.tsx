@@ -33,7 +33,10 @@ const Song = ({ song }: SongProps) => {
       const body = {
         uris: [track?.uri],
         offset: { uri: track?.uri },
-        position_ms: reset ? 0 : currentTrack?.position,
+        position_ms:
+          currentTrack?.trackId !== song.id || reset
+            ? 0
+            : currentTrack?.position,
       };
       try {
         const resp = await fetch(

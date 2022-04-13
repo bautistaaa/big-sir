@@ -1,13 +1,12 @@
-import { FC, useState } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
-import { useContext } from 'react';
 import { useMachine } from '@xstate/react';
-import { Icons, Details, List } from './icons/';
+import { FC, useContext, useState } from 'react';
+import styled, { ThemeContext } from 'styled-components/macro';
+import getDirectoryContents from '../../utils/getDirectoryContents';
+import DetailView from './DetailView';
 import finderMachine from './finder.machine';
+import { Details, Icons, List } from './icons/';
 import IconView from './IconView';
 import ListView from './ListView';
-import DetailView from './DetailView';
-import getDirectoryContents from '../../utils/getDirectoryContents';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -36,7 +35,6 @@ const SideBarItems: Record<string, SidebarItem> = {
 
 const Finder: FC = () => {
   const [current, send] = useMachine(finderMachine, { devTools: true });
-  // const { current: currentParent } = useAppContext();
   const [activeFolder, setActiveFolder] = useState('personal');
   const themeContext = useContext(ThemeContext);
   const files = getDirectoryContents(
@@ -45,7 +43,6 @@ const Finder: FC = () => {
   const isIconView = current.matches('icons');
   const isDetailView = current.matches('details');
   const isListView = current.matches('lists');
-  // const isDark = currentParent.context.mode === 'dark';
 
   return (
     <Wrapper>

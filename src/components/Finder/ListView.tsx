@@ -8,6 +8,7 @@ import { formatDate } from '../../utils';
 const ListView: FC<{ files: Contents }> = ({ files }) => {
   const { current, send } = useAppContext();
   const [active, setActive] = useState('');
+  console.log({ files, length: Object.keys(files).length });
 
   return (
     <Wrapper
@@ -118,7 +119,7 @@ const Wrapper = styled.div<{ count: number; isDark: boolean; theme: any }>`
       rgb(51, 51, 51) 0,
       rgb(51, 51, 51) 40px
     )
-    left 0 top ${76 + count * 20 + 25}px no-repeat fixed;
+    left 0 top ${count * 20 + 25}px no-repeat fixed;
   `}
   &::before {
     content: '';

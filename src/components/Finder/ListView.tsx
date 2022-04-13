@@ -8,7 +8,6 @@ import { formatDate } from '../../utils';
 const ListView: FC<{ files: Contents }> = ({ files }) => {
   const { current, send } = useAppContext();
   const [active, setActive] = useState('');
-  console.log(current.context.mode)
 
   return (
     <Wrapper

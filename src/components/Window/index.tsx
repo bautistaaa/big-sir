@@ -129,6 +129,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
     },
     [current.value, send, resizeable]
   );
+  const randomInteger = Math.floor(Math.random() * 150);
 
   return (
     <Rnd
@@ -144,8 +145,9 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       minHeight={minHeight ?? 300}
       minWidth={minWidth ?? 300}
       default={{
-        x: Math.round(window.innerWidth / 2 - windowWidth / 2),
-        y: Math.round(window.innerHeight / 2 - windowHeight / 2),
+        x: Math.round(window.innerWidth / 2 - windowWidth / 2) + randomInteger,
+        y:
+          Math.round(window.innerHeight / 2 - windowHeight / 2) + randomInteger,
         width: `${windowWidth}px`,
         height: `${windowHeight}px`,
       }}

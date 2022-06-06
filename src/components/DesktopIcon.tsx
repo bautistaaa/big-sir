@@ -1,3 +1,4 @@
+import { useActor } from '@xstate/react';
 import { FC, useEffect, useRef } from 'react';
 import { Rnd } from 'react-rnd';
 import styled from 'styled-components/macro';
@@ -49,7 +50,8 @@ const DesktopIcon: FC<{
   activeIcon: string;
   setActiveIcon: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ icon, reset, activeIcon, setActiveIcon }) => {
-  const { send } = useAppContext();
+  const service = useAppContext();
+  const [, send] = useActor(service);
   const windowRef = useRef<Rnd>();
   const iconRef = useRef<HTMLDivElement | null>(null);
   const { isFocused } = useIsFocused(iconRef);

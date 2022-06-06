@@ -1,3 +1,4 @@
+import { useActor } from '@xstate/react';
 import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
@@ -6,7 +7,8 @@ import { File, Contents } from '../../shared/fileDirectory';
 import { formatDate } from '../../utils';
 
 const ListView: FC<{ files: Contents }> = ({ files }) => {
-  const { current, send } = useAppContext();
+  const service = useAppContext();
+  const [current, send] = useActor(service);
   const [active, setActive] = useState('');
 
   return (

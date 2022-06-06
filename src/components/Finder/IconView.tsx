@@ -1,3 +1,4 @@
+import { useActor } from '@xstate/react';
 import { FC, useState } from 'react';
 import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
@@ -5,7 +6,8 @@ import { useAppContext } from '../../AppContext';
 import { Contents, File } from '../../shared/fileDirectory';
 
 const IconView: FC<{ files: Contents }> = ({ files }) => {
-  const { send } = useAppContext();
+  const service = useAppContext();
+  const [, send] = useActor(service);
   const [active, setActive] = useState('');
   return (
     <Wrapper>

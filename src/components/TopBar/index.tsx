@@ -5,20 +5,27 @@ import { Apple } from './icons';
 import CommandPanel from './CommandPanel';
 import Clock from './Clock';
 import { useAppContext } from '../../AppContext';
+import { useActor } from '@xstate/react';
 
 const TopBar: FC = () => {
-  const { send: sendParent } = useAppContext();
+  const service = useAppContext();
+  const [, send] = useActor(service);
 
   const handleAboutThisMacClick = () => {
-    sendParent({
+    send({
       type: 'FOCUS_WINDOW',
       payload: { name: 'aboutThisMac' },
     });
   };
   const handleAboutThisDeveloperClick = () => {
-    sendParent({
+    send({
       type: 'FOCUS_WINDOW',
       payload: { name: 'aboutThisDeveloper' },
+    });
+  };
+  const handleLogoutClick = () => {
+    send({
+      type: 'TOGGLE_AUTHENTICATION',
     });
   };
   return (
@@ -41,6 +48,9 @@ const TopBar: FC = () => {
               <MenuButton onClick={handleAboutThisDeveloperClick}>
                 About This Developer
               </MenuButton>
+            </Menu.Item>
+            <Menu.Item as={StyledMenuItem}>
+              <MenuButton onClick={handleLogoutClick}>Log Out...</MenuButton>
             </Menu.Item>
           </Menu.Items>
         </Menu>
@@ -74,7 +84,7 @@ const StyledMenuButton = styled.button`
 const StyledMenuItems = styled.ul`
   outline: none;
   position: absolute;
-  background: ${({theme}) => theme.menuBackground};
+  background: ${({ theme }) => theme.menuBackground};
   backdrop-filter: blur(72px);
   box-shadow: inset 0px 0px 0px 0.4px rgb(255 255 255 / 35%);
   left: 0;
@@ -88,7 +98,6 @@ const StyledMenuItem = styled.li`
   position: relative;
   padding: 3px 0;
   margin: 0 5px;
-  }
 `;
 const Separator = styled.div`
   position: relative;

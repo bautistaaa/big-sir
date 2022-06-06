@@ -6,6 +6,7 @@ import { View } from '../Terminal';
 import autocomplete from '../../utils/autocomplete';
 import { getFileContents } from '../../utils';
 import { Event, EventData, SCXML, SingleOrArray, State } from 'xstate';
+import { useActor } from '@xstate/react';
 
 const Prompt: FC<{
   isTerminalFocused: boolean;
@@ -23,7 +24,8 @@ const Prompt: FC<{
   currentParent: current,
   sendParent: send,
 }) => {
-  const { send: sendParent } = useAppContext();
+  const service = useAppContext();
+  const [, sendParent] = useActor(service);
   const { currentCommand, keysCurrentlyPressed } = current.context;
   const stateRef = useRef(current.context);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);

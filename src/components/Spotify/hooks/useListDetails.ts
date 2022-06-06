@@ -29,12 +29,18 @@ function useListDetails<
   const [details, setDetails] = useState<R | null>(null);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchTracks = async () => {
       const data = ((await getters[type](listId)) as unknown) as R;
       setDetails(data);
     };
 
     fetchTracks();
+
+    return () => {
+      abortController.abort();
+    };
   }, [listId, type]);
 
   return details;

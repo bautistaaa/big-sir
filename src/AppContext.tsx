@@ -1,31 +1,42 @@
 import { useMachine } from '@xstate/react';
 import React, { FC, useContext } from 'react';
-import { Event, EventData, SCXML, SingleOrArray, State } from 'xstate';
+import { Interpreter } from 'xstate';
 import appMachine, { Context, AppEvent } from './app.machine';
 
-interface AppContextValues {
-  current: State<Context, AppEvent, any, any>;
-  send: (
-    event: SingleOrArray<Event<AppEvent>> | SCXML.Event<AppEvent>,
-    payload?: EventData | undefined
-  ) => State<Context, AppEvent, any, any>;
-}
+type AppContextValues = Interpreter<
+  Context,
+  any,
+  AppEvent,
+  {
+    value: any;
+    context: Context;
+  }
+>;
 
-const AppContext = React.createContext<AppContextValues>({
-  current: {} as State<Context, AppEvent, any, any>,
-  send: () => ({} as State<Context, AppEvent, any, any>),
-});
+const AppContext = React.createContext<AppContextValues>(
+  {} as Interpreter<
+    Context,
+    any,
+    AppEvent,
+    {
+      value: any;
+      context: Context;
+    }
+  >
+);
 
-const useAppContext = () => useContext(AppContext);
+const useAppContext = () => {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useAppContext must be used within a AppProvider');
+  }
+  return context;
+};
 
 const AppProvider: FC = ({ children }) => {
-  const [current, send] = useMachine(appMachine, { devTools: true });
+  const [, , service] = useMachine(appMachine);
 
-  return (
-    <AppContext.Provider value={{ current, send }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={service}>{children}</AppContext.Provider>;
 };
 
 export { AppProvider, useAppContext };

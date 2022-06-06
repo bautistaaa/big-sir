@@ -16,7 +16,7 @@
     "react-codemirror2": "^7.2.1",
     "react-data-table-component": "^6.11.7",
     "react-dom": "^17.0.1",
-    "react-icons": "^4.2.0",
+    "react-icons": "^4.3.1",
     "react-intersection-observer": "^8.32.0",
     "react-merge-refs": "^1.1.0",
     "react-query": "^3.21.1",
@@ -58,9 +58,18 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^12.20.5",
     "@types/query-string": "^6.3.0",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-query": "^1.2.9",
     "@types/react-resize-detector": "^6.1.0",
     "@types/react-rnd": "^8.0.0",
+    "@types/react-router-dom": "^5.1.7",
     "@types/react-virtualized": "^9.21.15",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
     "@types/react-window": "^1.8.5",
@@ -68,16 +77,8 @@
     "@types/spotify-api": "0.0.12",
     "@types/spotify-web-playback-sdk": "^0.1.10",
     "@types/styled-components": "^5.1.8",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.20",
-    "@types/node": "^12.20.5",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
-    "@types/react-query": "^1.2.9",
-    "@types/react-router-dom": "^5.1.7",
     "babel-plugin-macros": "^3.0.1",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "react-error-overlay": "^6.0.9"
   }
 }

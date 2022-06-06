@@ -18,13 +18,7 @@ const App = () => {
         height: '100%',
       }}
     >
-      {current.matches('loggedOut') && (
-        <Main>
-          <InnerWrapper>
-            <LoggedOutView />
-          </InnerWrapper>
-        </Main>
-      )}
+      {current.matches('loggedOut') && <LoggedOutView />}
       {current.matches('loggedIn') && <LoggedInView />}
     </Wrapper>
   );
@@ -34,19 +28,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-`;
-const Main = styled.div`
-  height: 100%;
-  width: 100%;
-  position: relative;
-`;
-const InnerWrapper = styled.div`
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  position: relative;
 `;
 
 export default App;

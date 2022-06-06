@@ -36,56 +36,62 @@ export const LoggedOutView = () => {
   }, [state.value, sendParent]);
 
   return (
-    <>
-      <PasswordContainer>
-        <Circle>
-          <img src="about.jpg" alt="about" />
-        </Circle>
-        <Name>root/admin</Name>
-        {active && (
-          <form onSubmit={handleSubmit}>
-            <InputWrapper>
-              <Input
-                type="password"
-                placeholder="Enter Password"
-                onChange={(e) => {
-                  send({
-                    type: 'PASSWORD_UPDATE',
-                    payload: { password: e.target.value },
-                  });
-                }}
-                invalid={state.matches('invalid')}
-              />
-              {password && (
-                <BsArrowRightCircle
-                  fill="#fff"
-                  size={20}
-                  style={{
-                    position: 'absolute',
-                    top: '7px',
-                    right: '10px',
-                  }}
-                />
-              )}
-            </InputWrapper>
-          </form>
-        )}
-      </PasswordContainer>
+    <Main>
+      <InnerWrapper>
+        <PasswordContainer>
+          <Circle>
+            <img src="about.jpg" alt="about" />
+          </Circle>
+          <Name>root/admin</Name>
+          <FormWrapper>
+            {active && (
+              <form onSubmit={handleSubmit}>
+                <InputWrapper>
+                  <Input
+                    type="password"
+                    placeholder="Enter Password"
+                    onChange={(e) => {
+                      send({
+                        type: 'PASSWORD_UPDATE',
+                        payload: { password: e.target.value },
+                      });
+                    }}
+                    invalid={state.matches('invalid')}
+                    autoFocus
+                  />
+                  {password && (
+                    <BsArrowRightCircle
+                      fill="#fff"
+                      size={20}
+                      style={{
+                        position: 'absolute',
+                        top: '7px',
+                        right: '10px',
+                      }}
+                    />
+                  )}
+                </InputWrapper>
+              </form>
+            )}
+          </FormWrapper>
+          <EnterPassword>Enter Password</EnterPassword>
+        </PasswordContainer>
 
-      <ActionButtonContainer>
-        <CancelCircle
-          onClick={(e) => {
-            e.stopPropagation();
-            setActive(false);
-          }}
-        >
-          <AiOutlineCloseCircle fill="rgba(255, 255, 255, 0.7)" size={20} />
-        </CancelCircle>
-        <Cancel>
-          <span>Cancel</span>
-        </Cancel>
-      </ActionButtonContainer>
-    </>
+        <ActionButtonContainer>
+          <CancelCircle
+            onClick={(e) => {
+              e.stopPropagation();
+              setActive(false);
+            }}
+          >
+            <AiOutlineCloseCircle fill="rgba(255, 255, 255, 0.7)" size={20} />
+          </CancelCircle>
+          <Cancel>
+            <span>Cancel</span>
+          </Cancel>
+        </ActionButtonContainer>
+      </InnerWrapper>
+    </Main>
   );
 };
 
@@ -93,6 +99,9 @@ const Name = styled.div`
   color: white;
   margin-bottom: 20px;
   text-shadow: 0px 2px 2px #000000;
+`;
+const EnterPassword = styled(Name)`
+  font-size: 12px;
 `;
 const Cancel = styled.div`
   user-select: none;
@@ -192,4 +201,21 @@ const jiggle = keyframes`
   0%, 100% {
     transform: translateX(0);
   }
+`;
+const Main = styled.div`
+  height: 100%;
+  width: 100%;
+  position: relative;
+`;
+const InnerWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+`;
+const FormWrapper = styled.div`
+  height: 40px;
+  margin-bottom: 15px;
 `;

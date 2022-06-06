@@ -3,10 +3,17 @@ const email = 'chrisbautistaaa@gmail.com';
 
 const experience = [
   {
+    name: 'Netflix',
+    from: 'December 2021',
+    to: 'present',
+    position: 'Senior Software Developer',
+    tech: ['TypeScript', 'JavaScript', 'React', 'Node', 'GraphQL', 'Java']
+  },
+  {
     name: 'Hulu',
     from: 'June 2020',
-    to: 'present',
-    position: 'Software Developer',
+    to: 'December 2021',
+    position: 'Lead Software Engineer',
     tech: ['TypeScript', 'JavaScript', 'React', 'NextJS', 'Node', 'GraphQL']
   },
   {

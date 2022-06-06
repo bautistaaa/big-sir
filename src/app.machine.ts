@@ -35,9 +35,13 @@ type ToggleModeEvent = {
   type: 'TOGGLE_MODE';
   payload: { mode: Mode };
 };
+type AuthenticationEvent = {
+  type: 'TOGGLE_AUTHENTICATION';
+};
 
 export type AppEvent =
   | FocusWindowEvent
+  | AuthenticationEvent
   | MinimizeWindowEvent
   | RemoveWindowEvent
   | ToggleModeEvent;
@@ -74,8 +78,8 @@ const config = {
         )
       ) {
         refocusedWindows.push({
-          name: (event as FocusWindowEvent).payload.name,
-          defaultUrl: (event as FocusWindowEvent).payload.defaultUrl,
+          name: (event as FocusWindowEvent).payload?.name,
+          defaultUrl: (event as FocusWindowEvent).payload?.defaultUrl,
           zIndex: maxZIndex + 1,
           focused: true,
         });
@@ -128,6 +132,7 @@ const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const appMachine = createMachine<Context, AppEvent, any>(
   {
     id: 'app',
+    initial: 'loggedOut',
     context: {
       activeWindows: [],
       minimizedWindows: [],
@@ -144,9 +149,24 @@ const appMachine = createMachine<Context, AppEvent, any>(
       REMOVE_WINDOW: {
         actions: ['removeWindow'],
       },
+      TOGGLE_AUTHENTICATION: {
+        actions: ['toggleAuthentication'],
+      },
       TOGGLE_MODE: {
         actions: ['toggleMode'],
       },
+    },
+    states: {
+      loggedIn: {
+        on: {
+          TOGGLE_AUTHENTICATION: 'loggedOut',
+        },
+      },
+      loggedOut: {
+        on: {
+          TOGGLE_AUTHENTICATION: 'loggedIn',
+        },
+      }
     },
   },
   config

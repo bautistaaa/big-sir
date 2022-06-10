@@ -13,7 +13,7 @@ const Callback = () => {
     }
   }, [location, setToken]);
   if (token) {
-    return <Redirect to="/" />;
+    return <Redirect to="/?app=spotify" />;
   }
   return <div />;
 };

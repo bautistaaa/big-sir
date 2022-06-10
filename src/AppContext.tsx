@@ -1,5 +1,6 @@
 import { useMachine } from '@xstate/react';
 import React, { FC, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Interpreter } from 'xstate';
 import appMachine, { Context, AppEvent } from './app.machine';
 

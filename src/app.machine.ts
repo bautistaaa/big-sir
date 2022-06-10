@@ -38,11 +38,19 @@ type ToggleModeEvent = {
 type AuthenticationEvent = {
   type: 'TOGGLE_AUTHENTICATION';
 };
+type LoggedInEvent = {
+  type: 'LOGIN';
+};
+type LoggedOutEvent = {
+  type: 'LOGOUT';
+};
 
 export type AppEvent =
   | FocusWindowEvent
   | AuthenticationEvent
   | MinimizeWindowEvent
+  | LoggedInEvent
+  | LoggedOutEvent
   | RemoveWindowEvent
   | ToggleModeEvent;
 
@@ -132,7 +140,7 @@ const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const appMachine = createMachine<Context, AppEvent, any>(
   {
     id: 'app',
-    initial: 'loggedOut',
+    initial: 'idle',
     context: {
       activeWindows: [],
       minimizedWindows: [],
@@ -157,6 +165,12 @@ const appMachine = createMachine<Context, AppEvent, any>(
       },
     },
     states: {
+      idle: {
+        on: {
+          LOGIN: 'loggedIn',
+          LOGOUT: 'loggedOut',
+        },
+      },
       loggedIn: {
         on: {
           TOGGLE_AUTHENTICATION: 'loggedOut',
@@ -166,7 +180,7 @@ const appMachine = createMachine<Context, AppEvent, any>(
         on: {
           TOGGLE_AUTHENTICATION: 'loggedIn',
         },
-      }
+      },
     },
   },
   config

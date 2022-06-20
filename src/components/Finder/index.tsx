@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react';
 import { FC, useContext, useState } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import getDirectoryContents from '../../utils/getDirectoryContents';
 import DetailView from './DetailView';
 import finderMachine from './finder.machine';

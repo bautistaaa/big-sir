@@ -1,6 +1,6 @@
 import { useMachine, useSelector, useActor } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 import { SelectorState  } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';

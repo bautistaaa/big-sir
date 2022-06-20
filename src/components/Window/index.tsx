@@ -14,7 +14,7 @@ import AboutThisMac from '../AboutThisMac';
 import { RectResult } from '../../hooks/useRect';
 import useResizeWindow from '../../hooks/useResizeWindow';
 import useIsFocused from '../../hooks/useIsFocused';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 
 export interface WindowSize {
   width: string | number;

@@ -1,6 +1,6 @@
 import { FC, memo } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { useActor } from '@xstate/react';
 
 import SideBar from './SideBar';

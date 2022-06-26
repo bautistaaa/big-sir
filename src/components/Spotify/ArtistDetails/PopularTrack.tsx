@@ -9,6 +9,7 @@ import { SelectorState } from '../spotify.machine';
 import { oneLine } from '../../../shared/mixins';
 import { convertMsToMinutesAndSeconds } from '../../../utils';
 import { getToken } from '../utils';
+import { useState } from 'react';
 
 interface PopularTrackProps {
   index: number;
@@ -30,9 +31,12 @@ const PopularTrack = ({
   const service = useSpotifyContext();
   const [state] = useActor(service);
   const currentTrack = useSelector(service, selectCurrentTrack);
+  const [isHovered, setIsHovered] = useState(false);
   const deviceId = useSelector(service, selectDeviceId);
   const isCurrentTrack = track?.id === currentTrack?.trackId;
   const isPlaying = isCurrentTrack && !!currentTrack?.isPlaying;
+  const isDisplayingPlayButton = isHovered && !isPlaying;
+  const isDisplayingPauseButton = isHovered && isPlaying;
 
   const handleTrackStatus = (
     track: SpotifyApi.TrackObjectSimplified,
@@ -72,30 +76,40 @@ const PopularTrack = ({
   return (
     <Wrapper
       isActive={isActive}
+      isPlaying={isPlaying}
       onDoubleClick={() => handleTrackStatus(track, true, true)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
     >
       <IndexColumn>
         <ClearButton
+          isDisplayingPlayButton={isDisplayingPlayButton}
+          isDisplayingPauseButton={isDisplayingPauseButton}
+          isPlaying={isPlaying}
           onClick={(e) => {
             e.stopPropagation();
             handleTrackStatus(track, !isPlaying, false);
           }}
         >
-          {isPlaying ? (
+          {isHovered && isPlaying ? (
             <IoIosPause fill={'white'} size={20} />
+          ) : isPlaying ? (
+          <img
+            width="14"
+            height="14"
+            alt=""
+            src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
+          />
           ) : (
             <BiPlay fill={'white'} size={25} />
           )}
         </ClearButton>
         <Index isPlaying={isCurrentTrack}>
-          {isPlaying ? (
-            <img
-              width="14"
-              height="14"
-              alt=""
-              src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
-            />
-          ) : (
+          {!isPlaying && (
             <>{index + 1}</>
           )}
         </Index>
@@ -111,12 +125,33 @@ const PopularTrack = ({
   );
 };
 
-const ClearButton = styled(BaseClearButton)`
+const ClearButton = styled(BaseClearButton)<{ 
+  isDisplayingPlayButton: boolean,
+  isDisplayingPauseButton: boolean,
+  isPlaying: boolean 
+}>`
   display: none;
   height: 16px;
   width: 16px;
   position: relative;
-  left: 3px;
+  ${({ isDisplayingPlayButton }) =>
+  isDisplayingPlayButton &&
+  `
+  left: 2px;
+  bottom: 4px;  
+  `}
+  ${({ isDisplayingPauseButton }) =>
+  isDisplayingPauseButton &&
+  `
+  right: 5px;
+  bottom: 1px;  
+  `}
+  ${({ isDisplayingPauseButton, isDisplayingPlayButton, isPlaying }) =>
+  (!isDisplayingPauseButton && !isDisplayingPlayButton && isPlaying) &&
+  `
+  right: 3px;
+  bottom: 1px;  
+  `}
 `;
 const Index = styled.span<{ isPlaying: boolean }>`
   transition: none;
@@ -127,7 +162,7 @@ const Index = styled.span<{ isPlaying: boolean }>`
       color: #1db954;
     `}
 `;
-const Wrapper = styled.div<{ isActive: boolean }>`
+const Wrapper = styled.div<{ isActive: boolean, isPlaying: boolean }>`
   grid-gap: 16px;
   display: grid;
   padding: 8px 16px;
@@ -139,6 +174,12 @@ const Wrapper = styled.div<{ isActive: boolean }>`
   height: 56px;
   position: relative;
   letter-spacing: 0.4px;
+  ${({ isPlaying }) =>
+  isPlaying &&
+  ` ${ClearButton} {
+      display: block;
+    }
+  `}
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
@@ -164,7 +205,6 @@ const Wrapper = styled.div<{ isActive: boolean }>`
   `}
 `;
 const IndexColumn = styled.div`
-  position: relative;
   display: flex;
   justify-self: end;
   align-items: center;

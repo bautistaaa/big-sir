@@ -26,7 +26,7 @@ const AboutThisDeveloper: FC = () => {
             <Link href="https://www.github.com/bautistaaa" target="_blank">
               <ImGithub fill={themeContext.color} size={20} />
             </Link>
-            <Link href="https://twitter.com/chrisbautistaaa" target="_blank">
+            <Link href="https://twitter.com/trashh_dev" target="_blank">
               <GrTwitter fill={themeContext.color} size={20} />
             </Link>
           </Socials>

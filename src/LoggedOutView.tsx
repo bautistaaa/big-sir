@@ -61,6 +61,7 @@ export const LoggedOutView = () => {
                   />
                   {password && (
                     <BsArrowRightCircle
+                      onClick={() => send({ type: 'SUBMIT' })}
                       fill="#fff"
                       size={20}
                       style={{

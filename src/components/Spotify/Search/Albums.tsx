@@ -12,7 +12,7 @@ const Albums = ({ albums }: AlbumsProps) => {
       <Category>Albums</Category>
       <Items>
         {albums.slice(0, 4).map((album) => {
-          return <AlbumFeedCard listId={album.id} />;
+          return <AlbumFeedCard key={album.id} listId={album.id} />;
         })}
       </Items>
     </Wrapper>

@@ -12,7 +12,7 @@ const Artists = ({ artists }: ArtistsProps) => {
       <Category>Artists</Category>
       <Items>
         {artists.slice(0, 4).map((artist) => {
-          return <ArtistFeedCard listId={artist.id} />;
+          return <ArtistFeedCard key={artist.id} listId={artist.id} />;
         })}
       </Items>
     </Wrapper>

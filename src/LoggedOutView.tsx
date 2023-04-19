@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { BsArrowRightCircle } from 'react-icons/bs';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import styled, { css, keyframes } from 'styled-components';
@@ -8,6 +9,7 @@ import ClearButton from './components/ClearButton';
 import { loginMachine } from './login.machine';
 
 export const LoggedOutView = () => {
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
   const service = useAppContext();
   const [, sendParent] = useActor(service);
   const [state, send] = useMachine(loginMachine);
@@ -16,6 +18,12 @@ export const LoggedOutView = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     send({ type: 'SUBMIT' });
+  };
+
+  const handleBsArrowRightCircleSubmit = () => {
+    if (submitButtonRef.current) {
+      submitButtonRef.current.click();
+    }
   };
 
   useEffect(() => {
@@ -60,15 +68,21 @@ export const LoggedOutView = () => {
                     autoFocus
                   />
                   {password && (
-                    <BsArrowRightCircle
-                      fill="#fff"
-                      size={20}
-                      style={{
-                        position: 'absolute',
-                        top: '7px',
-                        right: '10px',
-                      }}
-                    />
+                    <>
+                      <BsArrowRightCircle
+                        fill="#fff"
+                        size={20}
+                        style={{
+                          position: 'absolute',
+                          top: '7px',
+                          right: '10px',
+                        }}
+                        onClick={handleBsArrowRightCircleSubmit}
+                      />
+                      <HiddenSubmitButton type="submit" ref={submitButtonRef}>
+                        Log In
+                      </HiddenSubmitButton>
+                    </>
                   )}
                 </InputWrapper>
               </form>
@@ -94,6 +108,10 @@ export const LoggedOutView = () => {
     </Main>
   );
 };
+
+const HiddenSubmitButton = styled.button`
+  display: none;
+`;
 
 const Name = styled.div`
   color: white;

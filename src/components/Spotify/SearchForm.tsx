@@ -22,7 +22,7 @@ const SearchForm: FC = () => {
 
   return (
     <SearchFormWrapper onMouseDown={(e) => e.stopPropagation()}>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <Input
           placeholder="Artists or songs"
           type="text"

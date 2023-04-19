@@ -178,6 +178,7 @@ const Wrapper = styled.div`
     color: ${({ theme }) => theme.color};
   }
 `;
+
 const Sidebar = styled.div<{ theme: any }>`
   padding: 62px 10px 0;
   position: absolute;
@@ -188,7 +189,6 @@ const Sidebar = styled.div<{ theme: any }>`
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   background: ${({ theme }) => theme.finderSideBarBackground};
-  backdrop-filter: blur(12px);
   &::after {
     content: '';
     position: absolute;

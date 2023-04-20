@@ -2,6 +2,7 @@ import { assign, createMachine } from 'xstate';
 
 export interface Context {
   activeDirectory: string;
+  directories: Record<string, SidebarItem>;
 }
 
 type DirectoryChangedEvent = {
@@ -9,11 +10,34 @@ type DirectoryChangedEvent = {
   payload: { name: string };
 };
 
+type CreateDirectoryEvent = {
+  type: 'CREATE_DIRECTORY';
+  payload: { name: string };
+};
+
 export type FinderEvent =
   | { type: 'LISTS' }
   | { type: 'ICONS' }
   | { type: 'DETAILS' }
-  | DirectoryChangedEvent;
+  | DirectoryChangedEvent
+  | CreateDirectoryEvent;
+
+type ItemType = 'directory' | 'desktop' | 'applications';
+interface SidebarItem {
+  type: ItemType;
+  path: string[];
+}
+
+const SideBarItems: Record<string, SidebarItem> = {
+  personal: {
+    type: 'directory',
+    path: ['home', 'personal'],
+  },
+  projects: {
+    type: 'directory',
+    path: ['home', 'projects'],
+  },
+};
 
 const finderMachine = createMachine<Context, FinderEvent>(
   {
@@ -21,6 +45,7 @@ const finderMachine = createMachine<Context, FinderEvent>(
     initial: 'lists',
     context: {
       activeDirectory: 'personal',
+      directories: SideBarItems,
     },
     states: {
       details: { on: { ICONS: 'icons', LISTS: 'lists' } },
@@ -31,6 +56,9 @@ const finderMachine = createMachine<Context, FinderEvent>(
       DIRECTORY_CHANGED: {
         actions: ['directoryChanged'],
       },
+      CREATE_DIRECTORY: {
+        actions: ['createDirectory'],
+      },
     },
   },
   {
@@ -38,6 +66,18 @@ const finderMachine = createMachine<Context, FinderEvent>(
       directoryChanged: assign<Context, FinderEvent>((_, event) => {
         return {
           activeDirectory: (event as DirectoryChangedEvent).payload.name,
+        };
+      }),
+      createDirectory: assign<Context, FinderEvent>((_, event) => {
+        const newDirectory: SidebarItem = {
+          type: 'directory',
+          path: ['home', (event as CreateDirectoryEvent).payload.name],
+        };
+        return {
+          directories: {
+            ...SideBarItems,
+            [(event as CreateDirectoryEvent).payload.name]: newDirectory,
+          },
         };
       }),
     },

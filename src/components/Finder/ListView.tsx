@@ -98,11 +98,12 @@ const Table = styled.table`
     color: rgb(177, 177, 177);
     font-size: 12px;
     vertical-align: middle;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
   tbody > tr {
     &:nth-child(odd) {
-      background: ${({ theme }) => theme.finderOddItemListBackground};
     }
     &:nth-child(even) {
       background: ${({ theme }) => theme.finderEvenItemListBackground};

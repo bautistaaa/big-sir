@@ -18,7 +18,6 @@ export const lightTheme: DefaultTheme = {
   finderTopBarBackground: 'rgb(241,239,245)',
   finderSideBarBackground: 'white',
   finderEvenItemListBackground: 'white',
-  finderOddItemListBackground: '#f1f1f1',
 
   finderIconFill: 'gray',
   finderModeButtonBackground: '#e3e3e3',
@@ -45,11 +44,12 @@ export const darkTheme: DefaultTheme = {
 
   finderBorder: 'rgb(100, 100, 100)',
   finderDetailsBorder: 'black',
-  finderBackground: 'rgb(41, 35, 38)',
-  finderTopBarBackground: 'rgb(56, 56, 56)',
-  finderSideBarBackground: 'rgb(42 42 42 / 65%)',
-  finderEvenItemListBackground: 'rgb(41, 35, 38)',
-  finderOddItemListBackground: 'rgb(51, 51, 51)',
+  finderBackground: '#282828',
+  finderTopBarBackground: 'rgb(50, 50, 52)',
+
+  finderSideBarBackground: 'rgb(46 48 52 / 85%)',
+  finderEvenItemListBackground: '#262627',
+
   finderIconFill: 'white',
   finderModeButtonBackground: 'rgb(81, 80, 80)',
 

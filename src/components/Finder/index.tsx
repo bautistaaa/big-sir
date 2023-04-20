@@ -17,29 +17,12 @@ const SidebarItemIconMap: { [k: string]: string } = {
   desktop: 'path.png',
   applications: 'path.png',
 };
-type ItemType = 'directory' | 'desktop' | 'applications';
-interface SidebarItem {
-  type: ItemType;
-  path: string[];
-}
-const SideBarItems: Record<string, SidebarItem> = {
-  personal: {
-    type: 'directory',
-    path: ['home', 'personal'],
-  },
-  projects: {
-    type: 'directory',
-    path: ['home', 'projects'],
-  },
-};
-
-type FolderName = keyof typeof SideBarItems;
 
 const Finder: FC = () => {
   const [current, send] = useMachine(finderMachine, { devTools: true });
-  const [activeFolder, setActiveFolder] = useState<FolderName>('personal');
+  const [activeFolder, setActiveFolder] = useState('personal');
   const files = getDirectoryContents(
-    SideBarItems[current.context.activeDirectory].path
+    current.context.directories[current.context.activeDirectory].path
   );
   const isIconView = current.matches('icons');
   const isListView = current.matches('lists');
@@ -52,23 +35,28 @@ const Finder: FC = () => {
         <Sidebar>
           <Title>Favorites</Title>
           <Items>
-            {Object.keys(SideBarItems).map((k, i) => {
+            {Object.keys(current.context.directories).map((k, i) => {
               return (
-                <Item key={i} active={activeFolder === k}>
-                  <img src={SidebarItemIconMap[SideBarItems[k].type]} alt="" />
-                  <ItemName
-                    onClick={() => {
-                      setActiveFolder(k);
-                      send({
-                        type: 'DIRECTORY_CHANGED',
-                        payload: {
-                          name: k,
-                        },
-                      });
-                    }}
-                  >
-                    {k}
-                  </ItemName>
+                <Item
+                  key={i}
+                  active={activeFolder === k}
+                  onClick={() => {
+                    setActiveFolder(k);
+                    send({
+                      type: 'DIRECTORY_CHANGED',
+                      payload: {
+                        name: k,
+                      },
+                    });
+                  }}
+                >
+                  <img
+                    src={
+                      SidebarItemIconMap[current.context.directories[k].type]
+                    }
+                    alt=""
+                  />
+                  <ItemName>{k}</ItemName>
                 </Item>
               );
             })}
@@ -95,7 +83,6 @@ const Explorer = styled.div`
   position: relative;
   width: 185px;
   height: 100%;
-  background: rgb(42 42 42 / 65%);
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   padding-left: 10px;
@@ -150,7 +137,7 @@ const Wrapper = styled.div`
 `;
 
 const Sidebar = styled.div<{ theme: any }>`
-  padding: 62px 10px 0;
+  padding: 58px 10px 0;
   position: absolute;
   left: 0;
   top: 0;
@@ -158,6 +145,7 @@ const Sidebar = styled.div<{ theme: any }>`
   width: 185px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
+  border-right: 1px solid ${({ theme }) => theme.finderDetailsBorder};
   background: ${({ theme }) => theme.finderSideBarBackground};
   &::after {
     content: '';
@@ -170,14 +158,15 @@ const Sidebar = styled.div<{ theme: any }>`
   }
 `;
 const Content = styled.div`
-  background: ${({ theme }) => theme.finderSideBarBackground};
+  background: ${({ theme }) => theme.finderBackground};
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 12px;
   overflow: auto;
 `;
 const Title = styled.div`
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
   padding-left: 3px;

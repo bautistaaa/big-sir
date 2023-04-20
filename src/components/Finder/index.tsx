@@ -81,7 +81,7 @@ const Finder: FC = () => {
 
 const Explorer = styled.div`
   position: relative;
-  width: 185px;
+  width: 180px;
   height: 100%;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -142,7 +142,7 @@ const Sidebar = styled.div<{ theme: any }>`
   left: 0;
   top: 0;
   height: 100%;
-  width: 185px;
+  width: 180px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   border-right: 1px solid ${({ theme }) => theme.finderDetailsBorder};

@@ -22,7 +22,8 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
                 setActive(k);
                 setContent(file);
               }}
-              onDoubleClick={() => {
+              onDoubleClick={(e) => {
+                e.stopPropagation();
                 if (file.fileType === 'html') {
                   send({
                     type: 'FOCUS_WINDOW',

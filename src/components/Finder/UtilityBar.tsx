@@ -25,10 +25,10 @@ const UtilityBar: FC<Props> = ({ folderName, current, send }) => {
     <Bar className="action-bar">
       <ControlButtonsWrapper>
         <ControlButton>
-          <Arrow fill="white" transform="rotate(180)" />
+          <Arrow fill={themeContext.finderIconFill} transform="rotate(180)" />
         </ControlButton>
         <ControlButton>
-          <Arrow fill="white" />
+          <Arrow fill={themeContext.finderIconFill} />
         </ControlButton>
       </ControlButtonsWrapper>
       <FolderName>{folderName}</FolderName>
@@ -106,10 +106,7 @@ const BaseUtilButton = styled.button<{ isActive: boolean; theme: any }>`
   z-index: 120;
   border-radius: 5px;
   ${({ isActive, theme }) =>
-    isActive &&
-    `
-    background: ${theme.finderModeButtonBackground};
-    `}
+    isActive && `background: ${theme.finderModeButtonBackground};`}
 `;
 const LeftButton = styled(BaseUtilButton)``;
 const MiddleButton = styled(BaseUtilButton)``;

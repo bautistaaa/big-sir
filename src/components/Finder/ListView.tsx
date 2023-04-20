@@ -32,7 +32,8 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
                 key={k}
                 active={active === file.display}
                 onClick={() => setActive(k)}
-                onDoubleClick={() => {
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
                   if (file.fileType === 'html') {
                     send({
                       type: 'FOCUS_WINDOW',
@@ -69,11 +70,7 @@ const ListView: FC<{ files: Contents }> = ({ files }) => {
   );
 };
 const TR = styled.tr<{ active: boolean }>`
-  ${({ active }) =>
-    active &&
-    `
-    background: rgb(26, 109, 196) !important;
-  `}
+  ${({ active }) => active && `background: rgb(26, 109, 196) !important;`}
 `;
 const Table = styled.table`
   th {
@@ -98,31 +95,32 @@ const Table = styled.table`
     color: rgb(177, 177, 177);
     font-size: 12px;
     vertical-align: middle;
-    padding-left: 5px;
-    padding-right: 5px;
   }
 
   tbody > tr {
     &:nth-child(odd) {
+      background: ${({ theme }) => theme.finderOddItemListBackground};
     }
     &:nth-child(even) {
       background: ${({ theme }) => theme.finderEvenItemListBackground};
     }
   }
 `;
-const Wrapper = styled.div<{ count: number; isDark: boolean; theme: any }>`
+const Wrapper = styled.div<{ count: number; isDark: boolean }>`
   height: 100%;
   z-index: 1;
   position: relative;
-  ${({ count }) => `
+
+  ${({ count, theme }) => `
     background: repeating-linear-gradient(
-      rgb(41, 35, 38),
-      rgb(41, 35, 38) 20px,
-      rgb(51, 51, 51) 0,
-      rgb(51, 51, 51) 40px
+      ${theme.finderEvenItemListBackground},
+      ${theme.finderEvenItemListBackground} 20px,
+      ${theme.finderOddItemListBackground} 0,
+      ${theme.finderOddItemListBackground} 40px
     )
     left 0 top ${count * 20 + 25}px no-repeat fixed;
   `}
+
   &::before {
     content: '';
     width: 100%;
@@ -133,12 +131,12 @@ const Wrapper = styled.div<{ count: number; isDark: boolean; theme: any }>`
     z-index: -1;
     transition: opacity 150ms ease-in;
     opacity: ${({ isDark }) => (isDark ? 0 : 1)};
-    ${({ count }) => `
+    ${({ count, theme }) => `
     background: repeating-linear-gradient(
-      white,
-      white 20px,
-      #f1f1f1 0,
-      #f1f1f1 40px
+      ${theme.finderEvenItemListBackground},
+      ${theme.finderEvenItemListBackground} 20px,
+      ${theme.finderOddItemListBackground} 0,
+      ${theme.finderOddItemListBackground} 40px
     )
     left 0 top ${count * 20 + 25}px no-repeat fixed;
   `}

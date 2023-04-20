@@ -1,6 +1,6 @@
 import { FC, useContext } from 'react';
 import styled, { ThemeContext } from 'styled-components/macro';
-import { Details, Icons, List } from './icons';
+import { Arrow, Details, Icons, List } from './icons';
 import { Context, FinderEvent } from './finder.machine';
 import { State } from 'xstate';
 
@@ -23,6 +23,14 @@ const UtilityBar: FC<Props> = ({ folderName, current, send }) => {
 
   return (
     <Bar className="action-bar">
+      <ControlButtonsWrapper>
+        <ControlButton>
+          <Arrow fill="white" transform="rotate(180)" />
+        </ControlButton>
+        <ControlButton>
+          <Arrow fill="white" />
+        </ControlButton>
+      </ControlButtonsWrapper>
       <FolderName>{folderName}</FolderName>
       <ButtonsWrapper>
         <LeftButton
@@ -31,7 +39,7 @@ const UtilityBar: FC<Props> = ({ folderName, current, send }) => {
         >
           <Icons
             fill={themeContext.finderIconFill}
-            backgroundFill={themeContext.finderModeButtonBackground}
+            backgroundFill={'transparent'}
           />
         </LeftButton>
         <MiddleButton
@@ -63,8 +71,20 @@ const FolderName = styled.div`
   font-weight: 500;
   color: rgb(177, 177, 177);
   align-self: center;
-  padding-left: 35px;
+  margin-left: 20px;
 `;
+const ControlButtonsWrapper = styled.div`
+  margin-left: 15px;
+  display: flex;
+  align-self: center;
+`;
+const ControlButton = styled.div`
+  width: 24px;
+  height: 22px;
+  color: rgb(177, 177, 177);
+  opacity: 0.3;
+`;
+
 const ButtonsWrapper = styled.div`
   display: flex;
   align-items: center;

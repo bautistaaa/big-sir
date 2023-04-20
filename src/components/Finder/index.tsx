@@ -128,7 +128,7 @@ const Item = styled.div<{ active: boolean }>`
   border-radius: 5px;
   padding: 6px 8px;
   img {
-    height: 15px;
+    height: 18px;
     margin-right: 5px;
   }
   ${({ active }) =>

@@ -1,12 +1,12 @@
 import { useMachine } from '@xstate/react';
-import { FC, useContext, useState } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import { FC, useState } from 'react';
+import styled from 'styled-components/macro';
 import getDirectoryContents from '../../utils/getDirectoryContents';
 import DetailView from './DetailView';
 import finderMachine from './finder.machine';
-import { Details, Icons, List } from './icons/';
 import IconView from './IconView';
 import ListView from './ListView';
+import UtilityBar from './UtilityBar';
 
 export const FileIconMap: { [k: string]: string } = {
   text: 'file.png',
@@ -17,32 +17,16 @@ const SidebarItemIconMap: { [k: string]: string } = {
   desktop: 'path.png',
   applications: 'path.png',
 };
-type ItemType = 'directory' | 'desktop' | 'applications';
-interface SidebarItem {
-  type: ItemType;
-  path: string[];
-}
-const SideBarItems: Record<string, SidebarItem> = {
-  personal: {
-    type: 'directory',
-    path: ['home', 'personal'],
-  },
-  projects: {
-    type: 'directory',
-    path: ['home', 'projects'],
-  },
-};
 
 const Finder: FC = () => {
   const [current, send] = useMachine(finderMachine, { devTools: true });
   const [activeFolder, setActiveFolder] = useState('personal');
-  const themeContext = useContext(ThemeContext);
   const files = getDirectoryContents(
-    SideBarItems[current.context.activeDirectory].path
+    current.context.directories[current.context.activeDirectory].path
   );
   const isIconView = current.matches('icons');
-  const isDetailView = current.matches('details');
   const isListView = current.matches('lists');
+  const isDetailView = current.matches('details');
 
   return (
     <Wrapper>
@@ -51,23 +35,28 @@ const Finder: FC = () => {
         <Sidebar>
           <Title>Favorites</Title>
           <Items>
-            {Object.keys(SideBarItems).map((k, i) => {
+            {Object.keys(current.context.directories).map((k, i) => {
               return (
-                <Item key={i} active={activeFolder === k}>
-                  <img src={SidebarItemIconMap[SideBarItems[k].type]} alt="" />
-                  <ItemName
-                    onClick={() => {
-                      setActiveFolder(k);
-                      send({
-                        type: 'DIRECTORY_CHANGED',
-                        payload: {
-                          name: k,
-                        },
-                      });
-                    }}
-                  >
-                    {k}
-                  </ItemName>
+                <Item
+                  key={i}
+                  active={activeFolder === k}
+                  onClick={() => {
+                    setActiveFolder(k);
+                    send({
+                      type: 'DIRECTORY_CHANGED',
+                      payload: {
+                        name: k,
+                      },
+                    });
+                  }}
+                >
+                  <img
+                    src={
+                      SidebarItemIconMap[current.context.directories[k].type]
+                    }
+                    alt=""
+                  />
+                  <ItemName>{k}</ItemName>
                 </Item>
               );
             })}
@@ -75,37 +64,11 @@ const Finder: FC = () => {
         </Sidebar>
       </Explorer>
       <RightSide>
-        <UtilityBar className="action-bar">
-          <ButtonsWrapper>
-            <LeftButton
-              onClick={() => {
-                send('ICONS');
-              }}
-              isActive={isIconView}
-            >
-              <Icons
-                fill={themeContext.finderIconFill}
-                backgroundFill={themeContext.finderModeButtonBackground}
-              />
-            </LeftButton>
-            <MiddleButton
-              onClick={() => {
-                send('LISTS');
-              }}
-              isActive={isListView}
-            >
-              <List fill={themeContext.finderIconFill} />
-            </MiddleButton>
-            <RightButton
-              onClick={() => {
-                send('DETAILS');
-              }}
-              isActive={isDetailView}
-            >
-              <Details fill={themeContext.finderIconFill} />
-            </RightButton>
-          </ButtonsWrapper>
-        </UtilityBar>
+        <UtilityBar
+          folderName={activeFolder.toString()}
+          current={current}
+          send={send}
+        />
         <Content>
           {isIconView && <IconView files={files} />}
           {isListView && <ListView files={files} />}
@@ -118,9 +81,8 @@ const Finder: FC = () => {
 
 const Explorer = styled.div`
   position: relative;
-  width: 150px;
+  width: 180px;
   height: 100%;
-  background: rgb(42 42 42 / 65%);
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   padding-left: 10px;
@@ -144,11 +106,6 @@ const InvisibleDraggableBar = styled.div`
   width: 100%;
   height: 50px;
 `;
-const UtilityBar = styled.div`
-  height: 50px;
-  min-height: 50px;
-  width: 100%;
-`;
 const Items = styled.div``;
 const Item = styled.div<{ active: boolean }>`
   display: flex;
@@ -158,7 +115,7 @@ const Item = styled.div<{ active: boolean }>`
   border-radius: 5px;
   padding: 6px 8px;
   img {
-    height: 15px;
+    height: 18px;
     margin-right: 5px;
   }
   ${({ active }) =>
@@ -178,17 +135,18 @@ const Wrapper = styled.div`
     color: ${({ theme }) => theme.color};
   }
 `;
+
 const Sidebar = styled.div<{ theme: any }>`
-  padding: 62px 10px 0;
+  padding: 58px 10px 0;
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
-  width: 150px;
+  width: 180px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
+  border-right: 1px solid ${({ theme }) => theme.finderDetailsBorder};
   background: ${({ theme }) => theme.finderSideBarBackground};
-  backdrop-filter: blur(12px);
   &::after {
     content: '';
     position: absolute;
@@ -200,46 +158,18 @@ const Sidebar = styled.div<{ theme: any }>`
   }
 `;
 const Content = styled.div`
-  background: ${({ theme }) => theme.finderSideBarBackground};
+  background: ${({ theme }) => theme.finderBackground};
   width: 100%;
   height: 100%;
   border-bottom-right-radius: 12px;
   overflow: auto;
 `;
 const Title = styled.div`
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   color: rgb(177, 177, 177);
   margin-bottom: 3px;
   padding-left: 3px;
 `;
-const ButtonsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  border-top-right-radius: 12px;
-`;
-const BaseUtilButton = styled.button<{ isActive: boolean; theme: any }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  outline: none;
-  width: 30px;
-  height: 22px;
-  margin-right: 1px;
-  z-index: 120;
-  border-radius: 5px;
-  ${({ isActive, theme }) =>
-    isActive &&
-    `
-    background: ${theme.finderModeButtonBackground};
-    `}
-`;
-const LeftButton = styled(BaseUtilButton)``;
-const MiddleButton = styled(BaseUtilButton)``;
-const RightButton = styled(BaseUtilButton)``;
 
 export default Finder;

@@ -19,14 +19,20 @@ export const LoggedOutView = () => {
   };
 
   useEffect(() => {
-    const clickHandler = () => {
+    const formActiveHandler = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent && e.key === 'Enter' && !active)
+        e.preventDefault();
       setActive(true);
     };
 
-    window.addEventListener('click', clickHandler);
+    window.addEventListener('click', formActiveHandler);
+    window.addEventListener('keydown', formActiveHandler);
 
-    return () => window.removeEventListener('click', clickHandler);
-  }, []);
+    return () => {
+      window.removeEventListener('click', formActiveHandler);
+      window.removeEventListener('keydown', formActiveHandler);
+    };
+  }, [active]);
 
   // this is definitely NOT how to do this
   useEffect(() => {
@@ -61,6 +67,7 @@ export const LoggedOutView = () => {
                   />
                   {password && (
                     <BsArrowRightCircle
+                      onClick={() => send({ type: 'SUBMIT' })}
                       fill="#fff"
                       size={20}
                       style={{

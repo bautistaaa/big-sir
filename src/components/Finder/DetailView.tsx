@@ -16,12 +16,14 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
           const file = typeof files !== 'string' ? files[k] : ({} as File);
           return (
             <Item
+              key={k}
               active={active === k}
               onClick={() => {
                 setActive(k);
                 setContent(file);
               }}
-              onDoubleClick={() => {
+              onDoubleClick={(e) => {
+                e.stopPropagation();
                 if (file.fileType === 'html') {
                   send({
                     type: 'FOCUS_WINDOW',

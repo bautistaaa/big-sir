@@ -90,7 +90,7 @@ const StyledMenuItems = styled.ul`
   left: 0;
   top: 24px;
   border-radius: 5px;
-  width: 260px;
+  width: 215px;
   padding: 2px 0;
 `;
 const StyledMenuItem = styled.li`

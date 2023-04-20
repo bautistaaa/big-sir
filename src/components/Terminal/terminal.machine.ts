@@ -102,6 +102,10 @@ const config = {
       } = event as ChangeDirectoryEvent;
 
       switch (path) {
+        case '~':
+          newCwd = '/';
+          newCwdContents = getDirectoryContents([]);
+          break;
         case '/':
           newCwd = '/';
           newCwdContents = getDirectoryContents([]);

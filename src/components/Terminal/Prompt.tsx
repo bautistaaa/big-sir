@@ -252,6 +252,9 @@ const Prompt: FC<{
                 defaultUrl,
               },
             });
+          } else if (cmd === 'clear') {
+            clear();
+            return;
           } else if (cmd !== '') {
             output = `bash: ${cmd}: command not found`;
           } else {

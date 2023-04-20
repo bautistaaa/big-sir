@@ -20,7 +20,8 @@ const IconView: FC<{ files: Contents }> = ({ files }) => {
             onClick={() => {
               setActive(k);
             }}
-            onDoubleClick={() => {
+            onDoubleClick={(e) => {
+              e.stopPropagation();
               if (file.fileType === 'html') {
                 send({
                   type: 'FOCUS_WINDOW',
@@ -57,7 +58,7 @@ const Wrapper = styled.div`
 `;
 const ItemName = styled.span<{ active: boolean }>`
   transition: none;
-  color: ${({theme}) => theme.color};
+  color: ${({ theme }) => theme.color};
   font-size: 12px;
   word-break: break-all;
   cursor: default;

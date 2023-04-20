@@ -16,6 +16,7 @@ const DetailView: FC<{ files: Contents }> = ({ files }) => {
           const file = typeof files !== 'string' ? files[k] : ({} as File);
           return (
             <Item
+              key={k}
               active={active === k}
               onClick={() => {
                 setActive(k);

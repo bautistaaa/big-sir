@@ -22,8 +22,8 @@ declare module 'styled-components' {
     finderBackground: string;
     finderTopBarBackground: string;
     finderSideBarBackground: string;
-    finderOddItemListBackground: string;
     finderEvenItemListBackground: string;
+    finderOddItemListBackground: string;
     // utility bar buttons
     finderIconFill: string;
     finderModeButtonBackground: string;

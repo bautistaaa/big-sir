@@ -1,10 +1,10 @@
-import { FC, memo, useState } from 'react';
-import { useMachine, useSelector, useService } from '@xstate/react';
+import { FC, memo } from 'react';
+import { useActor, useMachine, useSelector } from '@xstate/react';
 import styled from 'styled-components';
 import { IoIosPause } from 'react-icons/io';
 import { BiPlay } from 'react-icons/bi';
 
-import { Context, SelectorState, SpotifyEvent } from '../spotify.machine';
+import { SelectorState } from '../spotify.machine';
 import {
   convertMsToMinutesAndSeconds,
   formatDateForSpotify,
@@ -39,7 +39,7 @@ const PlaylistTableItem: FC<Props> = ({
   const token = getToken();
 
   const service = useSpotifyContext();
-  const [state] = useService<Context, SpotifyEvent>(service);
+  const [state] = useActor(service);
   const isLikedSongsView = state.matches('loggedIn.success.liked');
   const currentTrack = useSelector(service, selectCurrentTrack);
   const currentPlaylist = useSelector(service, selectCurrentPlayist);

@@ -1,17 +1,14 @@
 import { useMachine } from '@xstate/react';
 import React, { FC, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Interpreter } from 'xstate';
+import { Interpreter} from 'xstate';
 import appMachine, { Context, AppEvent } from './app.machine';
 
 type AppContextValues = Interpreter<
   Context,
   any,
   AppEvent,
-  {
-    value: any;
-    context: Context;
-  }
+  any,
+  any
 >;
 
 const AppContext = React.createContext<AppContextValues>(
@@ -22,7 +19,8 @@ const AppContext = React.createContext<AppContextValues>(
     {
       value: any;
       context: Context;
-    }
+    },
+    any
   >
 );
 

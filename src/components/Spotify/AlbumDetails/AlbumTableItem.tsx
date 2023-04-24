@@ -234,7 +234,6 @@ const Title = styled.div<{ isPlaying: boolean }>`
 const ArtistName = styled.div`
   ${oneLine}
 `;
-const AlbumName = styled(BaseColumn)``;
 const GnarlyColumn = styled.div<{
   isDisplayingPlayButton: boolean;
   isDisplayingPauseButton: boolean;

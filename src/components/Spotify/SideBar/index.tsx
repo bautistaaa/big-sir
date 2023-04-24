@@ -182,15 +182,5 @@ const HeartContainer = styled.div`
   justify-content: center;
   margin-right: 15px;
 `;
-const PlusContainer = styled.div`
-  border-radius: 1px;
-  background: #fff;
-  height: 24px;
-  width: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 15px;
-`;
 
 export default SideBar;

@@ -12,7 +12,7 @@ const PlaylistTable = ({ items }: { items: any }) => {
   // HELP: i couldnt figure out how to do this with sticky + intersection observer
   const tableWrapperRef = useRef<HTMLDivElement | null>(null);
   const wrapperWidth = useRef<number | undefined>();
-  const uris = useMemo(() => items?.map((x: any) => x?.track?.uri), []);
+  const uris = useMemo(() => items?.map((x: any) => x?.track?.uri), [items]);
   const { ref: resizeRef } = useResizeDetector({
     onResize: () => {
       wrapperWidth.current = resizeRef.current.getBoundingClientRect().width;

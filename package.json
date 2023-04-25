@@ -80,5 +80,16 @@
     "babel-plugin-macros": "^3.0.1",
     "prettier": "^2.2.1",
     "react-error-overlay": "^6.0.9"
+  },
+  "overrides": {
+    "@headlessui/react": {
+      "react": "^17.0.1"
+    },
+    "react-codemirror2": {
+      "react": "^17.0.1"
+    },
+    "react-virtualized": {
+      "react": "^17.0.1"
+    }
   }
 }

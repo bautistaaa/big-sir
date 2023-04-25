@@ -52,7 +52,9 @@ const Terminal: FC = () => {
               padding: '3px',
             }}
           >
-            <Message>{`Last login: ${lastLogin ?? formatDate(new Date())} on ttys001`}</Message>
+            <Message>{`Last login: ${
+              lastLogin ?? formatDate(new Date())
+            } on ttys001`}</Message>
             <Message>{`View resume at /home/personal/Resume.js (ex: nvim home/personal/Resume.js)`}</Message>
             <Prompt
               isTerminalFocused={isFocused}
@@ -60,7 +62,7 @@ const Terminal: FC = () => {
               setFileContent={setFileContent}
               currentParent={current}
               sendParent={send}
-            ></Prompt>
+            />
           </div>
         </Console>
       )}

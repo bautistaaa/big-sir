@@ -24,8 +24,6 @@
     "react-rnd": "^10.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "react-virtualized": "^9.22.5",
-    "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.7",
     "styled-components": "^5.2.1",
@@ -86,9 +84,6 @@
       "react": "^17.0.1"
     },
     "react-codemirror2": {
-      "react": "^17.0.1"
-    },
-    "react-virtualized": {
       "react": "^17.0.1"
     }
   }

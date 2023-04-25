@@ -1,6 +1,6 @@
 import { useActor } from '@xstate/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { Maximizable } from '../Window';
 import LoginScreen from './LoginScreen';
 import Main from './Main';

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { Controlled as CodeMirror } from 'react-codemirror2';
 import ModeLine from './ModeLine';
 import CommandLine from './CommandLine';

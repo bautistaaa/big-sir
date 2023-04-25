@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { Maximizable } from './Window';
 
 interface Props extends Maximizable {}

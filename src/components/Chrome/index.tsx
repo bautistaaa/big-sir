@@ -3,7 +3,7 @@ import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { IoMdRefresh } from 'react-icons/io';
 import { VscBrowser } from 'react-icons/vsc';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
 import { Maximizable } from '../Window';

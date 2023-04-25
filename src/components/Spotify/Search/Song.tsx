@@ -5,7 +5,7 @@ import { BiPlay } from 'react-icons/bi';
 import BaseClearButton from '../../../components/ClearButton';
 import { oneLine } from '../../../shared/mixins';
 import { convertMsToMinutesAndSeconds } from '../../../utils';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import { getToken } from '../utils';
 import { SelectorState } from '../spotify.machine';
 import { useSpotifyContext } from '../SpotifyContext';

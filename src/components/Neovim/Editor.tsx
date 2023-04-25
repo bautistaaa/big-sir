@@ -5,8 +5,8 @@ import ModeLine from './ModeLine';
 import CommandLine from './CommandLine';
 import useEditorState from '../../hooks/useEditorState';
 import { View } from '../Terminal';
-require('codemirror/mode/htmlmixed/htmlmixed');
-require('codemirror/keymap/vim');
+import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/keymap/vim';
 
 const BLOCKED_LIST = [
   'Backspace',

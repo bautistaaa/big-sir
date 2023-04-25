@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import mergeRefs from 'react-merge-refs';
 import { useResizeDetector } from 'react-resize-detector';
 import { useInView } from 'react-intersection-observer';

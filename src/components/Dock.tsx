@@ -1,5 +1,5 @@
 import { useActor } from '@xstate/react';
-import { FC, MutableRefObject } from 'react';
+import { MutableRefObject } from 'react';
 import styled from 'styled-components/macro';
 import { useAppContext } from '../AppContext';
 import { AppType } from '../shared/app-configs';

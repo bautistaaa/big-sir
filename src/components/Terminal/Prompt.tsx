@@ -12,11 +12,11 @@ const Prompt: FC<{
   isTerminalFocused: boolean;
   setView: React.Dispatch<React.SetStateAction<View>>;
   setFileContent: React.Dispatch<React.SetStateAction<string>>;
-  currentParent: State<Context, TerminalEvent, any, any>;
+  currentParent: State<Context, TerminalEvent, any, any, any>;
   sendParent: (
     event: SingleOrArray<Event<TerminalEvent>> | SCXML.Event<TerminalEvent>,
     payload?: EventData | undefined
-  ) => State<Context, TerminalEvent, any, any>;
+  ) => State<Context, TerminalEvent, any, any, any>;
 }> = ({
   isTerminalFocused,
   setView,
@@ -294,7 +294,7 @@ const Prompt: FC<{
         window.removeEventListener('keyup', handleKeyUp);
       };
     }
-  }, [isTerminalFocused, send, setFileContent, setView, sendParent]);
+  }, [clear, isTerminalFocused, send, setFileContent, setView, sendParent]);
 
   return (
     <Wrapper>

@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useActor, useSelector } from '@xstate/react';
+import { useSelector } from '@xstate/react';
 import { BiPlay } from 'react-icons/bi';
 import { IoIosPause } from 'react-icons/io';
 
@@ -28,7 +28,6 @@ const PopularTrack = ({
   uris,
 }: PopularTrackProps) => {
   const service = useSpotifyContext();
-  const [state] = useActor(service);
   const currentTrack = useSelector(service, selectCurrentTrack);
   const deviceId = useSelector(service, selectDeviceId);
   const isCurrentTrack = track?.id === currentTrack?.trackId;
@@ -203,6 +202,5 @@ const Title = styled.div<{ isPlaying: boolean }>`
       color: #1db954;
     `}
 `;
-const AlbumName = styled(BaseColumn)``;
 
 export default PopularTrack;

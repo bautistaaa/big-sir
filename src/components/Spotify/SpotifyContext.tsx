@@ -11,7 +11,8 @@ type SpotifyContextValue = Interpreter<
   {
     value: any;
     context: Context;
-  }
+  },
+  any
 >;
 
 export const SpotifyContext = createContext<SpotifyContextValue>(

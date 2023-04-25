@@ -14,7 +14,8 @@ type SpotifyContextValue = Interpreter<
   {
     value: any;
     context: SearchMachineContext;
-  }
+  },
+  any
 >;
 
 export const StickyBarContext = createContext<SpotifyContextValue>(

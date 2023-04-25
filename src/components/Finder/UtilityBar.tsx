@@ -13,7 +13,8 @@ interface Props {
     {
       value: any;
       context: Context;
-    }
+    },
+    any
   >;
   send: any;
 }

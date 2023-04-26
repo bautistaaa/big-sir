@@ -27,7 +27,7 @@ export interface WindowPosition {
 }
 
 export interface Maximizable {
-  handleMaximize: () => void;
+  handleMaximize: (...e: any[]) => void;
 }
 
 interface WindowProps {

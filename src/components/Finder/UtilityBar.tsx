@@ -1,10 +1,11 @@
-import { FC, useContext } from 'react';
+import { useContext } from 'react';
 import styled, { ThemeContext } from 'styled-components/macro';
 import { Arrow, Details, Icons, List } from './icons';
 import { Context, FinderEvent } from './finder.machine';
 import { State } from 'xstate';
+import { Maximizable } from '../Window';
 
-interface Props {
+interface Props extends Maximizable {
   folderName: string;
   current: State<
     Context,
@@ -19,11 +20,11 @@ interface Props {
   send: any;
 }
 
-const UtilityBar: FC<Props> = ({ folderName, current, send }) => {
+const UtilityBar = ({ current, folderName, handleMaximize, send }: Props) => {
   const themeContext = useContext(ThemeContext);
 
   return (
-    <Bar className="action-bar">
+    <Bar className="action-bar" onDoubleClick={handleMaximize}>
       <ControlButtonsWrapper>
         <ControlButton>
           <Arrow fill={themeContext.finderIconFill} transform="rotate(180)" />

@@ -1,14 +1,16 @@
-import { FC, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
-import { IoLogoTwitch } from 'react-icons/io';
-import { ImGithub } from 'react-icons/im';
+import { useContext } from 'react';
 import { GrTwitter } from 'react-icons/gr';
+import { ImGithub } from 'react-icons/im';
+import { IoLogoTwitch } from 'react-icons/io';
+import styled, { ThemeContext } from 'styled-components/macro';
+import { Maximizable } from './Window';
 
-const AboutThisDeveloper: FC = () => {
+interface Props extends Maximizable {}
+const AboutThisDeveloper = ({ handleMaximize }: Props) => {
   const themeContext = useContext(ThemeContext);
   return (
     <Wrapper>
-      <TopBar className="action-bar" />
+      <TopBar className="action-bar" onDoubleClick={handleMaximize} />
       <Content>
         <Circle>
           <img src="me.png" alt="about" />

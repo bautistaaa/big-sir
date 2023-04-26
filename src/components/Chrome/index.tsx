@@ -1,12 +1,13 @@
-import { FC, FormEvent, useEffect, useRef, useState, useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
-import { VscBrowser } from 'react-icons/vsc';
-import { IoMdRefresh } from 'react-icons/io';
+import { useActor } from '@xstate/react';
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import { IoMdRefresh } from 'react-icons/io';
+import { VscBrowser } from 'react-icons/vsc';
+import styled, { ThemeContext } from 'styled-components/macro';
 import { useAppContext } from '../../AppContext';
 import ClearButton from '../../components/ClearButton';
+import { Maximizable } from '../Window';
 import { LeftArrow, RightArrow } from './icons';
-import { useActor } from '@xstate/react';
 
 interface Bookmark {
   favico: string;
@@ -47,12 +48,13 @@ const DEFAULT_URL = {
   url: 'https://www.google.com/webhp?igu=1',
   title: 'Google',
 };
-const Chrome: FC = (): JSX.Element => {
+interface Props extends Maximizable {}
+const Chrome = ({ handleMaximize }: Props) => {
   const service = useAppContext();
   const [current] = useActor(service);
   const themeContext = useContext(ThemeContext);
   const windowState = current.context.activeWindows.find(
-    (x) => x.name === 'chrome'
+    (x: any) => x.name === 'chrome'
   );
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -108,7 +110,7 @@ const Chrome: FC = (): JSX.Element => {
 
   return (
     <Wrapper ref={wrapperRef}>
-      <TopBar className="action-bar"></TopBar>
+      <TopBar className="action-bar" onDoubleClick={handleMaximize} />
       <BrowserBar title={url.title ?? ''}>
         <ActionButtonsWrapper>
           <ClearButton onClick={handlePreviousClick} disabled={!hasPrevious}>

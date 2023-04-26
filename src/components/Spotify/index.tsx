@@ -1,26 +1,27 @@
-import { FC, memo } from 'react';
+import { useActor } from '@xstate/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import styled from 'styled-components/macro';
-import { useActor } from '@xstate/react';
-
-import SideBar from './SideBar';
-import Main from './Main';
+import { Maximizable } from '../Window';
 import LoginScreen from './LoginScreen';
+import Main from './Main';
 import Player from './Player';
+import SideBar from './SideBar';
 import { SpotifyProvider, useSpotifyContext } from './SpotifyContext';
 
 const client = new QueryClient();
 
-const SpotifyWrapper = memo(() => {
+interface Props extends Maximizable {}
+const SpotifyWrapper = ({ handleMaximize }: Props) => {
   return (
     <QueryClientProvider client={client}>
       <SpotifyProvider>
-        <Spotify />
+        <Spotify handleMaximize={handleMaximize} />
       </SpotifyProvider>
     </QueryClientProvider>
   );
-});
-const Spotify: FC = () => {
+};
+interface Props extends Maximizable {}
+const Spotify = ({ handleMaximize }: Props) => {
   const service = useSpotifyContext();
   const [state] = useActor(service);
 
@@ -29,7 +30,7 @@ const Spotify: FC = () => {
       {state.matches('loggedOut') && <LoginScreen />}
       {state.matches('loggedIn') && (
         <SpotifyLayout>
-          <DraggableBar className="action-bar" />
+          <DraggableBar className="action-bar" onDoubleClick={handleMaximize} />
           <SideBar />
           <Main />
           <NowPlayingBar>

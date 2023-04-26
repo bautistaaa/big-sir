@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
 import styled from 'styled-components/macro';
 import Neovim from '../../components/Neovim';
@@ -8,10 +8,12 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 import { formatDate } from '../../utils';
 import { useMachine } from '@xstate/react';
 import terminalMachine from './terminal.machine';
+import { Maximizable } from '../Window';
 
 export type View = 'terminal' | 'nvim';
 
-const Terminal: FC = () => {
+interface Props extends Maximizable {}
+const Terminal = ({ handleMaximize }: Props) => {
   const [view, setView] = useState<View>('terminal');
   const [current, send] = useMachine(terminalMachine, { devTools: true });
   const [fileContent, setFileContent] = useState('');
@@ -42,7 +44,7 @@ const Terminal: FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <TopBar className="action-bar" />
+      <TopBar className="action-bar" onDoubleClick={handleMaximize} />
       {view === 'terminal' && (
         <Console ref={consoleRef}>
           <div

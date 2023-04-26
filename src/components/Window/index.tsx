@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, memo, useCallback } from 'react';
+import React, { FC, useEffect, useRef, memo, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { useActor, useMachine } from '@xstate/react';
 import windowMachine from './window.machine';
@@ -26,12 +26,18 @@ export interface WindowPosition {
   y: number;
 }
 
+export interface Maximizable {
+  handleMaximize: () => void;
+}
+
 interface WindowProps {
   name: AppType;
   minimizedTargetRect: RectResult;
 }
 const getComponentByName = (name: AppType) => {
-  const components: { [K in AppType]: React.ComponentType<any> } = {
+  const components: {
+    [K in AppType]: React.ComponentType<Maximizable>;
+  } = {
     aboutThisDeveloper: AboutThisDeveloper,
     aboutThisMac: AboutThisMac,
     chrome: Chrome,
@@ -51,10 +57,10 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
   const { isFocused } = useIsFocused(ref);
 
   const isMinimized = !!currentParent.context.minimizedWindows.find(
-    (mw) => mw.name === name
+    (mw: any) => mw.name === name
   );
   const windowState = currentParent.context.activeWindows.find(
-    (aw) => aw.name === name
+    (aw: any) => aw.name === name
   );
   const {
     width: windowWidth,
@@ -162,7 +168,6 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
       }}
       onDragStart={focusWindow}
       onResizeStart={focusWindow}
-      onDoubleClick={handleMaximizeClick}
     >
       <Wrapper active={windowState?.focused ?? false}>
         <Border>
@@ -176,7 +181,7 @@ const Window: FC<WindowProps> = memo(({ name, minimizedTargetRect }) => {
                 enableResizing={resizeable}
               />
             </div>
-            <Component key={name} />
+            <Component key={name} handleMaximize={handleMaximizeClick} />
           </Container>
         </Border>
       </Wrapper>

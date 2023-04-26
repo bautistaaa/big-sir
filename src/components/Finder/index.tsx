@@ -1,7 +1,8 @@
 import { useMachine } from '@xstate/react';
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components/macro';
 import getDirectoryContents from '../../utils/getDirectoryContents';
+import { Maximizable } from '../Window';
 import DetailView from './DetailView';
 import finderMachine from './finder.machine';
 import IconView from './IconView';
@@ -18,7 +19,8 @@ const SidebarItemIconMap: { [k: string]: string } = {
   applications: 'path.png',
 };
 
-const Finder: FC = () => {
+interface Props extends Maximizable {}
+const Finder = ({ handleMaximize }: Props) => {
   const [current, send] = useMachine(finderMachine, { devTools: true });
   const [activeFolder, setActiveFolder] = useState('personal');
   const files = getDirectoryContents(
@@ -68,6 +70,7 @@ const Finder: FC = () => {
           folderName={activeFolder.toString()}
           current={current}
           send={send}
+          handleMaximize={handleMaximize}
         />
         <Content>
           {isIconView && <IconView files={files} />}

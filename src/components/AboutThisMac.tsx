@@ -1,10 +1,11 @@
-import { FC } from 'react';
 import styled from 'styled-components/macro';
+import { Maximizable } from './Window';
 
-const AboutThisMac: FC = () => {
+interface Props extends Maximizable {}
+const AboutThisMac = ({ handleMaximize }: Props) => {
   return (
     <Wrapper>
-      <TopBar className="action-bar" />
+      <TopBar className="action-bar" onDoubleClick={handleMaximize} />
       <Content>
         <Circle>
           <img src="about.jpg" alt="about" />
@@ -24,7 +25,7 @@ const AboutThisMac: FC = () => {
 };
 
 const TopBar = styled.div`
-  background: ${({theme}) => theme.topBarBackground};
+  background: ${({ theme }) => theme.topBarBackground};
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 40px;
@@ -49,14 +50,14 @@ const Content = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({theme}) => theme.color};
-  background: ${({theme}) => theme.aboutBackground};
+  color: ${({ theme }) => theme.color};
+  background: ${({ theme }) => theme.aboutBackground};
   backdrop-filter: blur(72px);
   height: calc(100% - 40px);
   width: 100%;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-`
+`;
 const Circle = styled.div`
   height: 150px;
   width: 150px;

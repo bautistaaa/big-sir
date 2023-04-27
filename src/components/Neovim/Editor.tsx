@@ -121,9 +121,10 @@ const Editor: FC<{
       <Wrapper ref={ref}>
         <FileContent>
           <CodeMirror
-            value={code}
-            theme={dracula}
+            autoFocus
             extensions={[vim(), basicSetup()]}
+            theme={dracula}
+            value={code}
             onChange={(value) => {
               setCode(value);
             }}

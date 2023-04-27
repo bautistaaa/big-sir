@@ -1,12 +1,13 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Controlled as CodeMirror } from 'react-codemirror2';
+import CodeMirror from '@uiw/react-codemirror';
+import { basicSetup } from '@uiw/codemirror-extensions-basic-setup';
 import ModeLine from './ModeLine';
 import CommandLine from './CommandLine';
 import useEditorState from '../../hooks/useEditorState';
 import { View } from '../Terminal';
-import 'codemirror/mode/htmlmixed/htmlmixed';
-import 'codemirror/keymap/vim';
+import { dracula } from '@uiw/codemirror-theme-dracula';
+import { vim } from '@replit/codemirror-vim';
 
 const BLOCKED_LIST = [
   'Backspace',
@@ -20,13 +21,6 @@ const BLOCKED_LIST = [
   'ArrowUp',
   'ArrowDown',
 ];
-
-const options = {
-  theme: 'dracula',
-  lineNumbers: true,
-  keyMap: 'vim',
-  mode: 'htmlmixed',
-};
 
 const Editor: FC<{
   isTerminalFocused: boolean;
@@ -127,12 +121,10 @@ const Editor: FC<{
       <Wrapper ref={ref}>
         <FileContent>
           <CodeMirror
-            options={options}
             value={code}
-            onBeforeChange={(editor, data, value) => {
-              setCode(value);
-            }}
-            onChange={(editor, data, value) => {
+            theme={dracula}
+            extensions={[vim(), basicSetup()]}
+            onChange={(value) => {
               setCode(value);
             }}
           />
@@ -161,14 +153,7 @@ const Wrapper = styled.div`
 `;
 const FileContent = styled.div`
   height: calc(100% - 50px);
-  .react-codemirror2,
-  .react-codemirror2 > div {
-    color: white !important;
-    height: 100%;
-  }
-  .react-codemirror2 * {
-    transition: none !important;
-  }
+  overflow: auto;
 `;
 const HiddenTextArea = styled.textarea`
   position: absolute;

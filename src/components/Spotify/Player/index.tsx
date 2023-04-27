@@ -50,7 +50,7 @@ const Player: FC = () => {
       // types out of date
       // @ts-ignore
       const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
-      const trackId = state?.track_window?.current_track?.id;
+      const trackId = state?.track_window?.current_track?.id || '';
 
       sendParent({
         type: 'UPDATE_TRACK',

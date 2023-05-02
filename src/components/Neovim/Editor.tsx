@@ -13,7 +13,7 @@ const Editor: FC<{
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Vim.defineEx('quit', 'q', (cm) => {
+    Vim.defineEx('quit', 'q', () => {
       setView('terminal');
     });
   });

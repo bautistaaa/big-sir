@@ -73,7 +73,6 @@ const Terminal = ({ handleMaximize }: Props) => {
           <Neovim
             fileContent={fileContent}
             setView={setView}
-            isTerminalFocused={true}
           />
         </Console>
       )}

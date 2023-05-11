@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import styled, { ThemeContext } from 'styled-components/macro';
+import styled, { ThemeContext } from 'styled-components';
 import { Arrow, Details, Icons, List } from './icons';
 import { Context, FinderEvent } from './finder.machine';
 import { State } from 'xstate';

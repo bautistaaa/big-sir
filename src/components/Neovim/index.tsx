@@ -5,10 +5,9 @@ import { View } from '../Terminal';
 
 type EditorState = 'loading' | 'nvim';
 const Neovim: FC<{
-  isTerminalFocused: boolean;
   fileContent: string;
   setView: React.Dispatch<React.SetStateAction<View>>;
-}> = ({ isTerminalFocused, fileContent, setView }) => {
+}> = ({ fileContent, setView }) => {
   const [editorState, setEditorState] = useState<EditorState>('loading');
 
   useEffect(() => {
@@ -30,7 +29,6 @@ const Neovim: FC<{
       <Editor
         fileContent={fileContent}
         setView={setView}
-        isTerminalFocused={isTerminalFocused}
       />
     );
   }

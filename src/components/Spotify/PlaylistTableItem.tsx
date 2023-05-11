@@ -152,7 +152,7 @@ const PlaylistTableItem: FC<Props> = ({
                 width="14"
                 height="14"
                 alt=""
-                src="https://open.scdn.co/cdn/images/equaliser-animated-green.73b73928.gif"
+                src="https://open.spotifycdn.com/cdn/images/equaliser-animated-green.f5eb96f2.gif"
               />
             )}
 

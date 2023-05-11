@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useMutationObserver from '@rooks/use-mutation-observer';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import Neovim from '../../components/Neovim';
 import Prompt from './Prompt';
 import useIsFocused from '../../hooks/useIsFocused';
@@ -73,6 +73,7 @@ const Terminal = ({ handleMaximize }: Props) => {
           <Neovim
             fileContent={fileContent}
             setView={setView}
+            isTerminalFocused={true}
           />
         </Console>
       )}

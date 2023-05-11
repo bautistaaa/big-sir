@@ -1,7 +1,7 @@
 import { useMachine, useActor } from '@xstate/react';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import playerMachine from './player.machine';
 import ClearButton from '../../ClearButton';
@@ -50,7 +50,7 @@ const Player: FC = () => {
       // types out of date
       // @ts-ignore
       const linkedFromId = state?.track_window?.current_track?.linked_from?.id;
-      const trackId = state?.track_window?.current_track?.id || '';
+      const trackId = state?.track_window?.current_track?.id;
 
       sendParent({
         type: 'UPDATE_TRACK',

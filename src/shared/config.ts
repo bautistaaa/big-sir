@@ -10,8 +10,8 @@ export interface Config {
 const config: Config = {
   apiUrl: 'https://api.spotify.com/v1',
   authorizeUrl: 'https://accounts.spotify.com/authorize',
-  clientId: import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_ID,
-  clientSecret: import.meta.env.VITE_REACT_APP_SPOTIFY_CLIENT_SECRET,
+  clientId: process.env.REACT_APP_SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.REACT_APP_SPOTIFY_CLIENT_SECRET,
   scopes:
     'user-read-recently-played user-top-read streaming user-library-read user-library-modify playlist-read-private user-read-email user-read-private user-modify-playback-state',
   tokenUrl: 'https://accounts.spotify.com/api/token',

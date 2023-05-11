@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { GrTwitter } from 'react-icons/gr';
 import { ImGithub } from 'react-icons/im';
 import { IoLogoTwitch } from 'react-icons/io';
-import styled, { ThemeContext } from 'styled-components';
+import styled, { ThemeContext } from 'styled-components/macro';
 import { Maximizable } from './Window';
 
 interface Props extends Maximizable {}

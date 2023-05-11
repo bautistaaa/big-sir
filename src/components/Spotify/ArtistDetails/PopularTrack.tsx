@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useSelector } from '@xstate/react';
 import { BiPlay } from 'react-icons/bi';
 import { IoIosPause } from 'react-icons/io';

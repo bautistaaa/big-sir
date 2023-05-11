@@ -1,6 +1,6 @@
 import { useSelector } from '@xstate/react';
 import { FC, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useActor } from '@xstate/react';
 import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai';
 import { Menu } from '@headlessui/react';

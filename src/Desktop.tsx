@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useAppContext } from './AppContext';
 import { LoggedOutView } from './LoggedOutView';
 import { LoggedInView } from './LoggedInView';

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { Settings } from './ButtonItem';
 import { Airdrop, Bluetooth, Moon, Wifi } from '../icons';
 

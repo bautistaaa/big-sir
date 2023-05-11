@@ -1,20 +1,19 @@
 {
-  "name": "big-sir",
+  "name": "vimfolio",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^1.4.2",
-    "@replit/codemirror-vim": "^6.0.14",
     "@rooks/use-mutation-observer": "^4.9.2",
-    "@uiw/codemirror-extensions-basic-setup": "^4.19.16",
-    "@uiw/codemirror-theme-dracula": "^4.19.16",
-    "@uiw/react-codemirror": "^4.19.16",
+    "@types/codemirror": "^5.60.5",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.1",
+    "codemirror": "^5.60.0",
     "colorthief": "^2.3.2",
     "query-string": "^7.0.0",
     "rc-slider": "^9.7.2",
     "react": "^17.0.1",
+    "react-codemirror2": "^7.2.1",
     "react-data-table-component": "^6.11.7",
     "react-dom": "^17.0.1",
     "react-icons": "^4.3.1",
@@ -33,9 +32,10 @@
     "xstate": "^4.37.1"
   },
   "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
@@ -60,7 +60,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "@types/jest": "^26.0.20",
-    "@types/node": "^14.0.0",
+    "@types/node": "^12.20.5",
     "@types/query-string": "^6.3.0",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.2",
@@ -73,12 +73,18 @@
     "@types/react-window": "^1.8.5",
     "@types/react-window-infinite-loader": "^1.0.5",
     "@types/spotify-api": "0.0.12",
-    "@types/spotify-web-playback-sdk": "^0.1.15",
+    "@types/spotify-web-playback-sdk": "^0.1.10",
     "@types/styled-components": "^5.1.8",
-    "@vitejs/plugin-react": "^4.0.0",
     "babel-plugin-macros": "^3.0.1",
     "prettier": "^2.2.1",
-    "react-error-overlay": "^6.0.9",
-    "vite": "4.3.2"
+    "react-error-overlay": "^6.0.9"
+  },
+  "overrides": {
+    "@headlessui/react": {
+      "react": "^17.0.1"
+    },
+    "react-codemirror2": {
+      "react": "^17.0.1"
+    }
   }
 }

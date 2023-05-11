@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import PlayButton from '../PlayButton';
 import { SelectorState } from '../spotify.machine';

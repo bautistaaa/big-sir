@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useActor, useMachine, useSelector } from '@xstate/react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 import PlaylistHero from '../PlaylistHero';
 import AlbumTable from './AlbumTable';

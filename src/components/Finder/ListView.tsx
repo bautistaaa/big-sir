@@ -1,6 +1,6 @@
 import { useActor } from '@xstate/react';
 import { FC, useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { FileIconMap } from '.';
 import { useAppContext } from '../../AppContext';
 import { File, Contents } from '../../shared/fileDirectory';

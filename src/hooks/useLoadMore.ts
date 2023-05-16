@@ -17,8 +17,11 @@ const useLoadMore = ({ dep, callback, options, shouldDestroy }: Props) => {
     const el = document.getElementById('main');
 
     if (el) {
+      const loadMoreEl = document.getElementById('load-more');
+      if (!loadMoreEl) return;
+
       const destroy = observe(
-        document.getElementById('load-more')!,
+        loadMoreEl,
         callback,
         options
       );

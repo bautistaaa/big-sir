@@ -12,7 +12,7 @@ const ArtistAlbums = ({ albums }: ArtistAlbumsProps) => {
       <AlbumList>
         {albums.map((album) => {
           return (
-            <Album>
+            <Album key={album.id}>
               <AlbumFeedCard listId={album.id} />
             </Album>
           );

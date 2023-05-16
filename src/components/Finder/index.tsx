@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react';
 import { useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components';
 import getDirectoryContents from '../../utils/getDirectoryContents';
 import { Maximizable } from '../Window';
 import DetailView from './DetailView';

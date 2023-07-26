@@ -19,10 +19,11 @@ Built with [React](https://reactjs.org/) and [XState](https://github.com/davidkp
   - Note: most sites don't allow iframes to load them
 - Finder
   - Able to open/view apps in three mode (detail/list/icon)
+- Spotify Desktop Client
+  - fully functional spotify app built from scratch
 
 ## Whats next?
 - Ability to create html files and view them live on chrome (like codepen)
-- Spotify desktop client
 - more terminal features (ex: help)
 - Anything really..
 

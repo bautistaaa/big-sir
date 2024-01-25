@@ -1,12 +1,8 @@
 # Big Sir
 ## Joining the mac os clone wars.. Here's mine
-
 Built with [React](https://reactjs.org/) and [XState](https://github.com/davidkpiano/xstate)
 
 ## Features
-- Draggable desktop icons. Click to open corresponding apps
-- Context Menu to reset icon positions
-- Window management (focus priority, minimize, maximize)
 - Terminal
   - Able to open/view files in NeoVim (ex: nvim home/personal/Resume.js)
     - I disabled the `cat` command, only `nvim` works
